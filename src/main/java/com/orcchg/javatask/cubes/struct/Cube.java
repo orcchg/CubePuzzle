@@ -1,11 +1,13 @@
 package com.orcchg.javatask.cubes.struct;
 
 public class Cube {
+  private final int mID;
   private Orientation mOrientation = Orientation.UP;
   private Side[] mSides = new Side[4];
   private Side[] mTemp = new Side[4];
   
-  public Cube(Side up, Side down, Side right, Side left) {
+  public Cube(int id, Side up, Side down, Side right, Side left) {
+    mID = id;
     mSides[0] = up;
     mSides[1] = down;
     mSides[2] = right;
@@ -13,6 +15,118 @@ public class Cube {
     backup();
   }
   
+  public int getID() {
+    return mID;
+  }
+  
+  public Side getSide(Orientation orientation) {
+    Side side = null;
+    switch (orientation) {
+      case UP:
+        side = mSides[0];
+        break;
+      case DOWN:
+        side = mSides[1];
+        break;
+      case RIGHT:
+        side = mSides[2];
+        break;
+      case LEFT:
+        side = mSides[3];
+        break;
+    }
+    return side;
+  }
+  
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = 1;
+    result = prime * result + mID;
+    return result;
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj)
+      return true;
+    if (obj == null)
+      return false;
+    if (getClass() != obj.getClass())
+      return false;
+    Cube other = (Cube) obj;
+    if (mID != other.mID)
+      return false;
+    return true;
+  }
+  
+  public Cube setOrientation(Orientation orientation) {
+    switch (mOrientation) {
+      case UP:
+        switch (orientation) {
+          case UP:
+            break;
+          case DOWN:
+            rotate(); rotate();
+            break;
+          case RIGHT:
+            rotate();
+            break;
+          case LEFT:
+            rotate(); rotate(); rotate();
+            break;
+        }
+        break;
+      case DOWN:
+        switch (orientation) {
+          case UP:
+            rotate(); rotate();
+            break;
+          case DOWN:
+            break;
+          case RIGHT:
+            rotate(); rotate(); rotate();
+            break;
+          case LEFT:
+            rotate();
+            break;
+        }
+        break;
+      case RIGHT:
+        switch (orientation) {
+          case UP:
+            rotate(); rotate(); rotate();
+            break;
+          case DOWN:
+            rotate();
+            break;
+          case RIGHT:
+            break;
+          case LEFT:
+            rotate(); rotate();
+            break;
+        }
+        break;
+      case LEFT:
+        switch (orientation) {
+          case UP:
+            rotate();
+            break;
+          case DOWN:
+            rotate(); rotate(); rotate();
+            break;
+          case RIGHT:
+            rotate(); rotate();
+            break;
+          case LEFT:
+            break;
+        }
+        break;
+    }
+    mOrientation = orientation;
+    return this;
+  }
+
   public Cube rotate() {  // clockwise rotation by 90 degrees
     switch (mOrientation) {
       case UP:

@@ -28,16 +28,12 @@ public class MainSolution {
     }
     MainSolution instance = new MainSolution();
     instance.readCubes(args[0]);
-    System.out.println("##### UP #####");
-    System.out.println(instance.mSolver.getCube(5));
-    System.out.println("##### RIGHT #####");
-    System.out.println(instance.mSolver.getCube(5).rotate());
-    System.out.println("##### DOWN #####");
-    System.out.println(instance.mSolver.getCube(5).rotate());
-    System.out.println("##### LEFT #####");
-    System.out.println(instance.mSolver.getCube(5).rotate());
-    System.out.println("##### UP #####");
-    System.out.println(instance.mSolver.getCube(5).rotate());
+    
+    System.err.println(instance.mSolver.match(
+        instance.mSolver.getCube(1).rotate(),
+        Orientation.RIGHT,
+        instance.mSolver.getCube(3).rotate().rotate().rotate(),
+        Orientation.LEFT));
   }
 
   /* Private methods */
@@ -58,10 +54,11 @@ public class MainSolution {
       e.printStackTrace();
     }
     
-    System.err.println(matrix);
+    int cube_id = 0;
     
     // top line
     mSolver.addCube(new Cube(
+        cube_id++,
         new Side(matrix.data[0][0], matrix.data[0][1], matrix.data[0][2], matrix.data[0][3], matrix.data[0][4]),   // up
         new Side(matrix.data[4][0], matrix.data[4][1], matrix.data[4][2], matrix.data[4][3], matrix.data[4][4]),   // down
         new Side(matrix.data[0][4], matrix.data[1][4], matrix.data[2][4], matrix.data[3][4], matrix.data[4][4]),   // right
@@ -69,6 +66,7 @@ public class MainSolution {
         ));
     
     mSolver.addCube(new Cube(
+        cube_id++,
         new Side(matrix.data[0][5], matrix.data[0][6], matrix.data[0][7], matrix.data[0][8], matrix.data[0][9]),   // up
         new Side(matrix.data[4][5], matrix.data[4][6], matrix.data[4][7], matrix.data[4][8], matrix.data[4][9]),   // down
         new Side(matrix.data[0][9], matrix.data[1][9], matrix.data[2][9], matrix.data[3][9], matrix.data[4][9]),   // right
@@ -76,6 +74,7 @@ public class MainSolution {
         ));
     
     mSolver.addCube(new Cube(
+        cube_id++,
         new Side(matrix.data[0][10], matrix.data[0][11], matrix.data[0][12], matrix.data[0][13], matrix.data[0][14]),   // up
         new Side(matrix.data[4][10], matrix.data[4][11], matrix.data[4][12], matrix.data[4][13], matrix.data[4][14]),   // down
         new Side(matrix.data[0][14], matrix.data[1][14], matrix.data[2][14], matrix.data[3][14], matrix.data[4][14]),   // right
@@ -84,6 +83,7 @@ public class MainSolution {
     
     // bottom line
     mSolver.addCube(new Cube(
+        cube_id++,
         new Side(matrix.data[5][0], matrix.data[5][1], matrix.data[5][2], matrix.data[5][3], matrix.data[5][4]),   // up
         new Side(matrix.data[9][0], matrix.data[9][1], matrix.data[9][2], matrix.data[9][3], matrix.data[9][4]),   // down
         new Side(matrix.data[5][4], matrix.data[6][4], matrix.data[7][4], matrix.data[8][4], matrix.data[9][4]),   // right
@@ -91,6 +91,7 @@ public class MainSolution {
         ));
     
     mSolver.addCube(new Cube(
+        cube_id++,
         new Side(matrix.data[5][5], matrix.data[5][6], matrix.data[5][7], matrix.data[5][8], matrix.data[5][9]),   // up
         new Side(matrix.data[9][5], matrix.data[9][6], matrix.data[9][7], matrix.data[9][8], matrix.data[9][9]),   // down
         new Side(matrix.data[5][9], matrix.data[6][9], matrix.data[7][9], matrix.data[8][9], matrix.data[9][9]),   // right
@@ -98,6 +99,7 @@ public class MainSolution {
         ));
     
     mSolver.addCube(new Cube(
+        cube_id++,
         new Side(matrix.data[5][10], matrix.data[5][11], matrix.data[5][12], matrix.data[5][13], matrix.data[5][14]),   // up
         new Side(matrix.data[9][10], matrix.data[9][11], matrix.data[9][12], matrix.data[9][13], matrix.data[9][14]),   // down
         new Side(matrix.data[5][14], matrix.data[6][14], matrix.data[7][14], matrix.data[8][14], matrix.data[9][14]),   // right

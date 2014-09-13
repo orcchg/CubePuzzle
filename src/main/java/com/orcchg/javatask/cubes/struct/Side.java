@@ -38,6 +38,16 @@ public class Side implements Cloneable {
     return this;
   }
   
+  public byte getNumericRepresentation() {
+    byte number = 0;
+    int power = 0;
+    for (Cell cell : cells) {
+      number += cell == Cell.FULL ? Math.pow(2, power) : 0;
+      ++power;
+    }
+    return number;
+  }
+  
   @Override
   public Side clone() {
     Side side = new Side(cells);
