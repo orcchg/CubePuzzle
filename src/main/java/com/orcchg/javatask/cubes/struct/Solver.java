@@ -551,8 +551,8 @@ public class Solver {
         solution.append("     ").append(cubes.get(i).getSide(Orientation.UP)).append("     ").append("\n");
         
         for (int j = 1; j < 3; ++j) {
-          solution.append("     ").append(cubes.get(i).getSide(Orientation.LEFT).cells[j])
-                  .append("ooo").append(cubes.get(i).getSide(Orientation.RIGHT).cells[j])
+          solution.append("     ").append(cubes.get(i).getSide(Orientation.LEFT).cells[j].toChar())
+                  .append("ooo").append(cubes.get(i).getSide(Orientation.RIGHT).cells[j].toChar())
                   .append("     ").append("\n");
         }
         solution.append("     ").append(cubes.get(i).getSide(Orientation.DOWN)).append("     ").append("\n");
@@ -591,8 +591,8 @@ public class Solver {
         solution.append("     ").append(cubes.get(i).getSide(Orientation.UP)).append("     ").append("\n");
         
         for (int j = 1; j < 3; ++j) {
-          solution.append("     ").append(cubes.get(i).getSide(Orientation.LEFT).cells[j])
-                  .append("ooo").append(cubes.get(i).getSide(Orientation.RIGHT).cells[j])
+          solution.append("     ").append(cubes.get(i).getSide(Orientation.LEFT).cells[j].toChar())
+                  .append("ooo").append(cubes.get(i).getSide(Orientation.RIGHT).cells[j].toChar())
                   .append("     ").append("\n");
         }
         solution.append("     ").append(cubes.get(i).getSide(Orientation.DOWN)).append("     ").append("\n");
