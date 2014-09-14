@@ -9,7 +9,6 @@ public class Cube {
   private Orientation mOrientation = Orientation.UP;
   private Side[] mSides = new Side[4];
   private Side[] mTemp = new Side[4];
-  private boolean mIsSymmetric = false;
   
   public Cube(int id, Side up, Side down, Side right, Side left) {
     mID = id;

@@ -1,7 +1,6 @@
 package com.orcchg.javatask.cubes.struct;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -185,10 +184,13 @@ public class Solver {
           combination_to_remove.add(lhs_cube.getID());
           //combination.remove((Object) rhs_cube.getID());
           combination_to_remove.add(rhs_cube.getID());
+          
+          List<Integer> rest_combination = Util.cloneArrayList(combination);
+          rest_combination.removeAll(combination_to_remove);
 
           // ------------------------------------------------------------------
           // try to attach third puzzle and get a straight line
-          rest_two_puzzles: for (int rest_cube_id : combination) {
+          rest_two_puzzles: for (int rest_cube_id : rest_combination) {
             int not_matched_counter = 0;
             for (Orientation orientation : Orientation.entries) {
               Cube rest_cube = mCubes.get(rest_cube_id);
@@ -260,9 +262,12 @@ public class Solver {
           }
           // ------------------------------------------------------------------
           
+          List<Integer> last_combination = Util.cloneArrayList(combination);
+          last_combination.removeAll(combination_to_remove);
+          
           // ------------------------------------------------------------------
           // try to attach last puzzle and get a ring
-          int last_puzzle_id = combination.get(0);
+          int last_puzzle_id = last_combination.get(0);
           int not_matched_counter = 0;
           for (Orientation orientation : Orientation.entries) {
             Cube last_cube = mCubes.get(last_puzzle_id);
@@ -349,6 +354,14 @@ public class Solver {
         continue smallcomb_2;
       }  // smallcomb_2 loop
       // ----------------------------------------------------------------------
+      
+//      for (LinkedList<Cube> cubes : collect_rings) {
+//        System.out.println("RINGS");
+//        for (Cube c : cubes) {
+//          System.out.print(c.getID());
+//        }
+//        System.out.println();
+//      }  // XXX:
       
       // --------------------------------------------------------------------------------------------------------------
       
@@ -759,6 +772,12 @@ public class Solver {
         }
         solution.append("     ").append(cubes.get(i).getSide(Orientation.DOWN)).append("     ").append("\n");
       }
+      
+      for (Cube c : cubes) {
+        System.out.print(c.getID() + " ");  // XXX
+      }
+      System.out.println();
+      
       solution.append("\n\n");
     }
     
@@ -828,7 +847,6 @@ public class Solver {
           public int compare(List<Cube> lhs, List<Cube> rhs) {
             int equal_counter = 0;
             int ids_counter = 0;
-            int orientation_counter = 0;
             
             for (int i = 0; i < lhs.size(); ++i) {
               Cube lhs_cube = lhs.get(i);
@@ -841,8 +859,6 @@ public class Solver {
                 ++equal_counter;
               } else if (equal_ids) {
                 ++ids_counter;
-              } else if (equal_orientations) {
-                ++orientation_counter;
               }
             }
             
