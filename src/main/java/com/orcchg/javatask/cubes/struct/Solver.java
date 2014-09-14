@@ -57,14 +57,9 @@ public class Solver {
       
       // all combinations from 4 of 2
       List<List<Integer>> smallcomb = Util.allConjunctions(combination, 2);
-      // ring segment
-      LinkedList<Cube> ring_segment = new LinkedList<>();
       
-      puzzles_2: while (!smallcomb.isEmpty()) {
-        // try two puzzles in all possible orientations and get any
-        int pair_index = smallcomb.size() - 1;
-        List<Integer> pair = smallcomb.get(pair_index);  // peek last
-        
+      // try two puzzles in all possible orientations and get any
+      puzzles_2: for (List<Integer> pair : smallcomb) {
         // get all possible combinations between two pieces
         List<Orientation[]> orientation_pairs = new ArrayList<>();
         
@@ -81,6 +76,9 @@ public class Solver {
         }
         
         orientations_loop: for (Orientation[] orientation_pair : orientation_pairs) {
+          // ring segment
+          LinkedList<Cube> ring_segment = new LinkedList<>();
+          
           Cube lhs_cube = mCubes.get(pair.get(0));
           Cube rhs_cube = mCubes.get(pair.get(1));
           ring_segment.add(lhs_cube.getOriented(orientation_pair[0]));
@@ -168,37 +166,20 @@ public class Solver {
             combination = Util.cloneArrayList(backup);
             ring_segment.clear();
             continue orientations_loop;
+          } else {
+            if (ring_segment.size() == 4) {
+              if (isSegmentARing(ring_segment)) {
+                // we have got a ring! one ring to rule them all...
+                collect_rings.add(ring_segment);
+              }
+              combination = Util.cloneArrayList(backup);
+              ring_segment.clear();
+            } else {
+              throw new RuntimeException("Magic error!");
+            }
           }
         }  // orientations_loop
-        
-//        orientation_lhs_loop: for (Orientation lhs : Orientation.entries) {
-//          orientation_rhs_loop: for (Orientation rhs : Orientation.entries) {
-//            Cube lhs_cube = mCubes.get(pair.get(0));
-//            Cube rhs_cube = mCubes.get(pair.get(1));
-//            boolean result = match(lhs_cube, lhs, rhs_cube, rhs);
-//            if (result) {
-//              ring_segment.add(lhs_cube.getOriented(lhs));
-//              ring_segment.add(rhs_cube.getOriented(rhs));
-//              combination.remove((Object) lhs_cube.getID());
-//              combination.remove((Object) rhs_cube.getID());
-//              break orientation_lhs_loop;
-//            } else {
-//              continue orientation_rhs_loop;
-//            }
-//          }  // orientation_rhs_loop
-//        }  // orientation_lhs_loop
-        
-
-      }  // puzzles_2 while loop
-      
-      if (ring_segment.size() == 4) {
-        // we have got a ring! one ring to rule them all...
-        collect_rings.add(ring_segment);
-        continue puzzles_4;
-      } else {
-        // current combination of 4 pieces is wrong
-        continue puzzles_4;
-      }
+      }  // puzzles_2 loop
     }  // puzzles_4 loop
     
     
@@ -212,4 +193,7 @@ public class Solver {
   
   /* Private methods */
   // --------------------------------------------------------------------------
+  private boolean isSegmentARing(final LinkedList<Cube> segment) {
+    return match(segment.get(0), Orientation.DOWN, segment.get(segment.size() - 1), Orientation.UP);
+  }
 }
