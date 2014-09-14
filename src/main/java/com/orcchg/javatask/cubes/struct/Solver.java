@@ -395,11 +395,11 @@ public class Solver {
               if (result || another_result) {
                 Cube candidate_cube = cube.getOriented(valid_orientation[1]);
                 
-//                boolean check = match(ring.get(id), Orientation.LEFT, candidate_cube, valid_orientation[1]);
-//                if (!check) {
-//                  // wrong actual matching - continue with other orientation
-//                  continue orientation_loop;
-//                }
+                boolean check = match(ring.get(id), Orientation.LEFT, candidate_cube, valid_orientation[1]);
+                if (!check) {
+                  // wrong actual matching - continue with other orientation
+                  continue orientation_loop;
+                }
                 
                 boolean try_one   = match(ring.get(id == 3 ? 2 : 3), Orientation.LEFT, candidate_cube, Orientation.DOWN);
                 boolean try_two   = match(ring.get(id == 3 ? 0 : 1), Orientation.LEFT, candidate_cube, Orientation.UP);
@@ -422,12 +422,12 @@ public class Solver {
                     if (success_one || another_success_one) {
                       Cube last_candidate_cube = last_cube.getOriented(local_valid_orientation[1]);
                       
-//                      boolean last_check = match(ring.get(id), Orientation.RIGHT, last_candidate_cube, local_valid_orientation[1]);
-//                      if (!last_check) {
-//                         // wrong actual matching - continue with other orientation
-//                        ++subcounter;
-//                        continue last_orientation_loop;
-//                      }
+                      boolean last_check = match(ring.get(id), Orientation.RIGHT, last_candidate_cube, local_valid_orientation[1]);
+                      if (!last_check) {
+                         // wrong actual matching - continue with other orientation
+                        ++subcounter;
+                        continue last_orientation_loop;
+                      }
                       
                       boolean success_two   = match(ring.get(id == 3 ? 2 : 3), Orientation.RIGHT, last_candidate_cube, Orientation.DOWN);
                       boolean success_three = match(ring.get(id == 3 ? 0 : 1), Orientation.RIGHT, last_candidate_cube, Orientation.UP);
