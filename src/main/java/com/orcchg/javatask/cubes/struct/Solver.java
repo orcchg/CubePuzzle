@@ -55,9 +55,18 @@ public class Solver {
       cube_ids.add(entry.getKey());
     }
 
+    int __DEBUG___combinations_i = 0;
+    int __DEBUG__combinations_sz = 0;
+    int __DEBUG___smallcomb_i = 0;
+    int __DEBUG__smallcomb_sz = 0;
+    int __DEBUG__collectrings_i = 0;
+    int __DEBUG__collectrings_sz = 0;
+    try {
     // ------------------------------------------------------------------------
     // attempt to build the ring of 4 adjacent puzzles
     List<List<Integer>> combinations = Util.allConjunctions(cube_ids, 4);
+    __DEBUG__combinations_sz = combinations.size();
+    
     combinations_4: for (List<Integer> combination : combinations) {
       // all possible rings from given 4 pieces
       List<LinkedList<Cube>> collect_rings = new ArrayList<>();
@@ -67,6 +76,7 @@ public class Solver {
       
       // all combinations from 4 of 2
       List<List<Integer>> smallcomb = Util.allConjunctions(combination, 2);
+      __DEBUG__smallcomb_sz = smallcomb.size();
 
       // ----------------------------------------------------------------------
       // try two puzzles in all possible orientations and get any
@@ -198,9 +208,13 @@ public class Solver {
           }
         }  // orientations_loop
         
+        ++__DEBUG___smallcomb_i;
         continue smallcomb_2;
       }  // smallcomb_2 loop
       // ----------------------------------------------------------------------
+      
+      __DEBUG__collectrings_sz = collect_rings.size();
+      System.err.println("Iteration [" + __DEBUG___combinations_i + ", " + __DEBUG___smallcomb_i + "]");
       
       // ----------------------------------------------------------------------
       // leave two last pieces
@@ -464,11 +478,21 @@ public class Solver {
         
         // ------------------------------------------------------------------
 
+        ++__DEBUG__collectrings_i;
         continue collect_rings_loop;
       }  // collect_rings_loop
+      
+      ++__DEBUG___combinations_i;
       continue combinations_4;
     }  // combinations_4 loop
     // ------------------------------------------------------------------------
+    
+    } catch (java.util.ConcurrentModificationException e) {
+      System.err.println("Exception!");
+      System.err.println("DEBUG: [combinations i]: " + __DEBUG___combinations_i + "/" + __DEBUG__combinations_sz);
+      System.err.println("DEBUG: [smallcomb i]: " + __DEBUG___smallcomb_i + "/" + __DEBUG__smallcomb_sz);
+      System.err.println("DEBUG: [collectrings i]: " + __DEBUG__collectrings_i + "/" + __DEBUG__collectrings_sz);
+    }
   }
   
   public void printSolution() {
