@@ -231,7 +231,7 @@ public class Solver {
               combination_to_remove.clear();
               ring_segment.clear();
             } else {
-              //throw new RuntimeException("Magic error!");
+              throw new RuntimeException("Magic error!");
             }
           }
         }  // orientations_loop
