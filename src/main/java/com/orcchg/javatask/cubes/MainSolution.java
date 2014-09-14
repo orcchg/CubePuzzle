@@ -39,7 +39,7 @@ public class MainSolution {
 //        Orientation.LEFT));
 
     instance.mSolver.solve();
-    instance.mSolver.printSolution();
+    System.out.println(instance.mSolver.getSolution());
   }
 
   /* Private methods */

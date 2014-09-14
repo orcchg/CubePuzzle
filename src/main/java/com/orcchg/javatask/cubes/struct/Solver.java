@@ -473,8 +473,16 @@ public class Solver {
     // ------------------------------------------------------------------------
   }
   
-  public void printSolution() {
+  public String getSolution() {
+    StringBuilder solution = new StringBuilder();
+    for (List<Cube> cubes : mUnfoldedT) {
+      
+    }
     
+    for (List<Cube> cubes : mUnfoldedX) {
+      
+    }
+    return solution.toString();
   }
   
   public void printCubes() {

@@ -180,36 +180,6 @@ public class Cube {
   @Override
   public String toString() {
     StringBuilder builder = new StringBuilder();
-//    switch (mOrientation) {
-//      case UP:
-//        builder.append(mSides[0]).append("\n");
-//        builder.append(mSides[3].cells[1].toChar()).append("ooo").append(mSides[2].cells[1].toChar()).append("\n");
-//        builder.append(mSides[3].cells[2].toChar()).append("ooo").append(mSides[2].cells[2].toChar()).append("\n");
-//        builder.append(mSides[3].cells[3].toChar()).append("ooo").append(mSides[2].cells[3].toChar()).append("\n");
-//        builder.append(mSides[1]);
-//        break;
-//      case DOWN:
-//        builder.append(mSides[1]).append("\n");
-//        builder.append(mSides[2].cells[1].toChar()).append("ooo").append(mSides[3].cells[1].toChar()).append("\n");
-//        builder.append(mSides[2].cells[2].toChar()).append("ooo").append(mSides[3].cells[2].toChar()).append("\n");
-//        builder.append(mSides[2].cells[3].toChar()).append("ooo").append(mSides[3].cells[3].toChar()).append("\n");
-//        builder.append(mSides[0]);
-//        break;
-//      case RIGHT:
-//        builder.append(mSides[3]).append("\n");
-//        builder.append(mSides[1].cells[1].toChar()).append("ooo").append(mSides[0].cells[1].toChar()).append("\n");
-//        builder.append(mSides[1].cells[2].toChar()).append("ooo").append(mSides[0].cells[2].toChar()).append("\n");
-//        builder.append(mSides[1].cells[3].toChar()).append("ooo").append(mSides[0].cells[3].toChar()).append("\n");
-//        builder.append(mSides[2]);
-//        break;
-//      case LEFT:
-//        builder.append(mSides[2]).append("\n");
-//        builder.append(mSides[0].cells[1].toChar()).append("ooo").append(mSides[1].cells[1].toChar()).append("\n");
-//        builder.append(mSides[0].cells[2].toChar()).append("ooo").append(mSides[1].cells[2].toChar()).append("\n");
-//        builder.append(mSides[0].cells[3].toChar()).append("ooo").append(mSides[1].cells[3].toChar()).append("\n");
-//        builder.append(mSides[3]);
-//        break;
-//    }
     builder.append(mSides[0]).append("\n");
     builder.append(mSides[3].cells[1].toChar()).append("ooo").append(mSides[2].cells[1].toChar()).append("\n");
     builder.append(mSides[3].cells[2].toChar()).append("ooo").append(mSides[2].cells[2].toChar()).append("\n");
