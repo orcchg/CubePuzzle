@@ -13,17 +13,15 @@ public class Util {
     for (int i = 0; i < array.length; ++i) {
       array[i] = list.get(i);
     }
-    processSubsets(array, length);
+    List<List<Integer>> combinations = processSubsets(array, length);
     return combinations;
   }
   
-  public static void printCombinations() {
-    for (List<Integer> items : combinations) {
-      for (int item : items) {
-        System.out.print(item + " ");
-      }
-      System.out.println("");
+  public static <T> void printList(final List<T> list) {
+    for (T item : list) {
+      System.out.print(item + " ");
     }
+    System.out.println("");
   }
   
   public static <T> void printListOfLists(final List<List<T>> list) {
@@ -53,15 +51,16 @@ public class Util {
   
   /* Private methods */
   // --------------------------------------------------------------------------
-  private static List<List<Integer>> combinations = new ArrayList<>();
+  //private List<List<Integer>> combinations = new ArrayList<>();
   
-  private static void processSubsets(int[] set, int k) {
+  private static List<List<Integer>> processSubsets(int[] set, int k) {
     int[] subset = new int[k];
-    combinations.clear();
-    processLargerSubsets(set, subset, 0, 0);
+    List<List<Integer>> combinations = new ArrayList<>();
+    processLargerSubsets(set, subset, 0, 0, combinations);
+    return combinations;
   }
   
-  private static void processLargerSubsets(int[] set, int[] subset, int subsetSize, int nextIndex) {
+  private static void processLargerSubsets(int[] set, int[] subset, int subsetSize, int nextIndex, final List<List<Integer>> combinations) {
     if (subsetSize == subset.length) {
       List<Integer> sublist = new ArrayList<>();
       for (int i : subset) {
@@ -71,7 +70,7 @@ public class Util {
     } else {
       for (int j = nextIndex; j < set.length; j++) {
         subset[subsetSize] = set[j];
-        processLargerSubsets(set, subset, subsetSize + 1, j + 1);
+        processLargerSubsets(set, subset, subsetSize + 1, j + 1, combinations);
       }
     }
   }

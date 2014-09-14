@@ -61,26 +61,34 @@ public class Solver {
     int __DEBUG__smallcomb_sz = 0;
     int __DEBUG__collectrings_i = 0;
     int __DEBUG__collectrings_sz = 0;
+    List<Integer> __DEBUG__combination = null;
+    List<Integer> __DEBUG__smallcomb = null;
     try {
     // ------------------------------------------------------------------------
     // attempt to build the ring of 4 adjacent puzzles
     List<List<Integer>> combinations = Util.allConjunctions(cube_ids, 4);
     __DEBUG__combinations_sz = combinations.size();
+    //Util.printListOfLists(combinations);
     
     combinations_4: for (List<Integer> combination : combinations) {
       // all possible rings from given 4 pieces
       List<LinkedList<Cube>> collect_rings = new ArrayList<>();
 
-      // backup to restore combination of 4 pieces
+      __DEBUG__combination = Util.cloneArrayList(combination);
+      
       List<Integer> combination_to_remove = new ArrayList<>();
       
       // all combinations from 4 of 2
       List<List<Integer>> smallcomb = Util.allConjunctions(combination, 2);
       __DEBUG__smallcomb_sz = smallcomb.size();
+      //Util.printListOfLists(smallcomb);
 
       // ----------------------------------------------------------------------
       // try two puzzles in all possible orientations and get any
       smallcomb_2: for (List<Integer> pair : smallcomb) {
+        __DEBUG___smallcomb_i = 0;
+        __DEBUG__smallcomb = Util.cloneArrayList(pair);
+        
         // get all possible combinations between two pieces
         List<Orientation[]> orientation_pairs = new ArrayList<>();
 
@@ -203,7 +211,7 @@ public class Solver {
               combination_to_remove.clear();
               ring_segment.clear();
             } else {
-              throw new RuntimeException("Magic error!");
+              //throw new RuntimeException("Magic error!");
             }
           }
         }  // orientations_loop
@@ -492,6 +500,8 @@ public class Solver {
       System.err.println("DEBUG: [combinations i]: " + __DEBUG___combinations_i + "/" + __DEBUG__combinations_sz);
       System.err.println("DEBUG: [smallcomb i]: " + __DEBUG___smallcomb_i + "/" + __DEBUG__smallcomb_sz);
       System.err.println("DEBUG: [collectrings i]: " + __DEBUG__collectrings_i + "/" + __DEBUG__collectrings_sz);
+      Util.printList(__DEBUG__combination);
+      Util.printList(__DEBUG__smallcomb);
     }
   }
   
