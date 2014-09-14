@@ -643,9 +643,9 @@ public class Solver {
       }
       
       solution.append(cubes.get(4).getSide(Orientation.DOWN))
-                .append(cubes.get(3).getSide(Orientation.DOWN))
-                .append(cubes.get(5).getSide(Orientation.DOWN))
-                .append("\n");
+               .append(cubes.get(3).getSide(Orientation.DOWN))
+               .append(cubes.get(5).getSide(Orientation.DOWN))
+               .append("\n");
       
       for (int i = 2; i >= 0; --i) {
         solution.append("     ").append(cubes.get(i).getSide(Orientation.UP)).append("     ").append("\n");
@@ -685,6 +685,11 @@ public class Solver {
                 .append(cubes.get(5).getSide(Orientation.RIGHT).cells[i].toChar())
                 .append("\n");
       }
+      
+      solution.append(cubes.get(4).getSide(Orientation.DOWN))
+              .append(cubes.get(2).getSide(Orientation.DOWN))
+              .append(cubes.get(5).getSide(Orientation.DOWN))
+              .append("\n");
       
       for (int i = 1; i >= 0; --i) {
         solution.append("     ").append(cubes.get(i).getSide(Orientation.UP)).append("     ").append("\n");
