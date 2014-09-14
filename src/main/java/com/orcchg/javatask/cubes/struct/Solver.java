@@ -1,12 +1,15 @@
 package com.orcchg.javatask.cubes.struct;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
 
 import com.orcchg.javatask.cubes.util.Util;
 
@@ -50,10 +53,7 @@ public class Solver {
     boolean result = true;
     for (int i = 0; i < 5; ++i) {
       result = result && ((lhs_side.cells[i].toInt() + rhs_side.cells[i].toInt()) < 2);
-//      System.out.print((lhs_side.cells[i].toInt() + rhs_side.cells[i].toInt()) + " ");
-//      System.out.print("[" + lhs_side.cells[i].toChar() + "," + rhs_side.cells[i].toChar() + "]");
     }
-//    System.out.println("");
     return result;
   }
   
@@ -124,32 +124,32 @@ public class Solver {
               orientation_pairs.add(orientation_pair);
             }
             
-            Cube rhs_cube_mirrored = mCubes.get(pair.get(1)).getMirrored();
-            boolean result_om = match(lhs_cube, lhs, rhs_cube_mirrored, rhs);
-            boolean another_result_om = matchReversed(lhs_cube, lhs, rhs_cube_mirrored, rhs);
-            rhs.mirror = true;
-            if (result_om || another_result_om) {
-              Orientation[] orientation_pair = new Orientation[]{lhs, rhs};
-              orientation_pairs.add(orientation_pair);
-            }
-            rhs.mirror = false;
-            
-            Cube lhs_cube_mirrored = mCubes.get(pair.get(0)).getMirrored();
-            boolean result_mo = match(lhs_cube_mirrored, lhs, rhs_cube, rhs);
-            boolean another_result_mo = matchReversed(lhs_cube_mirrored, lhs, rhs_cube, rhs);
-            lhs.mirror = true;
-            if (result_mo || another_result_mo) {
-              Orientation[] orientation_pair = new Orientation[]{lhs, rhs};
-              orientation_pairs.add(orientation_pair);
-            }
-            
-            boolean result_mm = match(lhs_cube_mirrored, lhs, rhs_cube_mirrored, rhs);
-            boolean another_result_mm = matchReversed(lhs_cube_mirrored, lhs, rhs_cube_mirrored, rhs);
-            rhs.mirror = true;
-            if (result_mm || another_result_mm) {
-              Orientation[] orientation_pair = new Orientation[]{lhs, rhs};
-              orientation_pairs.add(orientation_pair);
-            }
+//            Cube rhs_cube_mirrored = mCubes.get(pair.get(1)).getMirrored();
+//            boolean result_om = match(lhs_cube, lhs, rhs_cube_mirrored, rhs);
+//            boolean another_result_om = matchReversed(lhs_cube, lhs, rhs_cube_mirrored, rhs);
+//            rhs.mirror = true;
+//            if (result_om || another_result_om) {
+//              Orientation[] orientation_pair = new Orientation[]{lhs, rhs};
+//              orientation_pairs.add(orientation_pair);
+//            }
+//            rhs.mirror = false;
+//            
+//            Cube lhs_cube_mirrored = mCubes.get(pair.get(0)).getMirrored();
+//            boolean result_mo = match(lhs_cube_mirrored, lhs, rhs_cube, rhs);
+//            boolean another_result_mo = matchReversed(lhs_cube_mirrored, lhs, rhs_cube, rhs);
+//            lhs.mirror = true;
+//            if (result_mo || another_result_mo) {
+//              Orientation[] orientation_pair = new Orientation[]{lhs, rhs};
+//              orientation_pairs.add(orientation_pair);
+//            }
+//            
+//            boolean result_mm = match(lhs_cube_mirrored, lhs, rhs_cube_mirrored, rhs);
+//            boolean another_result_mm = matchReversed(lhs_cube_mirrored, lhs, rhs_cube_mirrored, rhs);
+//            rhs.mirror = true;
+//            if (result_mm || another_result_mm) {
+//              Orientation[] orientation_pair = new Orientation[]{lhs, rhs};
+//              orientation_pairs.add(orientation_pair);
+//            }
           }
         }
 
@@ -172,6 +172,12 @@ public class Solver {
             valid_rhs_cube.mirror();
           }
           valid_rhs_cube.setOrientation(valid_orientation[1]);
+          
+          boolean check = match(valid_lhs_cube, valid_orientation[0], valid_rhs_cube, valid_orientation[1]);
+          if (!check) {
+            // wrong actual matching - continue with other orientation
+            continue orientations_loop;
+          }
           
           ring_segment.add(valid_lhs_cube);
           ring_segment.add(valid_rhs_cube);
@@ -197,6 +203,13 @@ public class Solver {
                 }
                 valid_rest_cube.setOrientation(valid_orientation_local[1]);
                 
+                boolean check_three = match(ring_segment.get(1), Orientation.UP, valid_rest_cube, valid_orientation_local[1]);
+                if (!check_three) {
+                  // wrong actual matching - continue with other orientation
+                  ++not_matched_counter;
+                  continue;
+                }
+                
                 ring_segment.add(valid_rest_cube);
                 //combination.remove((Object) rest_cube_id);
                 combination_to_remove.add(rest_cube_id);
@@ -220,6 +233,13 @@ public class Solver {
                     valid_rest_cube.mirror();
                   }
                   valid_rest_cube.setOrientation(valid_orientation_local[1]);
+                  
+                  boolean check_three = match(ring_segment.get(0), Orientation.DOWN, valid_rest_cube, valid_orientation_local[1]);
+                  if (!check_three) {
+                    // wrong actual matching - continue with other orientation
+                    ++not_matched_counter;
+                    continue;
+                  }
                   
                   ring_segment.addFirst(valid_rest_cube);
                   //combination.remove((Object) rest_cube_id);
@@ -257,6 +277,13 @@ public class Solver {
               }
               valid_last_cube.setOrientation(valid_orientation_local[1]);
               
+              boolean check_last = match(ring_segment.get(2), Orientation.UP, valid_last_cube, valid_orientation_local[1]);
+              if (!check_last) {
+                // wrong actual matching - continue with other orientation
+                ++not_matched_counter;
+                continue;
+              }
+              
               ring_segment.add(valid_last_cube);
               //combination.remove((Object) last_puzzle_id);
               combination_to_remove.add(last_puzzle_id);
@@ -281,6 +308,13 @@ public class Solver {
                   valid_last_cube.mirror();
                 }
                 valid_last_cube.setOrientation(valid_orientation_local[1]);
+                
+                boolean check_last = match(ring_segment.get(0), Orientation.DOWN, valid_last_cube, valid_orientation_local[1]);
+                if (!check_last) {
+                  // wrong actual matching - continue with other orientation
+                  ++not_matched_counter;
+                  continue;
+                }
                 
                 ring_segment.addFirst(valid_last_cube);
                 //combination.remove((Object) last_puzzle_id);
@@ -325,7 +359,7 @@ public class Solver {
       set_cube_ids.removeAll(set_combination);
       List<Integer> two_last_pieces = new ArrayList<>(set_cube_ids);
       
-      mirror_loop: for (int mirror = 0; mirror < 4; ++mirror) {
+      mirror_loop: for (int mirror = 0; mirror < 1; ++mirror) {  // TODO
         Cube cube = new Cube(mCubes.get(two_last_pieces.get(0)));
         if (mirror > 1) {
           cube.mirror();
@@ -347,6 +381,13 @@ public class Solver {
               
               if (result || another_result) {
                 Cube candidate_cube = cube.getOriented(valid_orientation[1]);
+                
+//                boolean check = match(ring.get(id), Orientation.LEFT, candidate_cube, valid_orientation[1]);
+//                if (!check) {
+//                  // wrong actual matching - continue with other orientation
+//                  continue orientation_loop;
+//                }
+                
                 boolean try_one   = match(ring.get(id == 3 ? 2 : 3), Orientation.LEFT, candidate_cube, Orientation.DOWN);
                 boolean try_two   = match(ring.get(id == 3 ? 0 : 1), Orientation.LEFT, candidate_cube, Orientation.UP);
                 boolean try_three = match(ring.get(id == 3 ? 1 : 2), Orientation.LEFT, candidate_cube, Orientation.LEFT);
@@ -367,6 +408,14 @@ public class Solver {
                     
                     if (success_one || another_success_one) {
                       Cube last_candidate_cube = last_cube.getOriented(local_valid_orientation[1]);
+                      
+//                      boolean last_check = match(ring.get(id), Orientation.RIGHT, last_candidate_cube, local_valid_orientation[1]);
+//                      if (!last_check) {
+//                         // wrong actual matching - continue with other orientation
+//                        ++subcounter;
+//                        continue last_orientation_loop;
+//                      }
+                      
                       boolean success_two   = match(ring.get(id == 3 ? 2 : 3), Orientation.RIGHT, last_candidate_cube, Orientation.DOWN);
                       boolean success_three = match(ring.get(id == 3 ? 0 : 1), Orientation.RIGHT, last_candidate_cube, Orientation.UP);
                       boolean success_four  = match(ring.get(id == 3 ? 1 : 2), Orientation.RIGHT, last_candidate_cube, Orientation.RIGHT);
@@ -413,6 +462,13 @@ public class Solver {
               
               if (result || another_result) {
                 Cube candidate_cube = cube.getOriented(valid_orientation[1]);
+                
+//                boolean check = match(ring.get(id), Orientation.RIGHT, candidate_cube, valid_orientation[1]);
+//                if (!check) {
+//                  // wrong actual matching - continue with other orientation
+//                  continue orientation_loop;
+//                }
+                
                 boolean try_one   = match(ring.get(id == 3 ? 2 : 3), Orientation.RIGHT, candidate_cube, Orientation.DOWN);
                 boolean try_two   = match(ring.get(id == 3 ? 0 : 1), Orientation.RIGHT, candidate_cube, Orientation.UP);
                 boolean try_three = match(ring.get(id == 3 ? 1 : 2), Orientation.RIGHT, candidate_cube, Orientation.RIGHT);
@@ -433,6 +489,14 @@ public class Solver {
                     
                     if (success_one || another_success_one) {
                       Cube last_candidate_cube = last_cube.getOriented(local_valid_orientation[1]);
+                      
+//                      boolean last_check = match(ring.get(id), Orientation.LEFT, last_candidate_cube, local_valid_orientation[1]);
+//                      if (!last_check) {
+//                        // wrong actual matching - continue with other orientation
+//                        ++subcounter;
+//                        continue last_orientation_loop;
+//                      }
+                      
                       boolean success_two   = match(ring.get(id == 3 ? 2 : 3), Orientation.LEFT, last_candidate_cube, Orientation.DOWN);
                       boolean success_three = match(ring.get(id == 3 ? 0 : 1), Orientation.LEFT, last_candidate_cube, Orientation.UP);
                       boolean success_four  = match(ring.get(id == 3 ? 1 : 2), Orientation.LEFT, last_candidate_cube, Orientation.LEFT);
@@ -489,6 +553,13 @@ public class Solver {
               
               if (result || another_result) {
                 Cube candidate_cube = cube.getOriented(valid_orientation[1]);
+                
+                boolean check = match(ring.get(id), Orientation.LEFT, candidate_cube, valid_orientation[1]);
+                if (!check) {
+                  // wrong actual matching - continue with other orientation
+                  continue orientation_loop;
+                }
+                
                 boolean try_one   = match(ring.get(id == 2 ? 1 : 0), Orientation.LEFT, candidate_cube, Orientation.DOWN);
                 boolean try_two   = match(ring.get(id == 2 ? 3 : 2), Orientation.LEFT, candidate_cube, Orientation.UP);
                 boolean try_three = match(ring.get(id == 2 ? 0 : 3), Orientation.LEFT, candidate_cube, Orientation.LEFT);
@@ -509,6 +580,14 @@ public class Solver {
                     
                     if (success_one || another_success_one) {
                       Cube last_candidate_cube = last_cube.getOriented(local_valid_orientation[1]);
+                      
+                      boolean last_check = match(ring.get(id), Orientation.RIGHT, last_candidate_cube, local_valid_orientation[1]);
+                      if (!last_check) {
+                        // wrong actual matching - continue with other orientation
+                        ++subcounter;
+                        continue last_orientation_loop;
+                      }
+                      
                       boolean success_two   = match(ring.get(id == 2 ? 1 : 0), Orientation.RIGHT, last_candidate_cube, Orientation.DOWN);
                       boolean success_three = match(ring.get(id == 2 ? 3 : 2), Orientation.RIGHT, last_candidate_cube, Orientation.UP);
                       boolean success_four  = match(ring.get(id == 2 ? 0 : 3), Orientation.RIGHT, last_candidate_cube, Orientation.RIGHT);
@@ -555,6 +634,13 @@ public class Solver {
               
               if (result || another_result) {
                 Cube candidate_cube = cube.getOriented(valid_orientation[1]);
+                
+                boolean check = match(ring.get(id), Orientation.RIGHT, candidate_cube, valid_orientation[1]);
+                if (!check) {
+                  // wrong actual matching - continue with other orientation
+                  continue orientation_loop;
+                }
+                
                 boolean try_one   = match(ring.get(id == 2 ? 1 : 0), Orientation.RIGHT, candidate_cube, Orientation.DOWN);
                 boolean try_two   = match(ring.get(id == 2 ? 3 : 2), Orientation.RIGHT, candidate_cube, Orientation.UP);
                 boolean try_three = match(ring.get(id == 2 ? 0 : 3), Orientation.RIGHT, candidate_cube, Orientation.RIGHT);
@@ -575,6 +661,14 @@ public class Solver {
                     
                     if (success_one || another_success_one) {
                       Cube last_candidate_cube = last_cube.getOriented(local_valid_orientation[1]);
+                      
+                      boolean last_check = match(ring.get(id), Orientation.LEFT, last_candidate_cube, local_valid_orientation[1]);
+                      if (!last_check) {
+                        // wrong actual matching - continue with other orientation
+                        ++subcounter;
+                        continue last_orientation_loop;
+                      }
+                      
                       boolean success_two   = match(ring.get(id == 2 ? 1 : 0), Orientation.LEFT, last_candidate_cube, Orientation.DOWN);
                       boolean success_three = match(ring.get(id == 2 ? 3 : 2), Orientation.LEFT, last_candidate_cube, Orientation.UP);
                       boolean success_four  = match(ring.get(id == 2 ? 0 : 3), Orientation.LEFT, last_candidate_cube, Orientation.LEFT);
@@ -626,6 +720,9 @@ public class Solver {
       continue combinations_4;
     }  // combinations_4 loop
     // ------------------------------------------------------------------------
+    
+    mUnfoldedT = removeDuplicates(mUnfoldedT);
+    mUnfoldedX = removeDuplicates(mUnfoldedX);
   }
   
   public String getSolution() {
@@ -722,5 +819,48 @@ public class Solver {
   // --------------------------------------------------------------------------
   private boolean isSegmentARing(final LinkedList<Cube> segment) {
     return match(segment.get(0), Orientation.DOWN, segment.get(segment.size() - 1), Orientation.UP);
+  }
+  
+  private List<List<Cube>> removeDuplicates(List<List<Cube>> list) {
+    Set<List<Cube>> unique_list = new TreeSet<>(
+        new Comparator<List<Cube>>() {
+          @Override
+          public int compare(List<Cube> lhs, List<Cube> rhs) {
+            int equal_counter = 0;
+            int ids_counter = 0;
+            int orientation_counter = 0;
+            
+            for (int i = 0; i < lhs.size(); ++i) {
+              Cube lhs_cube = lhs.get(i);
+              Cube rhs_cube = rhs.get(i);
+              boolean equal_ids = lhs_cube.getID() == rhs_cube.getID();
+              boolean equal_orientations = lhs_cube.getOrientation().equals(rhs_cube.getOrientation()) ||
+                                           (equal_ids && lhs_cube.isSymmetric());
+              
+              if (equal_ids && equal_orientations) {
+                ++equal_counter;
+              } else if (equal_ids) {
+                ++ids_counter;
+              } else if (equal_orientations) {
+                ++orientation_counter;
+              }
+            }
+            
+            if (equal_counter == lhs.size()) {
+              return 0;
+            } else if (ids_counter == lhs.size()) {
+              return 1;
+            } else {
+              return -1;
+            }
+          }});
+    
+    unique_list.addAll(list);
+    
+    List<List<Cube>> result = new ArrayList<>();
+    for (List<Cube> item : unique_list) {
+      result.add(item);
+    }
+    return result;
   }
 }

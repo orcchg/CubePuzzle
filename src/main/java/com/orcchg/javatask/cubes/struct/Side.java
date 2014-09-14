@@ -1,5 +1,7 @@
 package com.orcchg.javatask.cubes.struct;
 
+import java.util.Arrays;
+
 public class Side implements Cloneable {
   public static enum Cell {
     EMPTY, FULL;
@@ -25,8 +27,32 @@ public class Side implements Cloneable {
     }
   }
   
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = 1;
+    result = prime * result + Arrays.hashCode(cells);
+    return result;
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj)
+      return true;
+    if (obj == null)
+      return false;
+    if (getClass() != obj.getClass())
+      return false;
+    Side other = (Side) obj;
+    if (!Arrays.equals(cells, other.cells))
+      return false;
+    return true;
+  }
+
   public Side(Cell[] cells) {
-    System.arraycopy(cells, 0, this.cells, 0, 5);
+    for (int i = 0; i < 5; ++i) {
+      this.cells[i] = cells[i] == Cell.FULL ? Cell.FULL : Cell.EMPTY;
+    }
   }
   
   public Side(int prev_far, int prev_close, int middle, int next_close, int next_far) {
