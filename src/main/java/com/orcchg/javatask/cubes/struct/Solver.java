@@ -53,6 +53,8 @@ public class Solver {
     // attempt to build the ring of 4 adjacent puzzles
     List<List<Integer>> combinations = Util.allConjunctions(cube_ids, 4);
     puzzles_4: for (List<Integer> combination : combinations) {
+      List<Integer> backup = Util.cloneArrayList(combination);
+      
       // all combinations from 4 of 2
       List<List<Integer>> smallcomb = Util.allConjunctions(combination, 2);
       // ring segment
@@ -63,95 +65,130 @@ public class Solver {
         int pair_index = smallcomb.size() - 1;
         List<Integer> pair = smallcomb.get(pair_index);  // peek last
         
-        orientation_lhs_loop: for (Orientation lhs : Orientation.entries) {
-          orientation_rhs_loop: for (Orientation rhs : Orientation.entries) {
+        // get all possible combinations between two pieces
+        List<Orientation[]> orientation_pairs = new ArrayList<>();
+        
+        for (Orientation lhs : Orientation.entries) {
+          for (Orientation rhs : Orientation.entries) {
             Cube lhs_cube = mCubes.get(pair.get(0));
             Cube rhs_cube = mCubes.get(pair.get(1));
             boolean result = match(lhs_cube, lhs, rhs_cube, rhs);
             if (result) {
-              ring_segment.add(lhs_cube.getOriented(lhs));
-              ring_segment.add(rhs_cube.getOriented(rhs));
-              combination.remove((Object) lhs_cube.getID());
-              combination.remove((Object) rhs_cube.getID());
-              break orientation_lhs_loop;
-            } else {
-              continue orientation_rhs_loop;
-            }
-          }  // orientation_rhs_loop
-        }  // orientation_lhs_loop
-        
-        // try to attach third puzzle and get a straight line
-        rest_two_puzzles: for (int rest_cube_id : combination) {
-          int not_matched_counter = 0;
-          for (Orientation orientation : Orientation.entries) {
-            Cube rest_cube = mCubes.get(rest_cube_id);
-            boolean result = match(ring_segment.get(1), Orientation.UP, rest_cube, orientation);
-            if (result) {
-              ring_segment.add(rest_cube.getOriented(orientation));
-              combination.remove((Object) rest_cube_id);
-              break rest_two_puzzles;
-            } else {
-              ++not_matched_counter;
+              Orientation[] orientation_pair = new Orientation[]{lhs, rhs};
+              orientation_pairs.add(orientation_pair);
             }
           }
+        }
+        
+        orientations_loop: for (Orientation[] orientation_pair : orientation_pairs) {
+          Cube lhs_cube = mCubes.get(pair.get(0));
+          Cube rhs_cube = mCubes.get(pair.get(1));
+          ring_segment.add(lhs_cube.getOriented(orientation_pair[0]));
+          ring_segment.add(rhs_cube.getOriented(orientation_pair[1]));
+          combination.remove((Object) lhs_cube.getID());
+          combination.remove((Object) rhs_cube.getID());
           
-          if (not_matched_counter == Orientation.size) {
-            // try another side
+          // ------------------------------------------------------------------
+          // try to attach third puzzle and get a straight line
+          rest_two_puzzles: for (int rest_cube_id : combination) {
+            int not_matched_counter = 0;
             for (Orientation orientation : Orientation.entries) {
               Cube rest_cube = mCubes.get(rest_cube_id);
-              boolean result = match(ring_segment.get(0), Orientation.DOWN, rest_cube, orientation);
+              boolean result = match(ring_segment.get(1), Orientation.UP, rest_cube, orientation);
               if (result) {
-                ring_segment.addFirst(rest_cube.getOriented(orientation));
+                ring_segment.add(rest_cube.getOriented(orientation));
                 combination.remove((Object) rest_cube_id);
                 break rest_two_puzzles;
+              } else {
+                ++not_matched_counter;
               }
             }
-          }
-        }  // rest_two_puzzles loop
-        
-        if (combination.size() == 2) {
-          // initial pair of puzzles is wrong or its pieces are in invalid orientation
-          // retry with new orientation
+            
+            if (not_matched_counter == Orientation.size) {
+              // try another side
+              for (Orientation orientation : Orientation.entries) {
+                Cube rest_cube = mCubes.get(rest_cube_id);
+                boolean result = match(ring_segment.get(0), Orientation.DOWN, rest_cube, orientation);
+                if (result) {
+                  ring_segment.addFirst(rest_cube.getOriented(orientation));
+                  combination.remove((Object) rest_cube_id);
+                  break rest_two_puzzles;
+                }
+              }
+            }
+          }  // rest_two_puzzles loop
+          // ------------------------------------------------------------------
           
-        }
-        
-        // try to attach last puzzle and get a ring
-        int last_puzzle_id = combination.get(0);
-        int not_matched_counter = 0;
-        for (Orientation orientation : Orientation.entries) {
-          Cube last_cube = mCubes.get(last_puzzle_id);
-          boolean result = match(ring_segment.get(2), Orientation.UP, last_cube, orientation);
-          if (result) {
-            ring_segment.add(last_cube.getOriented(orientation));
-            combination.remove((Object) last_puzzle_id);
-            break;
-          } else {
-            ++not_matched_counter;
+          // ------------------------------------------------------------------
+          if (combination.size() == 2) {
+            // initial pair of puzzles is wrong or its pieces are in invalid orientation
+            // retry with new orientation
+            combination = Util.cloneArrayList(backup);
+            ring_segment.clear();
+            continue orientations_loop;
           }
-        }
-        
-        if (not_matched_counter == Orientation.size) {
-          not_matched_counter = 0;
-          // try another side
+          // ------------------------------------------------------------------
+          
+          // ------------------------------------------------------------------
+          // try to attach last puzzle and get a ring
+          int last_puzzle_id = combination.get(0);
+          int not_matched_counter = 0;
           for (Orientation orientation : Orientation.entries) {
             Cube last_cube = mCubes.get(last_puzzle_id);
-            boolean result = match(ring_segment.get(0), Orientation.DOWN, last_cube, orientation);
+            boolean result = match(ring_segment.get(2), Orientation.UP, last_cube, orientation);
             if (result) {
-              ring_segment.addFirst(last_cube.getOriented(orientation));
+              ring_segment.add(last_cube.getOriented(orientation));
               combination.remove((Object) last_puzzle_id);
               break;
             } else {
               ++not_matched_counter;
             }
           }
-        }
+          
+          if (not_matched_counter == Orientation.size) {
+            not_matched_counter = 0;
+            // try another side
+            for (Orientation orientation : Orientation.entries) {
+              Cube last_cube = mCubes.get(last_puzzle_id);
+              boolean result = match(ring_segment.get(0), Orientation.DOWN, last_cube, orientation);
+              if (result) {
+                ring_segment.addFirst(last_cube.getOriented(orientation));
+                combination.remove((Object) last_puzzle_id);
+                break;
+              } else {
+                ++not_matched_counter;
+              }
+            }
+          }
+          // ------------------------------------------------------------------
+          
+          if (not_matched_counter == Orientation.size) {
+            // initial pair of puzzles is wrong or its pieces are in invalid orientation
+            // retry with new orientation
+            combination = Util.cloneArrayList(backup);
+            ring_segment.clear();
+            continue orientations_loop;
+          }
+        }  // orientations_loop
         
-        if (not_matched_counter == Orientation.size) {
-          // this pair is wrong - pop it from list
-          not_matched_counter = 0;
-          smallcomb.remove(pair_index);
-          ring_segment.clear();
-        }
+//        orientation_lhs_loop: for (Orientation lhs : Orientation.entries) {
+//          orientation_rhs_loop: for (Orientation rhs : Orientation.entries) {
+//            Cube lhs_cube = mCubes.get(pair.get(0));
+//            Cube rhs_cube = mCubes.get(pair.get(1));
+//            boolean result = match(lhs_cube, lhs, rhs_cube, rhs);
+//            if (result) {
+//              ring_segment.add(lhs_cube.getOriented(lhs));
+//              ring_segment.add(rhs_cube.getOriented(rhs));
+//              combination.remove((Object) lhs_cube.getID());
+//              combination.remove((Object) rhs_cube.getID());
+//              break orientation_lhs_loop;
+//            } else {
+//              continue orientation_rhs_loop;
+//            }
+//          }  // orientation_rhs_loop
+//        }  // orientation_lhs_loop
+        
+
       }  // puzzles_2 while loop
       
       if (ring_segment.size() == 4) {
@@ -163,6 +200,8 @@ public class Solver {
         continue puzzles_4;
       }
     }  // puzzles_4 loop
+    
+    
   }
   
   public void printCubes() {

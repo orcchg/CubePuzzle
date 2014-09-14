@@ -35,6 +35,22 @@ public class Util {
     }
   }
   
+  public static List<Integer> cloneArrayList(List<Integer> list) {
+    List<Integer> clone = new ArrayList<>(list.size());
+    for(Integer item: list) {
+      clone.add(item.intValue());
+    }
+    return clone;
+  }
+  
+  public static List<List<Integer>> cloneListOfArrayLists(List<List<Integer>> list) {
+    List<List<Integer>> clone = new ArrayList<>(list.size());
+    for (List<Integer> item : list) {
+      clone.add(cloneArrayList(item));
+    }
+    return clone;
+  }
+  
   /* Private methods */
   // --------------------------------------------------------------------------
   private static List<List<Integer>> combinations = new ArrayList<>();
