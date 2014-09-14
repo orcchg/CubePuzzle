@@ -2,9 +2,11 @@ package com.orcchg.javatask.cubes.struct;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import com.orcchg.javatask.cubes.util.Util;
 
@@ -48,18 +50,20 @@ public class Solver {
       cube_ids.add(entry.getKey());
     }
     
-    List<LinkedList<Cube>> collect_rings = new ArrayList<>();
-    
     // attempt to build the ring of 4 adjacent puzzles
     List<List<Integer>> combinations = Util.allConjunctions(cube_ids, 4);
-    puzzles_4: for (List<Integer> combination : combinations) {
+    combinations_4: for (List<Integer> combination : combinations) {
+      // all possible rings from given 4 pieces
+      List<LinkedList<Cube>> collect_rings = new ArrayList<>();
+      
+      // backup to restore combination of 4 pieces
       List<Integer> backup = Util.cloneArrayList(combination);
       
       // all combinations from 4 of 2
       List<List<Integer>> smallcomb = Util.allConjunctions(combination, 2);
       
       // try two puzzles in all possible orientations and get any
-      puzzles_2: for (List<Integer> pair : smallcomb) {
+      smallcomb_2: for (List<Integer> pair : smallcomb) {
         // get all possible combinations between two pieces
         List<Orientation[]> orientation_pairs = new ArrayList<>();
         
@@ -167,7 +171,8 @@ public class Solver {
             ring_segment.clear();
             continue orientations_loop;
           } else {
-            if (ring_segment.size() == 4) {
+            // last piece has been found
+            if (ring_segment.size() == 4 && combination.isEmpty()) {
               if (isSegmentARing(ring_segment)) {
                 // we have got a ring! one ring to rule them all...
                 collect_rings.add(ring_segment);
@@ -179,8 +184,24 @@ public class Solver {
             }
           }
         }  // orientations_loop
-      }  // puzzles_2 loop
-    }  // puzzles_4 loop
+        
+        continue smallcomb_2;
+      }  // smallcomb_2 loop
+      
+      // leave two last pieces
+      Set<Integer> set_cube_ids = new HashSet<>(cube_ids);
+      Set<Integer> set_combination = new HashSet<>(combination);
+      set_cube_ids.removeAll(set_combination);
+      List<Integer> two_last_pieces = new ArrayList<>(set_cube_ids);
+      
+      for (LinkedList<Cube> ring : collect_rings) {
+        // try to attach two rest pieces in T unfolded form
+        
+        // try to attach two rest pieces in X unfolded form
+        
+      }
+      continue combinations_4;
+    }  // combinations_4 loop
     
     
   }
