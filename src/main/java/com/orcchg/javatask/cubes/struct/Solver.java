@@ -171,7 +171,6 @@ public class Solver {
             // initial pair of puzzles is wrong or its pieces are in invalid orientation
             // retry with new orientation
             combination_to_remove.clear();
-            ring_segment.clear();
             continue orientations_loop;
           }
           // ------------------------------------------------------------------
@@ -219,7 +218,6 @@ public class Solver {
             // initial pair of puzzles is wrong or its pieces are in invalid orientation
             // retry with new orientation
             combination_to_remove.clear();
-            ring_segment.clear();
             continue orientations_loop;
           } else {
             // last piece has been found
@@ -229,7 +227,6 @@ public class Solver {
                 collect_rings.add(ring_segment);
               }
               combination_to_remove.clear();
-              ring_segment.clear();
             } else {
               throw new RuntimeException("Magic error!");
             }
