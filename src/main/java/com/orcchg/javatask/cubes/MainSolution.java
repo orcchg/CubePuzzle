@@ -3,12 +3,16 @@ package com.orcchg.javatask.cubes;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import com.orcchg.javatask.cubes.struct.Cube;
 import com.orcchg.javatask.cubes.struct.Matrix;
 import com.orcchg.javatask.cubes.struct.Orientation;
 import com.orcchg.javatask.cubes.struct.Side;
 import com.orcchg.javatask.cubes.struct.Solver;
+import com.orcchg.javatask.cubes.util.Util;
 
 public class MainSolution {
   private Solver mSolver;
@@ -29,11 +33,15 @@ public class MainSolution {
     MainSolution instance = new MainSolution();
     instance.readCubes(args[0]);
     
-    System.err.println(instance.mSolver.match(
-        instance.mSolver.getCube(1).rotate(),
-        Orientation.RIGHT,
-        instance.mSolver.getCube(3).rotate().rotate().rotate(),
-        Orientation.LEFT));
+//    System.err.println(instance.mSolver.match(
+//        instance.mSolver.getCube(1).rotate(),
+//        Orientation.RIGHT,
+//        instance.mSolver.getCube(3).rotate().rotate().rotate(),
+//        Orientation.LEFT));
+    List<Integer> list = new ArrayList<>(Arrays.asList(new Integer[]{0, 1, 2, 3, 4, 5}));
+    List<List<Integer>> answer = Util.allConjunctions(list, 4);
+    System.out.println("SIZE: " + answer.size());
+    Util.printListOfLists(answer);
   }
 
   /* Private methods */
