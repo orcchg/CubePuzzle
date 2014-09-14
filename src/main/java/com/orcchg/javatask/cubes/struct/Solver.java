@@ -14,8 +14,13 @@ public class Solver {
   private Map<Integer, Cube> mCubes;
   private static int internalCounter = 0;
   
+  private List<List<Cube>> mUnfoldedT;
+  private List<List<Cube>> mUnfoldedX;
+  
   public Solver() {
     mCubes = new HashMap<Integer, Cube>();
+    mUnfoldedT = new ArrayList<List<Cube>>();
+    mUnfoldedX = new ArrayList<List<Cube>>();
   }
   
   public void addCube(final Cube cube) {
@@ -232,8 +237,14 @@ public class Solver {
                     boolean success_four  = match(ring.get(id == 3 ? 1 : 2), Orientation.RIGHT, last_candidate_cube, Orientation.RIGHT);
                     boolean success = success_two && success_three && success_four;
                     if (success) {
-                      // it is an answer!
-                      // XXX
+                      // we have got an answer - T unfolded form
+                      List<Cube> answerT = new ArrayList<>(6);
+                      for (Cube cube_from_ring : ring) {
+                        answerT.add(cube_from_ring);
+                      }
+                      answerT.add(candidate_cube);
+                      answerT.add(last_candidate_cube);
+                      mUnfoldedT.add(answerT);
                     }
                   } else {
                     ++subcounter;
@@ -284,8 +295,14 @@ public class Solver {
                     boolean success_four  = match(ring.get(id == 3 ? 1 : 2), Orientation.LEFT, last_candidate_cube, Orientation.LEFT);
                     boolean success = success_two && success_three && success_four;
                     if (success) {
-                      // it is an answer!
-                      // XXX
+                      // we have got an answer - T unfolded form
+                      List<Cube> answerT = new ArrayList<>(6);
+                      for (Cube cube_from_ring : ring) {
+                        answerT.add(cube_from_ring);
+                      }
+                      answerT.add(last_candidate_cube);
+                      answerT.add(candidate_cube);
+                      mUnfoldedT.add(answerT);
                     }
                   } else {
                     ++subcounter;
@@ -346,8 +363,14 @@ public class Solver {
                     boolean success_four  = match(ring.get(id == 2 ? 0 : 3), Orientation.RIGHT, last_candidate_cube, Orientation.RIGHT);
                     boolean success = success_two && success_three && success_four;
                     if (success) {
-                      // it is an answer!
-                      // XXX
+                      // we have got an answer - X unfolded form
+                      List<Cube> answerX = new ArrayList<>(6);
+                      for (Cube cube_from_ring : ring) {
+                        answerX.add(cube_from_ring);
+                      }
+                      answerX.add(candidate_cube);
+                      answerX.add(last_candidate_cube);
+                      mUnfoldedX.add(answerX);
                     }
                   } else {
                     ++subcounter;
@@ -398,8 +421,14 @@ public class Solver {
                     boolean success_four  = match(ring.get(id == 2 ? 0 : 3), Orientation.LEFT, last_candidate_cube, Orientation.LEFT);
                     boolean success = success_two && success_three && success_four;
                     if (success) {
-                      // it is an answer!
-                      // XXX
+                      // we have got an answer - X unfolded form
+                      List<Cube> answerX = new ArrayList<>(6);
+                      for (Cube cube_from_ring : ring) {
+                        answerX.add(cube_from_ring);
+                      }
+                      answerX.add(last_candidate_cube);
+                      answerX.add(candidate_cube);
+                      mUnfoldedX.add(answerX);
                     }
                   } else {
                     ++subcounter;
