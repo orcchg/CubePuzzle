@@ -33,6 +33,14 @@ public class MainSolution {
     MainSolution instance = new MainSolution();
     instance.readCubes(args[0]);
 
+//    System.out.println(Solver.match(instance.mSolver.getCube(0), Orientation.RIGHT, instance.mSolver.getCube(1), Orientation.LEFT));
+//    System.out.println(Solver.match(instance.mSolver.getCube(1), Orientation.RIGHT, instance.mSolver.getCube(2), Orientation.LEFT));
+//    System.out.println(Solver.match(instance.mSolver.getCube(0), Orientation.DOWN, instance.mSolver.getCube(3), Orientation.UP));
+//    System.out.println(Solver.match(instance.mSolver.getCube(1), Orientation.DOWN, instance.mSolver.getCube(4), Orientation.UP));
+//    System.out.println(Solver.match(instance.mSolver.getCube(2), Orientation.DOWN, instance.mSolver.getCube(5), Orientation.UP));
+//    System.out.println(Solver.match(instance.mSolver.getCube(3), Orientation.RIGHT, instance.mSolver.getCube(4), Orientation.LEFT));
+//    System.out.println(Solver.match(instance.mSolver.getCube(4), Orientation.RIGHT, instance.mSolver.getCube(5), Orientation.LEFT));
+    
     instance.mSolver.solve();
     System.out.println(instance.mSolver.getSolution());
     System.out.println(instance.mSolver.totalUnfoldedT() + " ^^^ " + instance.mSolver.totalUnfoldedX());

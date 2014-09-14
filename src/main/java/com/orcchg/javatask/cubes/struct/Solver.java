@@ -44,9 +44,22 @@ public class Solver {
   }
   
   // match two cubes side (of lhs one) by side (of rhs one)
-  public boolean match(final Cube lhs, Orientation lhs_orient, final Cube rhs, Orientation rhs_orient) {
+  public static boolean match(final Cube lhs, Orientation lhs_orient, final Cube rhs, Orientation rhs_orient) {
     Side lhs_side = lhs.getSide(lhs_orient);
-    Side rhs_side = rhs.getSide(lhs_orient);
+    Side rhs_side = rhs.getSide(rhs_orient);
+    boolean result = true;
+    for (int i = 0; i < 5; ++i) {
+      result = result && ((lhs_side.cells[i].toInt() + rhs_side.cells[i].toInt()) < 2);
+//      System.out.print((lhs_side.cells[i].toInt() + rhs_side.cells[i].toInt()) + " ");
+//      System.out.print("[" + lhs_side.cells[i].toChar() + "," + rhs_side.cells[i].toChar() + "]");
+    }
+//    System.out.println("");
+    return result;
+  }
+  
+  public static boolean matchReversed(final Cube lhs, Orientation lhs_orient, final Cube rhs, Orientation rhs_orient) {
+    Side lhs_side = lhs.getSide(lhs_orient);
+    Side rhs_side = rhs.getSide(rhs_orient).getReversed();
     boolean result = true;
     for (int i = 0; i < 5; ++i) {
       result = result && ((lhs_side.cells[i].toInt() + rhs_side.cells[i].toInt()) < 2);
@@ -54,17 +67,7 @@ public class Solver {
     return result;
   }
   
-  public boolean matchReversed(final Cube lhs, Orientation lhs_orient, final Cube rhs, Orientation rhs_orient) {
-    Side lhs_side = lhs.getSide(lhs_orient);
-    Side rhs_side = rhs.getSide(lhs_orient).getReversed();
-    boolean result = true;
-    for (int i = 0; i < 5; ++i) {
-      result = result && ((lhs_side.cells[i].toInt() + rhs_side.cells[i].toInt()) < 2);
-    }
-    return result;
-  }
-  
-  public boolean fullMatch(final Cube lhs, Orientation lhs_orient, final Cube rhs, Orientation rhs_orient) {
+  public static boolean fullMatch(final Cube lhs, Orientation lhs_orient, final Cube rhs, Orientation rhs_orient) {
     byte lhs_bits = lhs.getSide(lhs_orient).getNumericRepresentation();
     byte rhs_bits = rhs.getSide(rhs_orient).getNumericRepresentation();
     byte mask = 31;
@@ -72,7 +75,7 @@ public class Solver {
     return flip == rhs_bits;
   }
   
-  public boolean fullMatchReversed(final Cube lhs, Orientation lhs_orient, final Cube rhs, Orientation rhs_orient) {
+  public static boolean fullMatchReversed(final Cube lhs, Orientation lhs_orient, final Cube rhs, Orientation rhs_orient) {
     byte lhs_bits = lhs.getSide(lhs_orient).getNumericRepresentation();
     byte rhs_bits = rhs.getSide(rhs_orient).getReversed().getNumericRepresentation();
     byte mask = 31;
@@ -279,7 +282,7 @@ public class Solver {
                 }
                 valid_last_cube.setOrientation(valid_orientation_local[1]);
                 
-                ring_segment.add(valid_last_cube);
+                ring_segment.addFirst(valid_last_cube);
                 //combination.remove((Object) last_puzzle_id);
                 combination_to_remove.add(last_puzzle_id);
                 break;
@@ -312,6 +315,8 @@ public class Solver {
         continue smallcomb_2;
       }  // smallcomb_2 loop
       // ----------------------------------------------------------------------
+      
+      // --------------------------------------------------------------------------------------------------------------
       
       // ----------------------------------------------------------------------
       // leave two last pieces
