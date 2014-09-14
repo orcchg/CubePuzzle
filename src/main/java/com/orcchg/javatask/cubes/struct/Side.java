@@ -7,6 +7,14 @@ public class Side implements Cloneable {
     public char toChar() {
       return this == Cell.FULL ? 'o' : ' ';
     }
+    
+    public boolean toBool() {
+      return this == Cell.FULL ? true : false;
+    }
+    
+    public int toInt() {
+      return this == Cell.FULL ? 1 : 0;
+    }
   }
   
   public Cell[] cells = new Cell[5];
@@ -36,6 +44,12 @@ public class Side implements Cloneable {
       cells[cells.length - 1 - i] = temp;
     }
     return this;
+  }
+  
+  public Side getReversed() {
+    Side reversed = clone();
+    reversed.reverse();
+    return reversed;
   }
   
   public byte getNumericRepresentation() {

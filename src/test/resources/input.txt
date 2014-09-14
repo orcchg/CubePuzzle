@@ -1,10 +1,10 @@
-  o  o o o  o  
- ooo ooooo oooo
-ooooo ooo oooo 
- ooo ooooo oooo
-  o  o o o  o  
- o o  o o  o o 
-oooo ooooo oooo
- oooo ooo oooo 
-oooo ooooo oooo
-oo o o o  oo oo
+  o    o o o o 
+ ooo ooooo ooo 
+ooooo ooo ooooo
+ ooo ooooo ooo 
+  o   o oo  o  
+o o  o o o o o 
+oooooooooooooo 
+ ooo  ooo  oooo
+oooooooooooooo 
+ o o o o ooo o 

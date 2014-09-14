@@ -37,20 +37,38 @@ public class Solver {
   
   // match two cubes side (of lhs one) by side (of rhs one)
   public boolean match(final Cube lhs, Orientation lhs_orient, final Cube rhs, Orientation rhs_orient) {
+    Side lhs_side = lhs.getSide(lhs_orient);
+    Side rhs_side = rhs.getSide(lhs_orient);
+    boolean result = true;
+    for (int i = 0; i < 5; ++i) {
+      result = result && ((lhs_side.cells[i].toInt() + rhs_side.cells[i].toInt()) < 2);
+    }
+    return result;
+  }
+  
+  public boolean matchReversed(final Cube lhs, Orientation lhs_orient, final Cube rhs, Orientation rhs_orient) {
+    Side lhs_side = lhs.getSide(lhs_orient);
+    Side rhs_side = rhs.getSide(lhs_orient).getReversed();
+    boolean result = true;
+    for (int i = 0; i < 5; ++i) {
+      result = result && ((lhs_side.cells[i].toInt() + rhs_side.cells[i].toInt()) < 2);
+    }
+    return result;
+  }
+  
+  public boolean fullMatch(final Cube lhs, Orientation lhs_orient, final Cube rhs, Orientation rhs_orient) {
     byte lhs_bits = lhs.getSide(lhs_orient).getNumericRepresentation();
     byte rhs_bits = rhs.getSide(rhs_orient).getNumericRepresentation();
     byte mask = 31;
     byte flip = (byte) ((~lhs_bits) & mask);
-    // System.out.println("LHS: " + lhs_bits + ", FLIP: " + flip + ", RHS: " + rhs_bits);
     return flip == rhs_bits;
   }
   
-  public boolean matchReversed(final Cube lhs, Orientation lhs_orient, final Cube rhs, Orientation rhs_orient) {
+  public boolean fullMatchReversed(final Cube lhs, Orientation lhs_orient, final Cube rhs, Orientation rhs_orient) {
     byte lhs_bits = lhs.getSide(lhs_orient).getNumericRepresentation();
-    byte rhs_bits = rhs.getSide(rhs_orient).reverse().getNumericRepresentation();
+    byte rhs_bits = rhs.getSide(rhs_orient).getReversed().getNumericRepresentation();
     byte mask = 31;
     byte flip = (byte) ((~lhs_bits) & mask);
-    // System.out.println("LHS: " + lhs_bits + ", FLIP: " + flip + ", RHS: " + rhs_bits);
     return flip == rhs_bits;
   }
   

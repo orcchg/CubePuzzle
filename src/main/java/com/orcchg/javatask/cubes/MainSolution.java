@@ -9,6 +9,7 @@ import java.util.List;
 
 import com.orcchg.javatask.cubes.struct.Cube;
 import com.orcchg.javatask.cubes.struct.Matrix;
+import com.orcchg.javatask.cubes.struct.Orientation;
 import com.orcchg.javatask.cubes.struct.Side;
 import com.orcchg.javatask.cubes.struct.Solver;
 import com.orcchg.javatask.cubes.util.Util;
@@ -33,9 +34,15 @@ public class MainSolution {
     instance.readCubes(args[0]);
     
 //    System.err.println(instance.mSolver.match(
-//        instance.mSolver.getCube(1).rotate(),
+//        instance.mSolver.getCube(0),
 //        Orientation.RIGHT,
-//        instance.mSolver.getCube(3).rotate().rotate().rotate(),
+//        instance.mSolver.getCube(1),
+//        Orientation.LEFT));
+//    
+//    System.err.println(instance.mSolver.matchReversed(
+//        instance.mSolver.getCube(0),
+//        Orientation.RIGHT,
+//        instance.mSolver.getCube(1),
 //        Orientation.LEFT));
 
     instance.mSolver.solve();
