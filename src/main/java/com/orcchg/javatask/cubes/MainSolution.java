@@ -37,10 +37,9 @@ public class MainSolution {
 //        Orientation.RIGHT,
 //        instance.mSolver.getCube(3).rotate().rotate().rotate(),
 //        Orientation.LEFT));
-    List<Integer> list = new ArrayList<>(Arrays.asList(new Integer[]{0, 1, 2, 3, 4, 5}));
-    List<List<Integer>> answer = Util.allConjunctions(list, 4);
-    System.out.println("SIZE: " + answer.size());
-    Util.printListOfLists(answer);
+
+    instance.mSolver.solve();
+    instance.mSolver.printSolution();
   }
 
   /* Private methods */

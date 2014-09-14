@@ -64,6 +64,7 @@ public class Solver {
       
       // backup to restore combination of 4 pieces
       List<Integer> backup = Util.cloneArrayList(combination);
+      List<Integer> combination_to_remove = new ArrayList<>();
       
       // all combinations from 4 of 2
       List<List<Integer>> smallcomb = Util.allConjunctions(combination, 2);
@@ -94,8 +95,10 @@ public class Solver {
           Cube rhs_cube = mCubes.get(pair.get(1));
           ring_segment.add(lhs_cube.getOriented(orientation_pair[0]));
           ring_segment.add(rhs_cube.getOriented(orientation_pair[1]));
-          combination.remove((Object) lhs_cube.getID());
-          combination.remove((Object) rhs_cube.getID());
+          //combination.remove((Object) lhs_cube.getID());
+          combination_to_remove.add(lhs_cube.getID());
+          //combination.remove((Object) rhs_cube.getID());
+          combination_to_remove.add(rhs_cube.getID());
           
           // ------------------------------------------------------------------
           // try to attach third puzzle and get a straight line
@@ -106,7 +109,8 @@ public class Solver {
               boolean result = match(ring_segment.get(1), Orientation.UP, rest_cube, orientation);
               if (result) {
                 ring_segment.add(rest_cube.getOriented(orientation));
-                combination.remove((Object) rest_cube_id);
+                //combination.remove((Object) rest_cube_id);
+                combination_to_remove.add(rest_cube_id);
                 break rest_two_puzzles;
               } else {
                 ++not_matched_counter;
@@ -120,7 +124,8 @@ public class Solver {
                 boolean result = match(ring_segment.get(0), Orientation.DOWN, rest_cube, orientation);
                 if (result) {
                   ring_segment.addFirst(rest_cube.getOriented(orientation));
-                  combination.remove((Object) rest_cube_id);
+                  //combination.remove((Object) rest_cube_id);
+                  combination_to_remove.add(rest_cube_id);
                   break rest_two_puzzles;
                 }
               }
@@ -129,10 +134,10 @@ public class Solver {
           // ------------------------------------------------------------------
           
           // ------------------------------------------------------------------
-          if (combination.size() == 2) {
+          if (combination_to_remove.size() == 2) {
             // initial pair of puzzles is wrong or its pieces are in invalid orientation
             // retry with new orientation
-            combination = Util.cloneArrayList(backup);
+            combination_to_remove.clear();
             ring_segment.clear();
             continue orientations_loop;
           }
@@ -147,7 +152,8 @@ public class Solver {
             boolean result = match(ring_segment.get(2), Orientation.UP, last_cube, orientation);
             if (result) {
               ring_segment.add(last_cube.getOriented(orientation));
-              combination.remove((Object) last_puzzle_id);
+              //combination.remove((Object) last_puzzle_id);
+              combination_to_remove.add(last_puzzle_id);
               break;
             } else {
               ++not_matched_counter;
@@ -162,7 +168,8 @@ public class Solver {
               boolean result = match(ring_segment.get(0), Orientation.DOWN, last_cube, orientation);
               if (result) {
                 ring_segment.addFirst(last_cube.getOriented(orientation));
-                combination.remove((Object) last_puzzle_id);
+                //combination.remove((Object) last_puzzle_id);
+                combination_to_remove.add(last_puzzle_id);
                 break;
               } else {
                 ++not_matched_counter;
@@ -174,17 +181,17 @@ public class Solver {
           if (not_matched_counter == Orientation.size) {
             // initial pair of puzzles is wrong or its pieces are in invalid orientation
             // retry with new orientation
-            combination = Util.cloneArrayList(backup);
+            combination_to_remove.clear();
             ring_segment.clear();
             continue orientations_loop;
           } else {
             // last piece has been found
-            if (ring_segment.size() == 4 && combination.isEmpty()) {
+            if (ring_segment.size() == 4 && combination_to_remove.size() == 4) {
               if (isSegmentARing(ring_segment)) {
                 // we have got a ring! one ring to rule them all...
                 collect_rings.add(ring_segment);
               }
-              combination = Util.cloneArrayList(backup);
+              combination_to_remove.clear();
               ring_segment.clear();
             } else {
               throw new RuntimeException("Magic error!");
@@ -463,7 +470,9 @@ public class Solver {
       continue combinations_4;
     }  // combinations_4 loop
     // ------------------------------------------------------------------------
-    
+  }
+  
+  public void printSolution() {
     
   }
   
