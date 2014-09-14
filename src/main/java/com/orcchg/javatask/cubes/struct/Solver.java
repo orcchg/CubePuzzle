@@ -55,40 +55,23 @@ public class Solver {
       cube_ids.add(entry.getKey());
     }
 
-    int __DEBUG___combinations_i = 0;
-    int __DEBUG__combinations_sz = 0;
-    int __DEBUG___smallcomb_i = 0;
-    int __DEBUG__smallcomb_sz = 0;
-    int __DEBUG__collectrings_i = 0;
-    int __DEBUG__collectrings_sz = 0;
-    List<Integer> __DEBUG__combination = null;
-    List<Integer> __DEBUG__smallcomb = null;
-    try {
     // ------------------------------------------------------------------------
     // attempt to build the ring of 4 adjacent puzzles
     List<List<Integer>> combinations = Util.allConjunctions(cube_ids, 4);
-    __DEBUG__combinations_sz = combinations.size();
-    //Util.printListOfLists(combinations);
     
     combinations_4: for (List<Integer> combination : combinations) {
       // all possible rings from given 4 pieces
       List<LinkedList<Cube>> collect_rings = new ArrayList<>();
 
-      __DEBUG__combination = Util.cloneArrayList(combination);
-      
+      // store pieces to be removed - we do not modify collections we iterating through
       List<Integer> combination_to_remove = new ArrayList<>();
       
       // all combinations from 4 of 2
       List<List<Integer>> smallcomb = Util.allConjunctions(combination, 2);
-      __DEBUG__smallcomb_sz = smallcomb.size();
-      //Util.printListOfLists(smallcomb);
 
       // ----------------------------------------------------------------------
       // try two puzzles in all possible orientations and get any
       smallcomb_2: for (List<Integer> pair : smallcomb) {
-        __DEBUG___smallcomb_i = 0;
-        __DEBUG__smallcomb = Util.cloneArrayList(pair);
-        
         // get all possible combinations between two pieces
         List<Orientation[]> orientation_pairs = new ArrayList<>();
 
@@ -216,13 +199,9 @@ public class Solver {
           }
         }  // orientations_loop
         
-        ++__DEBUG___smallcomb_i;
         continue smallcomb_2;
       }  // smallcomb_2 loop
       // ----------------------------------------------------------------------
-      
-      __DEBUG__collectrings_sz = collect_rings.size();
-      System.err.println("Iteration [" + __DEBUG___combinations_i + ", " + __DEBUG___smallcomb_i + "]");
       
       // ----------------------------------------------------------------------
       // leave two last pieces
@@ -486,23 +465,12 @@ public class Solver {
         
         // ------------------------------------------------------------------
 
-        ++__DEBUG__collectrings_i;
         continue collect_rings_loop;
       }  // collect_rings_loop
       
-      ++__DEBUG___combinations_i;
       continue combinations_4;
     }  // combinations_4 loop
     // ------------------------------------------------------------------------
-    
-    } catch (java.util.ConcurrentModificationException e) {
-      System.err.println("Exception!");
-      System.err.println("DEBUG: [combinations i]: " + __DEBUG___combinations_i + "/" + __DEBUG__combinations_sz);
-      System.err.println("DEBUG: [smallcomb i]: " + __DEBUG___smallcomb_i + "/" + __DEBUG__smallcomb_sz);
-      System.err.println("DEBUG: [collectrings i]: " + __DEBUG__collectrings_i + "/" + __DEBUG__collectrings_sz);
-      Util.printList(__DEBUG__combination);
-      Util.printList(__DEBUG__smallcomb);
-    }
   }
   
   public void printSolution() {
