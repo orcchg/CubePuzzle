@@ -495,12 +495,12 @@ public class Solver {
                     if (success_one || another_success_one) {
                       Cube last_candidate_cube = last_cube.getOriented(local_valid_orientation[1]);
                       
-                      boolean last_check = match(ring.get(id), Orientation.LEFT, last_candidate_cube, local_valid_orientation[1]);
-                      if (!last_check) {
-                        // wrong actual matching - continue with other orientation
-                        ++subcounter;
-                        continue last_orientation_loop;
-                      }  // TODO : fix
+//                      boolean last_check = match(ring.get(id), Orientation.LEFT, last_candidate_cube, local_valid_orientation[1]);
+//                      if (!last_check) {
+//                        // wrong actual matching - continue with other orientation
+//                        ++subcounter;
+//                        continue last_orientation_loop;
+//                      }  // TODO : fix
                       
                       boolean success_two   = match(ring.get(id == 3 ? 2 : 3), Orientation.LEFT, last_candidate_cube, Orientation.DOWN);
                       boolean success_three = match(ring.get(id == 3 ? 0 : 1), Orientation.LEFT, last_candidate_cube, Orientation.UP);
