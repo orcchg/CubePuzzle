@@ -177,6 +177,20 @@ public class Cube {
     return rotated;
   }
   
+  public Cube mirror() {  // mirror at vertical line
+    mSides[0] = mTemp[0].clone().reverse();
+    mSides[1] = mTemp[1].clone().reverse();
+    mSides[2] = mTemp[2].clone();
+    mSides[3] = mTemp[3].clone();
+    return this;
+  }
+  
+  public Cube getMirrored() {
+    Cube mirrored = new Cube(this);
+    mirrored.mirror();
+    return mirrored;
+  }
+  
   @Override
   public String toString() {
     StringBuilder builder = new StringBuilder();
@@ -190,7 +204,7 @@ public class Cube {
   
   /* Private methods */
   // --------------------------------------------------------------------------
-  private Cube(final Cube rhs) {  // deep copy
+  Cube(final Cube rhs) {  // deep copy
     mID = rhs.mID;
     
     switch (rhs.mOrientation) {

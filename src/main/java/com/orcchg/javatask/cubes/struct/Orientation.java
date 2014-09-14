@@ -6,6 +6,8 @@ public enum Orientation {
   public static Orientation[] entries = values();  // to avoid unnecessary instances
   public static final int size = entries.length;
   
+  public boolean mirror = false;  // indicates whether it necessary to mirror cube
+  
   public static Orientation[] getValidOrientation(Orientation lhs, Orientation rhs) {
     Orientation orientation[] = new Orientation[2];
     
