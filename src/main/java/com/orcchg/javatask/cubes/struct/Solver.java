@@ -54,27 +54,26 @@ public class Solver {
     for (Map.Entry<Integer, Cube> entry : mCubes.entrySet()) {
       cube_ids.add(entry.getKey());
     }
-    
+
     // ------------------------------------------------------------------------
     // attempt to build the ring of 4 adjacent puzzles
     List<List<Integer>> combinations = Util.allConjunctions(cube_ids, 4);
     combinations_4: for (List<Integer> combination : combinations) {
       // all possible rings from given 4 pieces
       List<LinkedList<Cube>> collect_rings = new ArrayList<>();
-      
+
       // backup to restore combination of 4 pieces
-      List<Integer> backup = Util.cloneArrayList(combination);
       List<Integer> combination_to_remove = new ArrayList<>();
       
       // all combinations from 4 of 2
       List<List<Integer>> smallcomb = Util.allConjunctions(combination, 2);
-      
+
       // ----------------------------------------------------------------------
       // try two puzzles in all possible orientations and get any
       smallcomb_2: for (List<Integer> pair : smallcomb) {
         // get all possible combinations between two pieces
         List<Orientation[]> orientation_pairs = new ArrayList<>();
-        
+
         for (Orientation lhs : Orientation.entries) {
           for (Orientation rhs : Orientation.entries) {
             Cube lhs_cube = mCubes.get(pair.get(0));
@@ -86,11 +85,11 @@ public class Solver {
             }
           }
         }
-        
+
         orientations_loop: for (Orientation[] orientation_pair : orientation_pairs) {
           // ring segment
           LinkedList<Cube> ring_segment = new LinkedList<>();
-          
+
           Cube lhs_cube = mCubes.get(pair.get(0));
           Cube rhs_cube = mCubes.get(pair.get(1));
           ring_segment.add(lhs_cube.getOriented(orientation_pair[0]));
@@ -99,7 +98,7 @@ public class Solver {
           combination_to_remove.add(lhs_cube.getID());
           //combination.remove((Object) rhs_cube.getID());
           combination_to_remove.add(rhs_cube.getID());
-          
+
           // ------------------------------------------------------------------
           // try to attach third puzzle and get a straight line
           rest_two_puzzles: for (int rest_cube_id : combination) {
