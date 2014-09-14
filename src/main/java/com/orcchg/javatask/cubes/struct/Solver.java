@@ -1,31 +1,31 @@
 package com.orcchg.javatask.cubes.struct;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Queue;
-import java.util.Set;
+import java.util.Map;
+
+import com.orcchg.javatask.cubes.util.Util;
 
 public class Solver {
-  private Cube[] mCubes;
+  private Map<Integer, Cube> mCubes;
   private static int internalCounter = 0;
   
   public Solver() {
-    mCubes = new Cube[6];
+    mCubes = new HashMap<Integer, Cube>();
   }
   
   public void addCube(final Cube cube) {
     if (internalCounter >= 6) {
       return;
     }
-    mCubes[internalCounter++] = cube;
+    mCubes.put(cube.getID(), cube);
+    ++internalCounter;
   }
   
   public Cube getCube(int index) {
-    return mCubes[index];
+    return mCubes.get(index);
   }
   
   // match two cubes side (of lhs one) by side (of rhs one)
@@ -38,51 +38,139 @@ public class Solver {
     return flip == rhs_bits;
   }
   
+  public void solve() {
+    if (mCubes.size() != 6) {
+      throw new IllegalStateException("Number of cubes is not equal to six! No solution.");
+    }
+    
+    List<Integer> cube_ids = new ArrayList<>(6);
+    for (Map.Entry<Integer, Cube> entry : mCubes.entrySet()) {
+      cube_ids.add(entry.getKey());
+    }
+    
+    List<LinkedList<Cube>> collect_rings = new ArrayList<>();
+    
+    // attempt to build the ring of 4 adjacent puzzles
+    List<List<Integer>> combinations = Util.allConjunctions(cube_ids, 4);
+    puzzles_4: for (List<Integer> combination : combinations) {
+      // all combinations from 4 of 2
+      List<List<Integer>> smallcomb = Util.allConjunctions(combination, 2);
+      // ring segment
+      LinkedList<Cube> ring_segment = new LinkedList<>();
+      
+      puzzles_2: while (!smallcomb.isEmpty()) {
+        // try two puzzles in all possible orientations and get any
+        int pair_index = smallcomb.size() - 1;
+        List<Integer> pair = smallcomb.get(pair_index);  // peek last
+        
+        orientation_lhs_loop: for (Orientation lhs : Orientation.entries) {
+          orientation_rhs_loop: for (Orientation rhs : Orientation.entries) {
+            Cube lhs_cube = mCubes.get(pair.get(0));
+            Cube rhs_cube = mCubes.get(pair.get(1));
+            boolean result = match(lhs_cube, lhs, rhs_cube, rhs);
+            if (result) {
+              ring_segment.add(lhs_cube.getOriented(lhs));
+              ring_segment.add(rhs_cube.getOriented(rhs));
+              combination.remove((Object) lhs_cube.getID());
+              combination.remove((Object) rhs_cube.getID());
+              break orientation_lhs_loop;
+            } else {
+              continue orientation_rhs_loop;
+            }
+          }  // orientation_rhs_loop
+        }  // orientation_lhs_loop
+        
+        // try to attach third puzzle and get a straight line
+        rest_two_puzzles: for (int rest_cube_id : combination) {
+          int not_matched_counter = 0;
+          for (Orientation orientation : Orientation.entries) {
+            Cube rest_cube = mCubes.get(rest_cube_id);
+            boolean result = match(ring_segment.get(1), Orientation.UP, rest_cube, orientation);
+            if (result) {
+              ring_segment.add(rest_cube.getOriented(orientation));
+              combination.remove((Object) rest_cube_id);
+              break rest_two_puzzles;
+            } else {
+              ++not_matched_counter;
+            }
+          }
+          
+          if (not_matched_counter == Orientation.size) {
+            // try another side
+            for (Orientation orientation : Orientation.entries) {
+              Cube rest_cube = mCubes.get(rest_cube_id);
+              boolean result = match(ring_segment.get(0), Orientation.DOWN, rest_cube, orientation);
+              if (result) {
+                ring_segment.addFirst(rest_cube.getOriented(orientation));
+                combination.remove((Object) rest_cube_id);
+                break rest_two_puzzles;
+              }
+            }
+          }
+        }  // rest_two_puzzles loop
+        
+        if (combination.size() == 2) {
+          // initial pair of puzzles is wrong or its pieces are in invalid orientation
+          // retry with new orientation
+          
+        }
+        
+        // try to attach last puzzle and get a ring
+        int last_puzzle_id = combination.get(0);
+        int not_matched_counter = 0;
+        for (Orientation orientation : Orientation.entries) {
+          Cube last_cube = mCubes.get(last_puzzle_id);
+          boolean result = match(ring_segment.get(2), Orientation.UP, last_cube, orientation);
+          if (result) {
+            ring_segment.add(last_cube.getOriented(orientation));
+            combination.remove((Object) last_puzzle_id);
+            break;
+          } else {
+            ++not_matched_counter;
+          }
+        }
+        
+        if (not_matched_counter == Orientation.size) {
+          not_matched_counter = 0;
+          // try another side
+          for (Orientation orientation : Orientation.entries) {
+            Cube last_cube = mCubes.get(last_puzzle_id);
+            boolean result = match(ring_segment.get(0), Orientation.DOWN, last_cube, orientation);
+            if (result) {
+              ring_segment.addFirst(last_cube.getOriented(orientation));
+              combination.remove((Object) last_puzzle_id);
+              break;
+            } else {
+              ++not_matched_counter;
+            }
+          }
+        }
+        
+        if (not_matched_counter == Orientation.size) {
+          // this pair is wrong - pop it from list
+          not_matched_counter = 0;
+          smallcomb.remove(pair_index);
+          ring_segment.clear();
+        }
+      }  // puzzles_2 while loop
+      
+      if (ring_segment.size() == 4) {
+        // we have got a ring! one ring to rule them all...
+        collect_rings.add(ring_segment);
+        continue puzzles_4;
+      } else {
+        // current combination of 4 pieces is wrong
+        continue puzzles_4;
+      }
+    }  // puzzles_4 loop
+  }
+  
   public void printCubes() {
-    for (Cube cube : mCubes) {
-      System.out.println(cube);
+    for (Map.Entry<Integer, Cube> entry : mCubes.entrySet()) {
+      System.out.println(entry.getValue());
     }
   }
   
   /* Private methods */
   // --------------------------------------------------------------------------
-  private void singleSolution() {
-    List<Cube> answerT = new ArrayList<>();
-    
-    for (Cube cube : mCubes) {
-      Set<Cube> set = new HashSet<>(Arrays.asList(mCubes));
-      set.remove(cube);
-      
-      Queue<Orientation> orientations = new LinkedList<>(Arrays.asList(Orientation.entries));
-      Queue<Cube> another_cubes = new LinkedList<>();
-      another_cubes.addAll(set);
-      
-      while (!another_cubes.isEmpty()) {
-        while (!orientations.isEmpty()) {
-          Cube another_cube = another_cubes.peek();
-          Orientation orientation = orientations.peek();
-          boolean result = match(cube, Orientation.UP, another_cube, orientation);
-          if (result) {
-            answerT.add(cube);
-            answerT.add(another_cube.setOrientation(orientation));
-            orientations.poll();
-            break;
-          } else {
-            orientations.poll();
-          }
-        }
-      }
-      
-      
-      
-    }
-  }
-  
-  private List<Cube> findMiddleElementsT() {
-    List<Cube> mid_elems = new ArrayList<>();
-    for (Cube cube : mCubes) {
-      
-    }
-    return mid_elems;
-  }
 }

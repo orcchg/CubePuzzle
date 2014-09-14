@@ -9,7 +9,6 @@ import java.util.List;
 
 import com.orcchg.javatask.cubes.struct.Cube;
 import com.orcchg.javatask.cubes.struct.Matrix;
-import com.orcchg.javatask.cubes.struct.Orientation;
 import com.orcchg.javatask.cubes.struct.Side;
 import com.orcchg.javatask.cubes.struct.Solver;
 import com.orcchg.javatask.cubes.util.Util;

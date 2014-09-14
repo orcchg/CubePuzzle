@@ -1,5 +1,9 @@
 package com.orcchg.javatask.cubes.struct;
 
+/** 
+ * @brief Represents single piece of puzzle
+ * @note Sorry for strange class name :(, the reason is historical
+ */
 public class Cube {
   private final int mID;
   private Orientation mOrientation = Orientation.UP;
@@ -126,6 +130,12 @@ public class Cube {
     mOrientation = orientation;
     return this;
   }
+  
+  public Cube getOriented(Orientation orientation) {
+    Cube oriented = new Cube(this);
+    oriented.setOrientation(orientation);
+    return oriented;
+  }
 
   public Cube rotate() {  // clockwise rotation by 90 degrees
     switch (mOrientation) {
@@ -159,6 +169,12 @@ public class Cube {
         break;
     }
     return this;
+  }
+  
+  public Cube getRotated() {  // clockwise rotation by 90 degrees
+    Cube rotated = new Cube(this);  // deep copy
+    rotated.rotate();
+    return rotated;
   }
   
   @Override
@@ -204,6 +220,31 @@ public class Cube {
   
   /* Private methods */
   // --------------------------------------------------------------------------
+  private Cube(final Cube rhs) {  // deep copy
+    mID = rhs.mID;
+    
+    switch (rhs.mOrientation) {
+      case UP:
+        mOrientation = Orientation.UP;
+        break;
+      case DOWN:
+        mOrientation = Orientation.DOWN;
+        break;
+      case RIGHT:
+        mOrientation = Orientation.RIGHT;
+        break;
+      case LEFT:
+        mOrientation = Orientation.LEFT;
+        break;
+    }
+    
+    mSides[0] = rhs.mSides[0].clone();
+    mSides[1] = rhs.mSides[1].clone();
+    mSides[2] = rhs.mSides[2].clone();
+    mSides[3] = rhs.mSides[3].clone();
+    backup();
+  }
+  
   private void backup() {
     mTemp[0] = mSides[0].clone();
     mTemp[1] = mSides[1].clone();
