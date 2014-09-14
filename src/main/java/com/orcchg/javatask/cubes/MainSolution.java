@@ -42,7 +42,7 @@ public class MainSolution {
     //System.out.println(Solver.matchReversed(instance.mSolver.getCube(3), Orientation.UP, instance.mSolver.getCube(5), Orientation.DOWN));
     
     instance.mSolver.solve();
-    System.out.println(instance.mSolver.getSolution());
+    //System.out.println(instance.mSolver.getSolution());
     System.out.println(instance.mSolver.totalUnfoldedT() + " ^^^ " + instance.mSolver.totalUnfoldedX());
   }
 
