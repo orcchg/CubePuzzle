@@ -50,7 +50,7 @@ public class Solver {
       cube_ids.add(entry.getKey());
     }
     
-    // ----------------------------------------------------------------------
+    // ------------------------------------------------------------------------
     // attempt to build the ring of 4 adjacent puzzles
     List<List<Integer>> combinations = Util.allConjunctions(cube_ids, 4);
     combinations_4: for (List<Integer> combination : combinations) {
@@ -197,20 +197,15 @@ public class Solver {
       Set<Integer> set_combination = new HashSet<>(combination);
       set_cube_ids.removeAll(set_combination);
       List<Integer> two_last_pieces = new ArrayList<>(set_cube_ids);
+      Cube cube = mCubes.get(two_last_pieces.get(0));
       
       collect_rings_loop: for (LinkedList<Cube> ring : collect_rings) {
         // try to attach two rest pieces in T unfolded form
-        
         List<Integer> ring_head_and_tail = new ArrayList<>(2);
         ring_head_and_tail.add(3);  // head
         ring_head_and_tail.add(0);  // tail
         
-        Cube cube = mCubes.get(two_last_pieces.get(0));
-        
-         // ------------------------------------------------------------------
         ring_head_and_tail_loop: for (int id : ring_head_and_tail) {
-          int not_matched_counter = 0;
-          
           // ------------------------------------------------------------------
           // try left side
           orientation_loop: for (Orientation orientation : Orientation.entries) {
@@ -218,8 +213,8 @@ public class Solver {
             
             if (result) {
               Cube candidate_cube = cube.getOriented(orientation);
-              boolean try_one = match(ring.get(id == 3 ? 2 : 3), Orientation.LEFT, candidate_cube, Orientation.DOWN);
-              boolean try_two = match(ring.get(id == 3 ? 0 : 1), Orientation.LEFT, candidate_cube, Orientation.UP);
+              boolean try_one   = match(ring.get(id == 3 ? 2 : 3), Orientation.LEFT, candidate_cube, Orientation.DOWN);
+              boolean try_two   = match(ring.get(id == 3 ? 0 : 1), Orientation.LEFT, candidate_cube, Orientation.UP);
               boolean try_three = match(ring.get(id == 3 ? 1 : 2), Orientation.LEFT, candidate_cube, Orientation.LEFT);
               boolean accumulate = try_one && try_two && try_three;
               
@@ -232,9 +227,9 @@ public class Solver {
                   
                   if (success_one) {
                     Cube last_candidate_cube = last_cube.getOriented(last_orientation);
-                    boolean success_two = match(ring.get(id == 3 ? 2 : 3), Orientation.RIGHT, last_candidate_cube, Orientation.DOWN);
+                    boolean success_two   = match(ring.get(id == 3 ? 2 : 3), Orientation.RIGHT, last_candidate_cube, Orientation.DOWN);
                     boolean success_three = match(ring.get(id == 3 ? 0 : 1), Orientation.RIGHT, last_candidate_cube, Orientation.UP);
-                    boolean success_four = match(ring.get(id == 3 ? 1 : 2), Orientation.RIGHT, last_candidate_cube, Orientation.RIGHT);
+                    boolean success_four  = match(ring.get(id == 3 ? 1 : 2), Orientation.RIGHT, last_candidate_cube, Orientation.RIGHT);
                     boolean success = success_two && success_three && success_four;
                     if (success) {
                       // it is an answer!
@@ -250,31 +245,28 @@ public class Solver {
                   // last piece has not matched - the whole ring is wrong or orientation of 1st piece is wrong
                   // retry orientation of 1st piece
                   subcounter = 0;
-                  not_matched_counter = 0;
                   continue orientation_loop;
                 }
                 
               } else {
-                ++not_matched_counter;
+                // this piece does not match
               }  // accumulate (if)
               
             } else {
-              ++not_matched_counter;
+              // this piece does not match
             }  // result (if)
           }  // orientations_loop
           // ------------------------------------------------------------------
           
           // ------------------------------------------------------------------
           // try another side
-          not_matched_counter = 0;
-          
           orientation_loop: for (Orientation orientation : Orientation.entries) {
             boolean result = match(ring.get(id), Orientation.RIGHT, cube, orientation);
             
             if (result) {
               Cube candidate_cube = cube.getOriented(orientation);
-              boolean try_one = match(ring.get(id == 3 ? 2 : 3), Orientation.RIGHT, candidate_cube, Orientation.DOWN);
-              boolean try_two = match(ring.get(id == 3 ? 0 : 1), Orientation.RIGHT, candidate_cube, Orientation.UP);
+              boolean try_one   = match(ring.get(id == 3 ? 2 : 3), Orientation.RIGHT, candidate_cube, Orientation.DOWN);
+              boolean try_two   = match(ring.get(id == 3 ? 0 : 1), Orientation.RIGHT, candidate_cube, Orientation.UP);
               boolean try_three = match(ring.get(id == 3 ? 1 : 2), Orientation.RIGHT, candidate_cube, Orientation.RIGHT);
               boolean accumulate = try_one && try_two && try_three;
               
@@ -287,9 +279,9 @@ public class Solver {
                   
                   if (success_one) {
                     Cube last_candidate_cube = last_cube.getOriented(last_orientation);
-                    boolean success_two = match(ring.get(id == 3 ? 2 : 3), Orientation.LEFT, last_candidate_cube, Orientation.DOWN);
+                    boolean success_two   = match(ring.get(id == 3 ? 2 : 3), Orientation.LEFT, last_candidate_cube, Orientation.DOWN);
                     boolean success_three = match(ring.get(id == 3 ? 0 : 1), Orientation.LEFT, last_candidate_cube, Orientation.UP);
-                    boolean success_four = match(ring.get(id == 3 ? 1 : 2), Orientation.LEFT, last_candidate_cube, Orientation.LEFT);
+                    boolean success_four  = match(ring.get(id == 3 ? 1 : 2), Orientation.LEFT, last_candidate_cube, Orientation.LEFT);
                     boolean success = success_two && success_three && success_four;
                     if (success) {
                       // it is an answer!
@@ -305,40 +297,143 @@ public class Solver {
                   // last piece has not matched - the whole ring is wrong or orientation of 1st piece is wrong
                   // retry orientation of 1st piece
                   subcounter = 0;
-                  not_matched_counter = 0;
                   continue orientation_loop;
                 }
                 
               } else {
-                ++not_matched_counter;
+                // this piece does not match
               }  // accumulate (if)
               
             } else {
-              ++not_matched_counter;
+              // this piece does not match
             }  // result (if)
           }  // orientations_loop
           // ------------------------------------------------------------------
           
-          
-          if (not_matched_counter == Orientation.size) {
-            // unable to make T unfolded form with combination
-            not_matched_counter = 0;
-          }
-          
           continue ring_head_and_tail_loop;
         }  // ring_head_and_tail_loop
-         // ------------------------------------------------------------------
         
-        
-        
+        // --------------------------------------------------------------------
         // try to attach two rest pieces in X unfolded form
+        List<Integer> ring_middle_band = new ArrayList<>(2);
+        ring_middle_band.add(2);  // head
+        ring_middle_band.add(1);  // tail
         
-        // ----------------------------------------------------------------------
+        ring_middle_band_loop: for (int id : ring_middle_band) {
+          // ------------------------------------------------------------------
+          // try left side
+          orientation_loop: for (Orientation orientation : Orientation.entries) {
+            boolean result = match(ring.get(id), Orientation.LEFT, cube, orientation);
+            
+            if (result) {
+              Cube candidate_cube = cube.getOriented(orientation);
+              boolean try_one   = match(ring.get(id == 2 ? 1 : 0), Orientation.LEFT, candidate_cube, Orientation.DOWN);
+              boolean try_two   = match(ring.get(id == 2 ? 3 : 2), Orientation.LEFT, candidate_cube, Orientation.UP);
+              boolean try_three = match(ring.get(id == 2 ? 0 : 3), Orientation.LEFT, candidate_cube, Orientation.LEFT);
+              boolean accumulate = try_one && try_two && try_three;
+              
+              if (accumulate) {
+                // try last piece
+                Cube last_cube = mCubes.get(two_last_pieces.get(1));
+                int subcounter = 0;
+                last_orientation_loop: for (Orientation last_orientation : Orientation.entries) {
+                  boolean success_one = match(ring.get(id), Orientation.RIGHT, last_cube, last_orientation);
+                  
+                  if (success_one) {
+                    Cube last_candidate_cube = last_cube.getOriented(last_orientation);
+                    boolean success_two   = match(ring.get(id == 2 ? 1 : 0), Orientation.RIGHT, last_candidate_cube, Orientation.DOWN);
+                    boolean success_three = match(ring.get(id == 2 ? 3 : 2), Orientation.RIGHT, last_candidate_cube, Orientation.UP);
+                    boolean success_four  = match(ring.get(id == 2 ? 0 : 3), Orientation.RIGHT, last_candidate_cube, Orientation.RIGHT);
+                    boolean success = success_two && success_three && success_four;
+                    if (success) {
+                      // it is an answer!
+                      // XXX
+                    }
+                  } else {
+                    ++subcounter;
+                    continue last_orientation_loop;
+                  }
+                }  // last_orientation_loop
+                
+                if (subcounter == Orientation.size) {
+                  // last piece has not matched - the whole ring is wrong or orientation of 1st piece is wrong
+                  // retry orientation of 1st piece
+                  subcounter = 0;
+                  continue orientation_loop;
+                }
+                
+              } else {
+                // this piece does not match
+              }  // accumulate (if)
+              
+            } else {
+              // this piece does not match
+            }  // result (if)
+          }  // orientations_loop
+          // ------------------------------------------------------------------
+          
+          // ------------------------------------------------------------------
+          // try another side
+          orientation_loop: for (Orientation orientation : Orientation.entries) {
+            boolean result = match(ring.get(id), Orientation.RIGHT, cube, orientation);
+            
+            if (result) {
+              Cube candidate_cube = cube.getOriented(orientation);
+              boolean try_one   = match(ring.get(id == 2 ? 1 : 0), Orientation.RIGHT, candidate_cube, Orientation.DOWN);
+              boolean try_two   = match(ring.get(id == 2 ? 3 : 2), Orientation.RIGHT, candidate_cube, Orientation.UP);
+              boolean try_three = match(ring.get(id == 2 ? 0 : 3), Orientation.RIGHT, candidate_cube, Orientation.RIGHT);
+              boolean accumulate = try_one && try_two && try_three;
+              
+              if (accumulate) {
+                // try last piece
+                Cube last_cube = mCubes.get(two_last_pieces.get(1));
+                int subcounter = 0;
+                last_orientation_loop: for (Orientation last_orientation : Orientation.entries) {
+                  boolean success_one = match(ring.get(id), Orientation.LEFT, last_cube, last_orientation);
+                  
+                  if (success_one) {
+                    Cube last_candidate_cube = last_cube.getOriented(last_orientation);
+                    boolean success_two   = match(ring.get(id == 2 ? 1 : 0), Orientation.LEFT, last_candidate_cube, Orientation.DOWN);
+                    boolean success_three = match(ring.get(id == 2 ? 3 : 2), Orientation.LEFT, last_candidate_cube, Orientation.UP);
+                    boolean success_four  = match(ring.get(id == 2 ? 0 : 3), Orientation.LEFT, last_candidate_cube, Orientation.LEFT);
+                    boolean success = success_two && success_three && success_four;
+                    if (success) {
+                      // it is an answer!
+                      // XXX
+                    }
+                  } else {
+                    ++subcounter;
+                    continue last_orientation_loop;
+                  }
+                }  // last_orientation_loop
+                
+                if (subcounter == Orientation.size) {
+                  // last piece has not matched - the whole ring is wrong or orientation of 1st piece is wrong
+                  // retry orientation of 1st piece
+                  subcounter = 0;
+                  continue orientation_loop;
+                }
+                
+              } else {
+                // this piece does not match
+              }  // accumulate (if)
+              
+            } else {
+              // this piece does not match
+            }  // result (if)
+          }  // orientations_loop
+          // ------------------------------------------------------------------
+          
+          continue ring_middle_band_loop;
+        }  // ring_middle_band_loop
+        
+        // ------------------------------------------------------------------
+
         continue collect_rings_loop;
       }  // collect_rings_loop
       continue combinations_4;
     }  // combinations_4 loop
-    // ----------------------------------------------------------------------
+    // ------------------------------------------------------------------------
     
     
   }
