@@ -742,80 +742,12 @@ public class Solver {
     StringBuilder solution = new StringBuilder();
     for (List<Cube> cubes : mUnfoldedT) {
       // print all solutions as T unfolded form
-//      solution.append(cubes.get(4).getSide(Orientation.UP))
-//              .append(cubes.get(3).getSide(Orientation.UP))
-//              .append(cubes.get(5).getSide(Orientation.UP))
-//              .append("\n");
-//      
-//      for (int i = 1; i <= 3; ++i) {
-//        solution.append(cubes.get(4).getSide(Orientation.LEFT).cells[i].toChar()).append("ooo")
-//                .append(cubes.get(4).getSide(Orientation.RIGHT).cells[i].toChar())
-//                .append(cubes.get(3).getSide(Orientation.LEFT).cells[i].toChar()).append("ooo")
-//                .append(cubes.get(3).getSide(Orientation.RIGHT).cells[i].toChar())
-//                .append(cubes.get(5).getSide(Orientation.LEFT).cells[i].toChar()).append("ooo")
-//                .append(cubes.get(5).getSide(Orientation.RIGHT).cells[i].toChar())
-//                .append("\n");
-//      }
-//      
-//      solution.append(cubes.get(4).getSide(Orientation.DOWN))
-//               .append(cubes.get(3).getSide(Orientation.DOWN))
-//               .append(cubes.get(5).getSide(Orientation.DOWN))
-//               .append("\n");
-//      
-//      for (int i = 2; i >= 0; --i) {
-//        solution.append("     ").append(cubes.get(i).getSide(Orientation.UP)).append("     ").append("\n");
-//        
-//        for (int j = 1; j <= 3; ++j) {
-//          solution.append("     ").append(cubes.get(i).getSide(Orientation.LEFT).cells[j].toChar())
-//                  .append("ooo").append(cubes.get(i).getSide(Orientation.RIGHT).cells[j].toChar())
-//                  .append("     ").append("\n");
-//        }
-//        solution.append("     ").append(cubes.get(i).getSide(Orientation.DOWN)).append("     ").append("\n");
-//      }
       solution.append(unfoldedTtoString(cubes));
     }
     
     // ------------------------------------------------------------------------
     for (List<Cube> cubes : mUnfoldedX) {
       // print all solutions as X unfolded form
-//      solution.append("     ").append(cubes.get(3).getSide(Orientation.UP)).append("     ").append("\n");
-//      
-//      for (int i = 1; i <= 3; ++i) {
-//        solution.append("     ").append(cubes.get(3).getSide(Orientation.LEFT).cells[i].toChar()).append("ooo")
-//                .append(cubes.get(3).getSide(Orientation.RIGHT).cells[i].toChar()).append("     ").append("\n");
-//      }
-//      solution.append("     ").append(cubes.get(3).getSide(Orientation.DOWN)).append("     ").append("\n");
-//      
-//      solution.append(cubes.get(4).getSide(Orientation.UP))
-//              .append(cubes.get(2).getSide(Orientation.UP))
-//              .append(cubes.get(5).getSide(Orientation.UP))
-//              .append("\n");
-//      
-//      for (int i = 1; i <= 3; ++i) {
-//        solution.append(cubes.get(4).getSide(Orientation.LEFT).cells[i].toChar()).append("ooo")
-//                .append(cubes.get(4).getSide(Orientation.RIGHT).cells[i].toChar())
-//                .append(cubes.get(2).getSide(Orientation.LEFT).cells[i].toChar()).append("ooo")
-//                .append(cubes.get(2).getSide(Orientation.RIGHT).cells[i].toChar())
-//                .append(cubes.get(5).getSide(Orientation.LEFT).cells[i].toChar()).append("ooo")
-//                .append(cubes.get(5).getSide(Orientation.RIGHT).cells[i].toChar())
-//                .append("\n");
-//      }
-//      
-//      solution.append(cubes.get(4).getSide(Orientation.DOWN))
-//              .append(cubes.get(2).getSide(Orientation.DOWN))
-//              .append(cubes.get(5).getSide(Orientation.DOWN))
-//              .append("\n");
-//      
-//      for (int i = 1; i >= 0; --i) {
-//        solution.append("     ").append(cubes.get(i).getSide(Orientation.UP)).append("     ").append("\n");
-//        
-//        for (int j = 1; j <= 3; ++j) {
-//          solution.append("     ").append(cubes.get(i).getSide(Orientation.LEFT).cells[j].toChar())
-//                  .append("ooo").append(cubes.get(i).getSide(Orientation.RIGHT).cells[j].toChar())
-//                  .append("     ").append("\n");
-//        }
-//        solution.append("     ").append(cubes.get(i).getSide(Orientation.DOWN)).append("     ").append("\n");
-//      }
       solution.append(unfoldedXtoString(cubes));
     }
     return solution.toString();
