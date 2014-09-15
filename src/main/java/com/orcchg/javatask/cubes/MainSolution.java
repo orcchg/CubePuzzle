@@ -5,16 +5,11 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 import com.orcchg.javatask.cubes.struct.Cube;
 import com.orcchg.javatask.cubes.struct.Matrix;
-import com.orcchg.javatask.cubes.struct.Orientation;
 import com.orcchg.javatask.cubes.struct.Side;
 import com.orcchg.javatask.cubes.struct.Solver;
-import com.orcchg.javatask.cubes.util.Util;
 
 public class MainSolution {
   private Solver mSolver;
