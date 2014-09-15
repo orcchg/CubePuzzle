@@ -1,5 +1,9 @@
 package com.orcchg.javatask.cubes.struct;
 
+/**
+ * @brief class represents the orientation of the cube (piece)
+ *     and also is used to mark certain side of cube
+ */
 public enum Orientation implements Cloneable {
   UP("UP"), DOWN("DOWN"), RIGHT("RIGHT"), LEFT("LEFT");
   
@@ -339,6 +343,24 @@ public enum Orientation implements Cloneable {
     return false;
   }
   
+  /**
+   * @brief two cubes are matched with 'lhs' and 'rhs' sides correspondingly.
+   *     In order to combine them into vertical straight line, we should
+   *     rotate these cubes, as this method says
+   *     
+   * @param left cube side
+   * @param rigth cube side
+   * 
+   * @return pair of orientations for cubes, which they should be placed
+   *     in order to get continuous vertical segment of two pieces,
+   *     adjacent along these two given sides
+   * 
+   * @details method also collects information about reversed order of matching
+   *     between two sides
+   * 
+   * @note this method only works if one needs to put two pieces into vertical
+   *     straight segment, left piece at the bottom, right piece at the top of segment
+   */
   public static Feature[] getValidOrientation(Orientation lhs, Orientation rhs) {
     Feature orientation[] = new Feature[2];
     
