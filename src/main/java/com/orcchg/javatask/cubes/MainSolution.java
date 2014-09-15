@@ -1,6 +1,8 @@
 package com.orcchg.javatask.cubes;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -36,6 +38,8 @@ public class MainSolution {
     instance.mSolver.solve();
     System.out.println(instance.mSolver.getSolution());
     System.out.println(instance.mSolver.totalUnfoldedT() + " ^^^ " + instance.mSolver.totalUnfoldedX());
+    
+    instance.writeToFile("output.txt", instance.mSolver.getSolution());
   }
 
   /* Private methods */
@@ -107,5 +111,24 @@ public class MainSolution {
         new Side(matrix.data[5][14], matrix.data[6][14], matrix.data[7][14], matrix.data[8][14], matrix.data[9][14]),   // right
         new Side(matrix.data[5][10], matrix.data[6][10], matrix.data[7][10], matrix.data[8][10], matrix.data[9][10])    // left
         ));
+  }
+  
+  private void writeToFile(final String filename, final String content) {
+    File file = new File(filename);
+    
+    try (FileOutputStream fout = new FileOutputStream(file);) {
+      if (!file.exists()) {
+        file.createNewFile();
+      }
+      
+      byte[] contentInBytes = content.getBytes();
+      
+      fout.write(contentInBytes);
+      fout.flush();
+      fout.close();
+      
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
   }
 }

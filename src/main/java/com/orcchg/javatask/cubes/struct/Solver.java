@@ -483,7 +483,9 @@ public class Solver {
                         }
                         answerT.add(candidate_cube);
                         answerT.add(last_candidate_cube);
-                        mUnfoldedT.add(answerT); 
+                        if (isUnfoldedTValid(answerT)) {
+                          mUnfoldedT.add(answerT);
+                        }
                       }
                     } else {
                       ++subcounter;
@@ -598,7 +600,9 @@ public class Solver {
                         }
                         answerT.add(last_candidate_cube);
                         answerT.add(candidate_cube);
-                        mUnfoldedT.add(answerT);
+                        if (isUnfoldedTValid(answerT)) {
+                          mUnfoldedT.add(answerT);
+                        }
                       }
                     } else {
                       ++subcounter;
@@ -721,7 +725,9 @@ public class Solver {
                         }
                         answerX.add(candidate_cube);
                         answerX.add(last_candidate_cube);
-                        mUnfoldedX.add(answerX);
+                        if (isUnfoldedXValid(answerX)) {
+                          mUnfoldedX.add(answerX);
+                        }
                       }
                     } else {
                       ++subcounter;
@@ -834,7 +840,9 @@ public class Solver {
                         }
                         answerX.add(last_candidate_cube);
                         answerX.add(candidate_cube);
-                        mUnfoldedX.add(answerX);
+                        if (isUnfoldedXValid(answerX)) {
+                          mUnfoldedX.add(answerX);
+                        }
                       }
                     } else {
                       ++subcounter;
@@ -1022,7 +1030,7 @@ public class Solver {
   // --------------------------------------------------------------------------
   private String unfoldedTtoString(final List<Cube> cubes) {
     StringBuilder solution = new StringBuilder();
-    solution.append(Util.printIDs(cubes)).append("------------------\n  VALID: " + isUnfoldedTValid(cubes) + "\n");
+    //solution.append(Util.printIDs(cubes)).append("------------------\n  VALID: " + isUnfoldedTValid(cubes) + "\n");
     
     solution.append(cubes.get(4).getSide(Orientation.UP))
             .append(cubes.get(3).getSide(Orientation.UP))
@@ -1062,7 +1070,7 @@ public class Solver {
   // --------------------------------------------------------------------------
   private String unfoldedXtoString(final List<Cube> cubes) {
     StringBuilder solution = new StringBuilder();
-    solution.append(Util.printIDs(cubes)).append("------------------\n  VALID: " + isUnfoldedXValid(cubes) + "\n");
+    //solution.append(Util.printIDs(cubes)).append("------------------\n  VALID: " + isUnfoldedXValid(cubes) + "\n");
     
     solution.append("     ").append(cubes.get(3).getSide(Orientation.UP)).append("     ").append("\n");
     
