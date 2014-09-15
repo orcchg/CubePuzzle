@@ -1,7 +1,9 @@
 package com.orcchg.javatask.cubes.util;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import com.orcchg.javatask.cubes.struct.Cube;
 
@@ -64,6 +66,14 @@ public class Util {
       ++i;
     }
     return true;
+  }
+  
+  public static boolean mapContentIsEmpty(Map<Integer, List<LinkedList<Cube>>> map) {
+    int total = 0;
+    for (Map.Entry<Integer, List<LinkedList<Cube>>> entry : map.entrySet()) {
+      total += entry.getValue().size();
+    }
+    return (total == 0);
   }
   
   /* Private methods */
