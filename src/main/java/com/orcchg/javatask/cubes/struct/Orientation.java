@@ -1,10 +1,22 @@
 package com.orcchg.javatask.cubes.struct;
 
 public enum Orientation implements Cloneable {
-  UP, DOWN, RIGHT, LEFT;
+  UP("UP"), DOWN("DOWN"), RIGHT("RIGHT"), LEFT("LEFT");
   
   public static Orientation[] entries = values();  // to avoid unnecessary instances
   public static final int size = entries.length;
+  
+  private final String text;
+  
+  private Orientation(final String text) {
+    this.text = text;
+  }
+  
+  // --------------------------------------------------------------------------
+  @Override
+  public String toString() {
+    return text;
+  }
   
   public static class Feature {
     private final Orientation mOrientation;
@@ -53,6 +65,17 @@ public enum Orientation implements Cloneable {
     
     public boolean isMirrored() {
       return mIsMirrored;
+    }
+    
+    @Override
+    public String toString() {
+      StringBuilder builder = new StringBuilder();
+      builder.append(mOrientation)
+             .append(":")
+             .append(mIsReversed)
+             .append(":")
+             .append(mIsMirrored);
+      return builder.toString();
     }
   }
   

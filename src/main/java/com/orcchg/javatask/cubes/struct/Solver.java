@@ -189,10 +189,12 @@ public class Solver {
           
           ring_segment.add(valid_lhs_cube);
           ring_segment.add(valid_rhs_cube);
-          //combination.remove((Object) lhs_cube.getID());
           combination_to_remove.add(lhs_cube.getID());
-          //combination.remove((Object) rhs_cube.getID());
           combination_to_remove.add(rhs_cube.getID());
+          
+          System.out.print("ORIENT [" + orientation_pair[0] + "|" + orientation_pair[1] +
+                           "]\nVALID [" + valid_orientation[0] + "|" + valid_orientation[1] + "]\n");
+          System.out.println(ringToString(ring_segment));
           
           List<Integer> rest_combination = Util.cloneArrayList(combination);
           rest_combination.removeAll(combination_to_remove);
@@ -227,7 +229,6 @@ public class Solver {
                 }
                 
                 ring_segment.add(valid_rest_cube);
-                //combination.remove((Object) rest_cube_id);
                 combination_to_remove.add(rest_cube_id);
                 break rest_two_puzzles;
               } else {
@@ -263,7 +264,6 @@ public class Solver {
                   }
                   
                   ring_segment.addFirst(valid_rest_cube);
-                  //combination.remove((Object) rest_cube_id);
                   combination_to_remove.add(rest_cube_id);
                   break rest_two_puzzles;
                 } else {
@@ -316,7 +316,6 @@ public class Solver {
               }
               
               ring_segment.add(valid_last_cube);
-              //combination.remove((Object) last_puzzle_id);
               combination_to_remove.add(last_puzzle_id);
               break;
             } else {
@@ -353,7 +352,6 @@ public class Solver {
                 }
                 
                 ring_segment.addFirst(valid_last_cube);
-                //combination.remove((Object) last_puzzle_id);
                 combination_to_remove.add(last_puzzle_id);
                 break;
               } else {
@@ -371,9 +369,6 @@ public class Solver {
           } else {
             // last piece has been found
             if (ring_segment.size() == 4 && combination_to_remove.size() == 4) {
-              
-              System.out.println(ringToString(ring_segment));
-              
               if (isSegmentARing(ring_segment)) {
                 // we have got a ring! one ring to rule them all...
                 collect_rings.add(ring_segment);
@@ -835,7 +830,7 @@ public class Solver {
   private String ringToString(final List<Cube> ring) {
     StringBuilder string = new StringBuilder();
     
-    for (int i = 3; i >= 0; --i) {
+    for (int i = ring.size() - 1; i >= 0; --i) {
       string.append(ring.get(i).getSide(Orientation.UP)).append("\n");
       
       for (int j = 1; j <= 3; ++j) {
