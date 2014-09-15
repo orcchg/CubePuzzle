@@ -76,6 +76,15 @@ public class Util {
     return (total == 0);
   }
   
+  public static String printIDs(List<Cube> cubes) {
+    StringBuilder string = new StringBuilder();
+    for (Cube cube : cubes) {
+      string.append(cube.getID()).append(" ");
+    }
+    string.append("\n");
+    return string.toString();
+  }
+  
   /* Private methods */
   // --------------------------------------------------------------------------
   private static List<List<Integer>> processSubsets(int[] set, int k) {

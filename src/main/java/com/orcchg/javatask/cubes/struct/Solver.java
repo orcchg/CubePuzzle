@@ -420,10 +420,11 @@ public class Solver {
                 Cube candidate_cube = new Cube(cube);
                 if (mirrored) {
                   candidate_cube.mirror();
-                  candidate_cube.setOrientation(Orientation.mirror(valid_orientation.getOrientation()));
+                  //candidate_cube.setOrientation(Orientation.mirror(valid_orientation.getOrientation()));
                 } else {
-                  candidate_cube.setOrientation(valid_orientation.getOrientation());
+                  //candidate_cube.setOrientation(valid_orientation.getOrientation());
                 }
+                candidate_cube.setOrientation(valid_orientation.getOrientation());
                 
                 boolean try_one   = match(ring.get(id == 3 ? 2 : 3), Orientation.LEFT, candidate_cube, Orientation.DOWN);
                 boolean try_two   = match(ring.get(id == 3 ? 0 : 1), Orientation.LEFT, candidate_cube, Orientation.UP);
@@ -463,10 +464,11 @@ public class Solver {
                       Cube last_candidate_cube = new Cube(last_cube);
                       if (last_mirrored) {
                         last_candidate_cube.mirror();
-                        last_candidate_cube.setOrientation(Orientation.mirror(local_valid_orientation.getOrientation()));
+                        //last_candidate_cube.setOrientation(Orientation.mirror(local_valid_orientation.getOrientation()));
                       } else {
-                        last_candidate_cube.setOrientation(local_valid_orientation.getOrientation());
+                        //last_candidate_cube.setOrientation(local_valid_orientation.getOrientation());
                       }
+                      last_candidate_cube.setOrientation(local_valid_orientation.getOrientation());
                       
                       boolean success_two   = match(ring.get(id == 3 ? 2 : 3), Orientation.RIGHT, last_candidate_cube, Orientation.DOWN);
                       boolean success_three = match(ring.get(id == 3 ? 0 : 1), Orientation.RIGHT, last_candidate_cube, Orientation.UP);
@@ -481,7 +483,7 @@ public class Solver {
                         }
                         answerT.add(candidate_cube);
                         answerT.add(last_candidate_cube);
-                        mUnfoldedT.add(answerT);
+                        mUnfoldedT.add(answerT); 
                       }
                     } else {
                       ++subcounter;
@@ -533,10 +535,11 @@ public class Solver {
                 Cube candidate_cube = new Cube(cube);
                 if (mirrored) {
                   candidate_cube.mirror();
-                  candidate_cube.setOrientation(Orientation.mirror(valid_orientation.getOrientation()));
+                  //candidate_cube.setOrientation(Orientation.mirror(valid_orientation.getOrientation()));
                 } else {
-                  candidate_cube.setOrientation(valid_orientation.getOrientation());
+                  //candidate_cube.setOrientation(valid_orientation.getOrientation());
                 }
+                candidate_cube.setOrientation(valid_orientation.getOrientation());
 
                 boolean try_one   = match(ring.get(id == 3 ? 2 : 3), Orientation.RIGHT, candidate_cube, Orientation.DOWN);
                 boolean try_two   = match(ring.get(id == 3 ? 0 : 1), Orientation.RIGHT, candidate_cube, Orientation.UP);
@@ -576,10 +579,11 @@ public class Solver {
                       Cube last_candidate_cube = new Cube(last_cube);
                       if (last_mirrored) {
                         last_candidate_cube.mirror();
-                        last_candidate_cube.setOrientation(Orientation.mirror(local_valid_orientation.getOrientation()));
+                        //last_candidate_cube.setOrientation(Orientation.mirror(local_valid_orientation.getOrientation()));
                       } else {
-                        last_candidate_cube.setOrientation(local_valid_orientation.getOrientation());
+                        //last_candidate_cube.setOrientation(local_valid_orientation.getOrientation());
                       }
+                      last_candidate_cube.setOrientation(local_valid_orientation.getOrientation());
 
                       boolean success_two   = match(ring.get(id == 3 ? 2 : 3), Orientation.LEFT, last_candidate_cube, Orientation.DOWN);
                       boolean success_three = match(ring.get(id == 3 ? 0 : 1), Orientation.LEFT, last_candidate_cube, Orientation.UP);
@@ -911,6 +915,46 @@ public class Solver {
     return true;
   }
   
+  private boolean isUnfoldedTValid(final List<Cube> cubes) {
+    LinkedList<Cube> ring = new LinkedList<>();
+    ring.addAll(cubes.subList(0, 4));
+    boolean segment_valid = isSegmentValid(ring) && isSegmentARing(ring);
+    
+    boolean left_right = match(cubes.get(4), Orientation.RIGHT, cubes.get(3), Orientation.LEFT);
+    boolean left_down = matchReversed(cubes.get(4), Orientation.DOWN, cubes.get(2), Orientation.LEFT);
+    boolean left_up = match(cubes.get(4), Orientation.UP, cubes.get(0), Orientation.LEFT);
+    boolean left_left = matchReversed(cubes.get(4), Orientation.LEFT, cubes.get(1), Orientation.LEFT);
+    boolean left = left_right && left_down && left_up && left_left;
+    
+    boolean right_left = match(cubes.get(5), Orientation.LEFT, cubes.get(3), Orientation.RIGHT);
+    boolean right_down = match(cubes.get(5), Orientation.DOWN, cubes.get(2), Orientation.RIGHT);
+    boolean right_up = matchReversed(cubes.get(5), Orientation.UP, cubes.get(0), Orientation.RIGHT);
+    boolean right_right = matchReversed(cubes.get(5), Orientation.RIGHT, cubes.get(1), Orientation.RIGHT);
+    boolean right = right_left && right_down && right_up && right_right;
+    
+    return segment_valid && left && right;
+  }
+  
+  private boolean isUnfoldedXValid(final List<Cube> cubes) {
+    LinkedList<Cube> ring = new LinkedList<>();
+    ring.addAll(cubes.subList(0, 4));
+    boolean segment_valid = isSegmentValid(ring) && isSegmentARing(ring);
+    
+    boolean left_right = match(cubes.get(4), Orientation.RIGHT, cubes.get(2), Orientation.LEFT);
+    boolean left_down = match(cubes.get(4), Orientation.DOWN, cubes.get(1), Orientation.LEFT);
+    boolean left_up = matchReversed(cubes.get(4), Orientation.UP, cubes.get(3), Orientation.LEFT);
+    boolean left_left = matchReversed(cubes.get(4), Orientation.LEFT, cubes.get(0), Orientation.LEFT);
+    boolean left = left_right && left_down && left_up && left_left;
+    
+    boolean right_left = match(cubes.get(5), Orientation.LEFT, cubes.get(2), Orientation.RIGHT);
+    boolean right_down = match(cubes.get(5), Orientation.DOWN, cubes.get(1), Orientation.RIGHT);
+    boolean right_up = matchReversed(cubes.get(5), Orientation.UP, cubes.get(3), Orientation.RIGHT);
+    boolean right_right = matchReversed(cubes.get(5), Orientation.RIGHT, cubes.get(0), Orientation.RIGHT);
+    boolean right = right_left && right_down && right_up && right_right;
+    
+    return segment_valid && left && right;
+  }
+  
   private List<List<Cube>> removeDuplicates(List<List<Cube>> list) {
     Set<List<Cube>> unique_list = new TreeSet<>(
         new Comparator<List<Cube>>() {
@@ -978,6 +1022,7 @@ public class Solver {
   // --------------------------------------------------------------------------
   private String unfoldedTtoString(final List<Cube> cubes) {
     StringBuilder solution = new StringBuilder();
+    solution.append(Util.printIDs(cubes)).append("------------------\n  VALID: " + isUnfoldedTValid(cubes) + "\n");
     
     solution.append(cubes.get(4).getSide(Orientation.UP))
             .append(cubes.get(3).getSide(Orientation.UP))
@@ -1017,6 +1062,7 @@ public class Solver {
   // --------------------------------------------------------------------------
   private String unfoldedXtoString(final List<Cube> cubes) {
     StringBuilder solution = new StringBuilder();
+    solution.append(Util.printIDs(cubes)).append("------------------\n  VALID: " + isUnfoldedXValid(cubes) + "\n");
     
     solution.append("     ").append(cubes.get(3).getSide(Orientation.UP)).append("     ").append("\n");
     
