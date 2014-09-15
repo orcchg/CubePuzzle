@@ -209,14 +209,29 @@ public class Solver {
                 boolean reversed = matchReversed(ring_segment.get(0), Orientation.DOWN, rest_cube, orientation);
                 boolean mirrored = Orientation.makeMirrored(Orientation.DOWN, orientation, direct, reversed);
                 
-                // XXX:
+                Orientation.Feature valid_orientation_local = null;
+                switch (orientation) {
+                  case UP:
+                    valid_orientation_local = new Orientation.Feature.Builder().setOrientation(Orientation.UP).build();
+                    break;
+                  case DOWN:
+                    valid_orientation_local = new Orientation.Feature.Builder().setOrientation(Orientation.DOWN).setReversed(true).build();
+                    break;
+                  case RIGHT:
+                    valid_orientation_local = new Orientation.Feature.Builder().setOrientation(Orientation.LEFT).build();
+                    break;
+                  case LEFT:
+                    valid_orientation_local = new Orientation.Feature.Builder().setOrientation(Orientation.RIGHT).setReversed(true).build();
+                    break;
+                }
+                
                 if (direct || reversed) {
                   Cube valid_rest_cube = new Cube(rest_cube);
                   if (mirrored) {
                     valid_rest_cube.mirror();
-                    valid_rest_cube.setOrientation(Orientation.mirror(orientation));
+                    valid_rest_cube.setOrientation(Orientation.mirror(valid_orientation_local.getOrientation()));
                   } else {
-                    valid_rest_cube.setOrientation(orientation);
+                    valid_rest_cube.setOrientation(valid_orientation_local.getOrientation());
                   }
                   
                   ring_segment.addFirst(valid_rest_cube);
@@ -239,7 +254,6 @@ public class Solver {
             continue orientations_loop;
           }
           // ------------------------------------------------------------------
-
           
           List<Integer> last_combination = Util.cloneArrayList(combination);
           last_combination.removeAll(combination_to_remove);
@@ -258,7 +272,7 @@ public class Solver {
             
             if (direct || reversed) {
               Cube valid_last_cube = new Cube(last_cube);
-              if (valid_orientation_local[1].isMirrored()) {
+              if (mirrored) {
                 valid_last_cube.mirror();
                 valid_last_cube.setOrientation(Orientation.mirror(valid_orientation_local[1].getOrientation()));
               } else {
@@ -282,17 +296,30 @@ public class Solver {
               boolean direct = match(ring_segment.get(0), Orientation.DOWN, last_cube, orientation);
               boolean reversed = matchReversed(ring_segment.get(0), Orientation.DOWN, last_cube, orientation);
               boolean mirrored = Orientation.makeMirrored(Orientation.DOWN, orientation, direct, reversed);
-              Orientation.Feature[] valid_orientation_local = Orientation.getValidOrientation(Orientation.DOWN, orientation);
-              valid_orientation_local[1].setMirrored(mirrored);
               
-              // XXX:
+              Orientation.Feature valid_orientation_local = null;
+              switch (orientation) {
+                case UP:
+                  valid_orientation_local = new Orientation.Feature.Builder().setOrientation(Orientation.UP).build();
+                  break;
+                case DOWN:
+                  valid_orientation_local = new Orientation.Feature.Builder().setOrientation(Orientation.DOWN).setReversed(true).build();
+                  break;
+                case RIGHT:
+                  valid_orientation_local = new Orientation.Feature.Builder().setOrientation(Orientation.LEFT).build();
+                  break;
+                case LEFT:
+                  valid_orientation_local = new Orientation.Feature.Builder().setOrientation(Orientation.RIGHT).setReversed(true).build();
+                  break;
+              }
+
               if (direct || reversed) {
                 Cube valid_last_cube = new Cube(last_cube);
-                if (valid_orientation_local[1].isMirrored()) {
+                if (mirrored) {
                   valid_last_cube.mirror();
-                  valid_last_cube.setOrientation(Orientation.mirror(valid_orientation_local[1].getOrientation()));
+                  valid_last_cube.setOrientation(Orientation.mirror(valid_orientation_local.getOrientation()));
                 } else {
-                  valid_last_cube.setOrientation(valid_orientation_local[1].getOrientation());
+                  valid_last_cube.setOrientation(valid_orientation_local.getOrientation());
                 }
                 
                 ring_segment.addFirst(valid_last_cube);
@@ -314,7 +341,7 @@ public class Solver {
           } else {
             // last piece has been found
             if (ring_segment.size() == 4 && combination_to_remove.size() == 4) {
-              if (isSegmentARing(ring_segment)) {
+              if (isSegmentARing(ring_segment) && isSegmentValid(ring_segment)) {
                 // we have got a ring! one ring to rule them all...
                 collect_rings.add(ring_segment);
               }
@@ -729,6 +756,16 @@ public class Solver {
   // --------------------------------------------------------------------------
   private boolean isSegmentARing(final LinkedList<Cube> segment) {
     return match(segment.get(0), Orientation.DOWN, segment.get(segment.size() - 1), Orientation.UP);
+  }
+  
+  private boolean isSegmentValid(final LinkedList<Cube> segment) {
+    for (int i = 0; i + 1 < segment.size(); ++i) {
+      boolean result = match(segment.get(i), Orientation.UP, segment.get(i + 1), Orientation.DOWN);
+      if (!result) {
+        return false;
+      }
+    }
+    return true;
   }
   
   private List<List<Cube>> removeDuplicates(List<List<Cube>> list) {
