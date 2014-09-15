@@ -158,21 +158,30 @@ public class Solver {
 
           Cube lhs_cube = mCubes.get(pair.get(0));
           Cube rhs_cube = mCubes.get(pair.get(1));
-          Orientation[] valid_orientation = Orientation.getValidOrientation(orientation_pair[0], orientation_pair[1]);
+          Orientation.Feature[] valid_orientation = Orientation.getValidOrientation(orientation_pair[0], orientation_pair[1]);
           
           Cube valid_lhs_cube = new Cube(lhs_cube);
-          if (valid_orientation[0].mirror) {
+          if (valid_orientation[0].isMirrored()) {
             valid_lhs_cube.mirror();
           }
-          valid_lhs_cube.setOrientation(valid_orientation[0]);
+          valid_lhs_cube.setOrientation(valid_orientation[0].getOrientation());
           
           Cube valid_rhs_cube = new Cube(rhs_cube);
-          if (valid_orientation[1].mirror) {
+          if (valid_orientation[1].isMirrored()) {
             valid_rhs_cube.mirror();
           }
-          valid_rhs_cube.setOrientation(valid_orientation[1]);
+          valid_rhs_cube.setOrientation(valid_orientation[1].getOrientation());
           
-          boolean check = match(valid_lhs_cube, valid_orientation[0], valid_rhs_cube, valid_orientation[1]);
+          boolean check = false;
+          if (valid_orientation[0].isReversed() && !valid_orientation[1].isReversed()) {
+            check = matchReversed(valid_rhs_cube, valid_orientation[1].getOrientation(), valid_lhs_cube, valid_orientation[0].getOrientation());
+          } else if (!valid_orientation[0].isReversed() && valid_orientation[1].isReversed()) {
+            check = matchReversed(valid_lhs_cube, valid_orientation[0].getOrientation(), valid_rhs_cube, valid_orientation[1].getOrientation());
+          } else if (!valid_orientation[0].isReversed() && !valid_orientation[1].isReversed()) {
+            check = match(valid_lhs_cube, valid_orientation[0].getOrientation(), valid_rhs_cube, valid_orientation[1].getOrientation());
+          } else {
+            throw new RuntimeException("Magic error: more than one orientations are reversed!");
+          }
           if (!check) {
             // wrong actual matching - continue with other orientation
             continue orientations_loop;
@@ -196,16 +205,21 @@ public class Solver {
               Cube rest_cube = mCubes.get(rest_cube_id);
               boolean result = match(ring_segment.get(1), Orientation.UP, rest_cube, orientation);
               boolean another_result = matchReversed(ring_segment.get(1), Orientation.UP, rest_cube, orientation);
-              Orientation[] valid_orientation_local = Orientation.getValidOrientation(Orientation.UP, orientation);
+              Orientation.Feature[] valid_orientation_local = Orientation.getValidOrientation(Orientation.UP, orientation);
               
               if (result || another_result) {
                 Cube valid_rest_cube = new Cube(rest_cube);
-                if (valid_orientation_local[1].mirror) {
+                if (valid_orientation_local[1].isMirrored()) {
                   valid_rest_cube.mirror();
                 }
-                valid_rest_cube.setOrientation(valid_orientation_local[1]);
+                valid_rest_cube.setOrientation(valid_orientation_local[1].getOrientation());
                 
-                boolean check_three = match(ring_segment.get(1), Orientation.UP, valid_rest_cube, valid_orientation_local[1]);
+                boolean check_three = false;
+                if (valid_orientation_local[1].isReversed()) {
+                  check_three = matchReversed(ring_segment.get(1), Orientation.UP, valid_rest_cube, valid_orientation_local[1].getOrientation());
+                } else {
+                  check_three = match(ring_segment.get(1), Orientation.UP, valid_rest_cube, valid_orientation_local[1].getOrientation());
+                }
                 if (!check_three) {
                   // wrong actual matching - continue with other orientation
                   ++not_matched_counter;
@@ -227,16 +241,21 @@ public class Solver {
                 Cube rest_cube = mCubes.get(rest_cube_id);
                 boolean result = match(ring_segment.get(0), Orientation.DOWN, rest_cube, orientation);
                 boolean another_result = matchReversed(ring_segment.get(0), Orientation.DOWN, rest_cube, orientation);
-                Orientation[] valid_orientation_local = Orientation.getValidOrientation(Orientation.DOWN, orientation);
+                Orientation.Feature[] valid_orientation_local = Orientation.getValidOrientation(Orientation.DOWN, orientation);
                 
                 if (result || another_result) {
                   Cube valid_rest_cube = new Cube(rest_cube);
-                  if (valid_orientation_local[1].mirror) {
+                  if (valid_orientation_local[1].isMirrored()) {
                     valid_rest_cube.mirror();
                   }
-                  valid_rest_cube.setOrientation(valid_orientation_local[1]);
+                  valid_rest_cube.setOrientation(valid_orientation_local[1].getOrientation());
                   
-                  boolean check_three = match(ring_segment.get(0), Orientation.DOWN, valid_rest_cube, valid_orientation_local[1]);
+                  boolean check_three = false;
+                  if (valid_orientation_local[1].isReversed()) {
+                    check_three = matchReversed(ring_segment.get(0), Orientation.DOWN, valid_rest_cube, valid_orientation_local[1].getOrientation());
+                  } else {
+                    check_three = match(ring_segment.get(0), Orientation.DOWN, valid_rest_cube, valid_orientation_local[1].getOrientation());
+                  }
                   if (!check_three) {
                     // wrong actual matching - continue with other orientation
                     ++not_matched_counter;
@@ -247,6 +266,8 @@ public class Solver {
                   //combination.remove((Object) rest_cube_id);
                   combination_to_remove.add(rest_cube_id);
                   break rest_two_puzzles;
+                } else {
+                  // no-op
                 }
               }
             }
@@ -273,16 +294,21 @@ public class Solver {
             Cube last_cube = mCubes.get(last_puzzle_id);
             boolean result = match(ring_segment.get(2), Orientation.UP, last_cube, orientation);
             boolean another_result = matchReversed(ring_segment.get(2), Orientation.UP, last_cube, orientation);
-            Orientation[] valid_orientation_local = Orientation.getValidOrientation(Orientation.UP, orientation);
+            Orientation.Feature[] valid_orientation_local = Orientation.getValidOrientation(Orientation.UP, orientation);
             
             if (result || another_result) {
               Cube valid_last_cube = new Cube(last_cube);
-              if (valid_orientation_local[1].mirror) {
+              if (valid_orientation_local[1].isMirrored()) {
                 valid_last_cube.mirror();
               }
-              valid_last_cube.setOrientation(valid_orientation_local[1]);
+              valid_last_cube.setOrientation(valid_orientation_local[1].getOrientation());
               
-              boolean check_last = match(ring_segment.get(2), Orientation.UP, valid_last_cube, valid_orientation_local[1]);
+              boolean check_last = false;
+              if (valid_orientation_local[1].isReversed()) {
+                check_last = matchReversed(ring_segment.get(2), Orientation.UP, valid_last_cube, valid_orientation_local[1].getOrientation());
+              } else {
+                check_last = match(ring_segment.get(2), Orientation.UP, valid_last_cube, valid_orientation_local[1].getOrientation());
+              }
               if (!check_last) {
                 // wrong actual matching - continue with other orientation
                 ++not_matched_counter;
@@ -305,16 +331,21 @@ public class Solver {
               Cube last_cube = mCubes.get(last_puzzle_id);
               boolean result = match(ring_segment.get(0), Orientation.DOWN, last_cube, orientation);
               boolean another_result = matchReversed(ring_segment.get(0), Orientation.DOWN, last_cube, orientation);
-              Orientation[] valid_orientation_local = Orientation.getValidOrientation(Orientation.DOWN, orientation);
+              Orientation.Feature[] valid_orientation_local = Orientation.getValidOrientation(Orientation.DOWN, orientation);
               
               if (result || another_result) {
                 Cube valid_last_cube = new Cube(last_cube);
-                if (valid_orientation_local[1].mirror) {
+                if (valid_orientation_local[1].isMirrored()) {
                   valid_last_cube.mirror();
                 }
-                valid_last_cube.setOrientation(valid_orientation_local[1]);
+                valid_last_cube.setOrientation(valid_orientation_local[1].getOrientation());
                 
-                boolean check_last = match(ring_segment.get(0), Orientation.DOWN, valid_last_cube, valid_orientation_local[1]);
+                boolean check_last = false;
+                if (valid_orientation_local[1].isReversed()) {
+                  check_last = matchReversed(ring_segment.get(0), Orientation.DOWN, valid_last_cube, valid_orientation_local[1].getOrientation());
+                } else {
+                  check_last = match(ring_segment.get(0), Orientation.DOWN, valid_last_cube, valid_orientation_local[1].getOrientation());
+                }
                 if (!check_last) {
                   // wrong actual matching - continue with other orientation
                   ++not_matched_counter;
@@ -382,16 +413,16 @@ public class Solver {
             orientation_loop: for (Orientation orientation : Orientation.entries) {
               boolean result = match(ring.get(id), Orientation.LEFT, cube, orientation);
               boolean another_result = matchReversed(ring.get(id), Orientation.LEFT, cube, orientation);
-              Orientation[] valid_orientation = Orientation.getValidOrientation(Orientation.LEFT, orientation);
+              Orientation.Feature[] valid_orientation = Orientation.getValidOrientation(Orientation.LEFT, orientation);
               
               if (result || another_result) {
-                Cube candidate_cube = cube.getOriented(valid_orientation[1]);
+                Cube candidate_cube = cube.getOriented(valid_orientation[1].getOrientation());
                 
-                boolean check = match(ring.get(id), Orientation.LEFT, candidate_cube, valid_orientation[1]);
-                if (!check) {
-                  // wrong actual matching - continue with other orientation
-                  continue orientation_loop;
-                }
+//                boolean check = match(ring.get(id), Orientation.LEFT, candidate_cube, valid_orientation[1]);
+//                if (!check) {
+//                  // wrong actual matching - continue with other orientation
+//                  continue orientation_loop;
+//                }
                 
                 boolean try_one   = match(ring.get(id == 3 ? 2 : 3), Orientation.LEFT, candidate_cube, Orientation.DOWN);
                 boolean try_two   = match(ring.get(id == 3 ? 0 : 1), Orientation.LEFT, candidate_cube, Orientation.UP);
@@ -409,17 +440,17 @@ public class Solver {
                   last_orientation_loop: for (Orientation last_orientation : Orientation.entries) {
                     boolean success_one = match(ring.get(id), Orientation.RIGHT, last_cube, last_orientation);
                     boolean another_success_one = matchReversed(ring.get(id), Orientation.RIGHT, last_cube, last_orientation);
-                    Orientation[] local_valid_orientation = Orientation.getValidOrientation(Orientation.RIGHT, last_orientation);
+                    Orientation.Feature[] local_valid_orientation = Orientation.getValidOrientation(Orientation.RIGHT, last_orientation);
                     
                     if (success_one || another_success_one) {
-                      Cube last_candidate_cube = last_cube.getOriented(local_valid_orientation[1]);
+                      Cube last_candidate_cube = last_cube.getOriented(local_valid_orientation[1].getOrientation());
                       
-                      boolean last_check = match(ring.get(id), Orientation.RIGHT, last_candidate_cube, local_valid_orientation[1]);
-                      if (!last_check) {
-                         // wrong actual matching - continue with other orientation
-                        ++subcounter;
-                        continue last_orientation_loop;
-                      }
+//                      boolean last_check = match(ring.get(id), Orientation.RIGHT, last_candidate_cube, local_valid_orientation[1]);
+//                      if (!last_check) {
+//                         // wrong actual matching - continue with other orientation
+//                        ++subcounter;
+//                        continue last_orientation_loop;
+//                      }
                       
                       boolean success_two   = match(ring.get(id == 3 ? 2 : 3), Orientation.RIGHT, last_candidate_cube, Orientation.DOWN);
                       boolean success_three = match(ring.get(id == 3 ? 0 : 1), Orientation.RIGHT, last_candidate_cube, Orientation.UP);
@@ -463,16 +494,16 @@ public class Solver {
             orientation_loop: for (Orientation orientation : Orientation.entries) {
               boolean result = match(ring.get(id), Orientation.RIGHT, cube, orientation);
               boolean another_result = matchReversed(ring.get(id), Orientation.RIGHT, cube, orientation);
-              Orientation[] valid_orientation = Orientation.getValidOrientation(Orientation.RIGHT, orientation);
+              Orientation.Feature[] valid_orientation = Orientation.getValidOrientation(Orientation.RIGHT, orientation);
               
               if (result || another_result) {
-                Cube candidate_cube = cube.getOriented(valid_orientation[1]);
+                Cube candidate_cube = cube.getOriented(valid_orientation[1].getOrientation());
                 
-                boolean check = match(ring.get(id), Orientation.RIGHT, candidate_cube, valid_orientation[1]);
-                if (!check) {
-                  // wrong actual matching - continue with other orientation
-                  continue orientation_loop;
-                }
+//                boolean check = match(ring.get(id), Orientation.RIGHT, candidate_cube, valid_orientation[1]);
+//                if (!check) {
+//                  // wrong actual matching - continue with other orientation
+//                  continue orientation_loop;
+//                }
                 
                 boolean try_one   = match(ring.get(id == 3 ? 2 : 3), Orientation.RIGHT, candidate_cube, Orientation.DOWN);
                 boolean try_two   = match(ring.get(id == 3 ? 0 : 1), Orientation.RIGHT, candidate_cube, Orientation.UP);
@@ -490,12 +521,12 @@ public class Solver {
                   last_orientation_loop: for (Orientation last_orientation : Orientation.entries) {
                     boolean success_one = match(ring.get(id), Orientation.LEFT, last_cube, last_orientation);
                     boolean another_success_one = matchReversed(ring.get(id), Orientation.LEFT, last_cube, last_orientation);
-                    Orientation[] local_valid_orientation = Orientation.getValidOrientation(Orientation.LEFT, last_orientation);
+                    Orientation.Feature[] local_valid_orientation = Orientation.getValidOrientation(Orientation.LEFT, last_orientation);
                     
                     if (success_one || another_success_one) {
-                      Cube last_candidate_cube = last_cube.getOriented(local_valid_orientation[1]);
+                      Cube last_candidate_cube = last_cube.getOriented(local_valid_orientation[1].getOrientation());
                       
-//                      boolean last_check = match(ring.get(id), Orientation.LEFT, last_candidate_cube, local_valid_orientation[1]);
+//                      boolean last_check = match(ring.get(id), Orientation.LEFT, last_candidate_cube, local_valid_orientation[1]); 
 //                      if (!last_check) {
 //                        // wrong actual matching - continue with other orientation
 //                        ++subcounter;
@@ -554,16 +585,16 @@ public class Solver {
             orientation_loop: for (Orientation orientation : Orientation.entries) {
               boolean result = match(ring.get(id), Orientation.LEFT, cube, orientation);
               boolean another_result = match(ring.get(id), Orientation.LEFT, cube, orientation);
-              Orientation[] valid_orientation = Orientation.getValidOrientation(Orientation.LEFT, orientation);
+              Orientation.Feature[] valid_orientation = Orientation.getValidOrientation(Orientation.LEFT, orientation);
               
               if (result || another_result) {
-                Cube candidate_cube = cube.getOriented(valid_orientation[1]);
+                Cube candidate_cube = cube.getOriented(valid_orientation[1].getOrientation());
                 
-                boolean check = match(ring.get(id), Orientation.LEFT, candidate_cube, valid_orientation[1]);
-                if (!check) {
-                  // wrong actual matching - continue with other orientation
-                  continue orientation_loop;
-                }
+//                boolean check = match(ring.get(id), Orientation.LEFT, candidate_cube, valid_orientation[1]);
+//                if (!check) {
+//                  // wrong actual matching - continue with other orientation
+//                  continue orientation_loop;
+//                }
                 
                 boolean try_one   = match(ring.get(id == 2 ? 1 : 0), Orientation.LEFT, candidate_cube, Orientation.DOWN);
                 boolean try_two   = match(ring.get(id == 2 ? 3 : 2), Orientation.LEFT, candidate_cube, Orientation.UP);
@@ -581,17 +612,17 @@ public class Solver {
                   last_orientation_loop: for (Orientation last_orientation : Orientation.entries) {
                     boolean success_one = match(ring.get(id), Orientation.RIGHT, last_cube, last_orientation);
                     boolean another_success_one = match(ring.get(id), Orientation.RIGHT, last_cube, last_orientation);
-                    Orientation[] local_valid_orientation = Orientation.getValidOrientation(Orientation.RIGHT, last_orientation);
+                    Orientation.Feature[] local_valid_orientation = Orientation.getValidOrientation(Orientation.RIGHT, last_orientation);
                     
                     if (success_one || another_success_one) {
-                      Cube last_candidate_cube = last_cube.getOriented(local_valid_orientation[1]);
+                      Cube last_candidate_cube = last_cube.getOriented(local_valid_orientation[1].getOrientation());
                       
-                      boolean last_check = match(ring.get(id), Orientation.RIGHT, last_candidate_cube, local_valid_orientation[1]);
-                      if (!last_check) {
-                        // wrong actual matching - continue with other orientation
-                        ++subcounter;
-                        continue last_orientation_loop;
-                      }
+//                      boolean last_check = match(ring.get(id), Orientation.RIGHT, last_candidate_cube, local_valid_orientation[1]);
+//                      if (!last_check) {
+//                        // wrong actual matching - continue with other orientation
+//                        ++subcounter;
+//                        continue last_orientation_loop;
+//                      }
                       
                       boolean success_two   = match(ring.get(id == 2 ? 1 : 0), Orientation.RIGHT, last_candidate_cube, Orientation.DOWN);
                       boolean success_three = match(ring.get(id == 2 ? 3 : 2), Orientation.RIGHT, last_candidate_cube, Orientation.UP);
@@ -635,16 +666,16 @@ public class Solver {
             orientation_loop: for (Orientation orientation : Orientation.entries) {
               boolean result = match(ring.get(id), Orientation.RIGHT, cube, orientation);
               boolean another_result = matchReversed(ring.get(id), Orientation.RIGHT, cube, orientation);
-              Orientation[] valid_orientation = Orientation.getValidOrientation(Orientation.RIGHT, orientation);
+              Orientation.Feature[] valid_orientation = Orientation.getValidOrientation(Orientation.RIGHT, orientation);
               
               if (result || another_result) {
-                Cube candidate_cube = cube.getOriented(valid_orientation[1]);
+                Cube candidate_cube = cube.getOriented(valid_orientation[1].getOrientation());
                 
-                boolean check = match(ring.get(id), Orientation.RIGHT, candidate_cube, valid_orientation[1]);
-                if (!check) {
-                  // wrong actual matching - continue with other orientation
-                  continue orientation_loop;
-                }
+//                boolean check = match(ring.get(id), Orientation.RIGHT, candidate_cube, valid_orientation[1]);
+//                if (!check) {
+//                  // wrong actual matching - continue with other orientation
+//                  continue orientation_loop;
+//                }
                 
                 boolean try_one   = match(ring.get(id == 2 ? 1 : 0), Orientation.RIGHT, candidate_cube, Orientation.DOWN);
                 boolean try_two   = match(ring.get(id == 2 ? 3 : 2), Orientation.RIGHT, candidate_cube, Orientation.UP);
@@ -662,17 +693,17 @@ public class Solver {
                   last_orientation_loop: for (Orientation last_orientation : Orientation.entries) {
                     boolean success_one = match(ring.get(id), Orientation.LEFT, last_cube, last_orientation);
                     boolean another_success_one = match(ring.get(id), Orientation.LEFT, last_cube, last_orientation);
-                    Orientation[] local_valid_orientation = Orientation.getValidOrientation(Orientation.LEFT, last_orientation);
+                    Orientation.Feature[] local_valid_orientation = Orientation.getValidOrientation(Orientation.LEFT, last_orientation);
                     
                     if (success_one || another_success_one) {
-                      Cube last_candidate_cube = last_cube.getOriented(local_valid_orientation[1]);
+                      Cube last_candidate_cube = last_cube.getOriented(local_valid_orientation[1].getOrientation());
                       
-                      boolean last_check = match(ring.get(id), Orientation.LEFT, last_candidate_cube, local_valid_orientation[1]);
-                      if (!last_check) {
-                        // wrong actual matching - continue with other orientation
-                        ++subcounter;
-                        continue last_orientation_loop;
-                      }
+//                      boolean last_check = match(ring.get(id), Orientation.LEFT, last_candidate_cube, local_valid_orientation[1]);
+//                      if (!last_check) {
+//                        // wrong actual matching - continue with other orientation
+//                        ++subcounter;
+//                        continue last_orientation_loop;
+//                      }
                       
                       boolean success_two   = match(ring.get(id == 2 ? 1 : 0), Orientation.LEFT, last_candidate_cube, Orientation.DOWN);
                       boolean success_three = match(ring.get(id == 2 ? 3 : 2), Orientation.LEFT, last_candidate_cube, Orientation.UP);
