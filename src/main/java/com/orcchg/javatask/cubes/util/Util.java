@@ -49,6 +49,10 @@ public class Util {
     return clone;
   }
   
+  public static boolean xor(boolean A, boolean B) {
+    return ((A && !B) || (!A && B));
+  }
+  
   /* Private methods */
   // --------------------------------------------------------------------------
   //private List<List<Integer>> combinations = new ArrayList<>();

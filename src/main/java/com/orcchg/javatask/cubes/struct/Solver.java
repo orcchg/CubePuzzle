@@ -114,11 +114,11 @@ public class Solver {
 
         for (Orientation lhs : Orientation.entries) {
           for (Orientation rhs : Orientation.entries) {
-            Cube lhs_cube = mCubes.get(pair.get(0));
-            Cube rhs_cube = mCubes.get(pair.get(1));
+            Cube lhs_cube = new Cube(mCubes.get(pair.get(0)));
+            Cube rhs_cube = new Cube(mCubes.get(pair.get(1)));
             boolean result = match(lhs_cube, lhs, rhs_cube, rhs);
             boolean another_result = matchReversed(lhs_cube, lhs, rhs_cube, rhs);
-            if (result || another_result) {
+            if (Util.xor(result, another_result)) {
               Orientation[] orientation_pair = new Orientation[]{lhs, rhs};
               orientation_pairs.add(orientation_pair);
             }
@@ -156,8 +156,8 @@ public class Solver {
           // ring segment
           LinkedList<Cube> ring_segment = new LinkedList<>();  // vertical straight line of 4 adjacent pieces
 
-          Cube lhs_cube = mCubes.get(pair.get(0));
-          Cube rhs_cube = mCubes.get(pair.get(1));
+          Cube lhs_cube = new Cube(mCubes.get(pair.get(0)));
+          Cube rhs_cube = new Cube(mCubes.get(pair.get(1)));
           Orientation.Feature[] valid_orientation = Orientation.getValidOrientation(orientation_pair[0], orientation_pair[1]);
           
           Cube valid_lhs_cube = new Cube(lhs_cube);
@@ -202,7 +202,7 @@ public class Solver {
           rest_two_puzzles: for (int rest_cube_id : rest_combination) {
             int not_matched_counter = 0;
             for (Orientation orientation : Orientation.entries) {
-              Cube rest_cube = mCubes.get(rest_cube_id);
+              Cube rest_cube = new Cube(mCubes.get(rest_cube_id));
               boolean result = match(ring_segment.get(1), Orientation.UP, rest_cube, orientation);
               boolean another_result = matchReversed(ring_segment.get(1), Orientation.UP, rest_cube, orientation);
               Orientation.Feature[] valid_orientation_local = Orientation.getValidOrientation(Orientation.UP, orientation);
@@ -238,7 +238,7 @@ public class Solver {
             if (not_matched_counter == Orientation.size) {
               // try another side
               for (Orientation orientation : Orientation.entries) {
-                Cube rest_cube = mCubes.get(rest_cube_id);
+                Cube rest_cube = new Cube(mCubes.get(rest_cube_id));
                 boolean result = match(ring_segment.get(0), Orientation.DOWN, rest_cube, orientation);
                 boolean another_result = matchReversed(ring_segment.get(0), Orientation.DOWN, rest_cube, orientation);
                 Orientation.Feature[] valid_orientation_local = Orientation.getValidOrientation(Orientation.DOWN, orientation);
@@ -291,7 +291,7 @@ public class Solver {
           int last_puzzle_id = last_combination.get(0);
           int not_matched_counter = 0;
           for (Orientation orientation : Orientation.entries) {
-            Cube last_cube = mCubes.get(last_puzzle_id);
+            Cube last_cube = new Cube(mCubes.get(last_puzzle_id));
             boolean result = match(ring_segment.get(2), Orientation.UP, last_cube, orientation);
             boolean another_result = matchReversed(ring_segment.get(2), Orientation.UP, last_cube, orientation);
             Orientation.Feature[] valid_orientation_local = Orientation.getValidOrientation(Orientation.UP, orientation);
@@ -328,7 +328,7 @@ public class Solver {
             not_matched_counter = 0;
             // try another side
             for (Orientation orientation : Orientation.entries) {
-              Cube last_cube = mCubes.get(last_puzzle_id);
+              Cube last_cube = new Cube(mCubes.get(last_puzzle_id));
               boolean result = match(ring_segment.get(0), Orientation.DOWN, last_cube, orientation);
               boolean another_result = matchReversed(ring_segment.get(0), Orientation.DOWN, last_cube, orientation);
               Orientation.Feature[] valid_orientation_local = Orientation.getValidOrientation(Orientation.DOWN, orientation);
@@ -371,6 +371,9 @@ public class Solver {
           } else {
             // last piece has been found
             if (ring_segment.size() == 4 && combination_to_remove.size() == 4) {
+              
+              System.out.println(ringToString(ring_segment));
+              
               if (isSegmentARing(ring_segment)) {
                 // we have got a ring! one ring to rule them all...
                 collect_rings.add(ring_segment);
@@ -531,7 +534,7 @@ public class Solver {
 //                        // wrong actual matching - continue with other orientation
 //                        ++subcounter;
 //                        continue last_orientation_loop;
-//                      }  // TODO : fix
+//                      }
                       
                       boolean success_two   = match(ring.get(id == 3 ? 2 : 3), Orientation.LEFT, last_candidate_cube, Orientation.DOWN);
                       boolean success_three = match(ring.get(id == 3 ? 0 : 1), Orientation.LEFT, last_candidate_cube, Orientation.UP);
@@ -828,6 +831,26 @@ public class Solver {
     return result;
   }
   
+  // --------------------------------------------------------------------------
+  private String ringToString(final List<Cube> ring) {
+    StringBuilder string = new StringBuilder();
+    
+    for (int i = 3; i >= 0; --i) {
+      string.append(ring.get(i).getSide(Orientation.UP)).append("\n");
+      
+      for (int j = 1; j <= 3; ++j) {
+        string.append(ring.get(i).getSide(Orientation.LEFT).cells[j].toChar()).append("ooo")
+              .append(ring.get(i).getSide(Orientation.RIGHT).cells[j].toChar()).append("\n");
+      }
+      
+      string.append(ring.get(i).getSide(Orientation.DOWN)).append("\n");
+    }
+    
+    string.append("\n");
+    return string.toString();
+  }
+  
+  // --------------------------------------------------------------------------
   private String unfoldedTtoString(final List<Cube> cubes) {
     StringBuilder solution = new StringBuilder();
     
@@ -866,6 +889,7 @@ public class Solver {
     return solution.toString();
   }
   
+  // --------------------------------------------------------------------------
   private String unfoldedXtoString(final List<Cube> cubes) {
     StringBuilder solution = new StringBuilder();
     
