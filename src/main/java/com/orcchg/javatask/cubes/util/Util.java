@@ -3,6 +3,8 @@ package com.orcchg.javatask.cubes.util;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.orcchg.javatask.cubes.struct.Cube;
+
 public class Util {
   public static List<List<Integer>> allConjunctions(final List<Integer> list, int length) {
     if (list.size() < length) {
@@ -51,6 +53,17 @@ public class Util {
   
   public static boolean xor(boolean A, boolean B) {
     return ((A && !B) || (!A && B));
+  }
+  
+  public static boolean sameIds(int[] ids, List<Cube> ring) {
+    int i = 0;
+    for (Cube cube : ring) {
+      if (ids[i] != cube.getID()) {
+        return false;
+      }
+      ++i;
+    }
+    return true;
   }
   
   /* Private methods */

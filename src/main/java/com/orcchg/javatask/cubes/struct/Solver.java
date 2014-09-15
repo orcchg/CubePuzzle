@@ -208,19 +208,38 @@ public class Solver {
                 boolean direct = match(ring_segment.get(0), Orientation.DOWN, rest_cube, orientation);
                 boolean reversed = matchReversed(ring_segment.get(0), Orientation.DOWN, rest_cube, orientation);
                 boolean mirrored = Orientation.makeMirrored(Orientation.DOWN, orientation, direct, reversed);
-                Orientation.Feature[] valid_orientation_local = Orientation.getValidOrientation(Orientation.DOWN, orientation);
-                valid_orientation_local[1].setMirrored(mirrored);
+                //Orientation.Feature[] valid_orientation_local = Orientation.getValidOrientation(Orientation.DOWN, orientation);
+                //valid_orientation_local[1].setMirrored(mirrored);
+                
+                if (rest_cube.getID() == 3 && ring_segment.get(0).getID() == 2) {
+                System.out.println("-------------------------------------------");
+                System.out.println(ring_segment.get(0));
+                System.out.println(rest_cube);
+                }
                 
                 if (direct || reversed) {
                   Cube valid_rest_cube = new Cube(rest_cube);
-                  if (valid_orientation_local[1].isMirrored()) {
+                  if (mirrored) {
                     valid_rest_cube.mirror();
-                    valid_rest_cube.setOrientation(Orientation.mirror(valid_orientation_local[1].getOrientation()));
+                    valid_rest_cube.setOrientation(Orientation.mirror(orientation));
                   } else {
-                    valid_rest_cube.setOrientation(valid_orientation_local[1].getOrientation());
+                    valid_rest_cube.setOrientation(orientation);
+                  }
+                  
+                  if (rest_cube.getID() == 3 && ring_segment.get(0).getID() == 2) {
+                  System.out.print("IDS: [" + lhs_cube.getID() + "|" + rhs_cube.getID() +
+                  "]\nSIDES [" + Orientation.DOWN + "|" + orientation +
+                  "]\nVALID [" + Orientation.DOWN + "|" + orientation + "]\n" +
+                  "ACTUAL [" + valid_lhs_cube.getOrientation() + "__" + valid_rhs_cube.getOrientation() + "]\n");
+                  System.out.println("+++++");
                   }
                   
                   ring_segment.addFirst(valid_rest_cube);
+                  
+                  if (rest_cube.getID() == 3 && ring_segment.get(1).getID() == 2) {
+                    System.out.println(ringToString(ring_segment));
+                  }
+                  
                   combination_to_remove.add(rest_cube_id);
                   break rest_two_puzzles;
                   
@@ -240,8 +259,6 @@ public class Solver {
             continue orientations_loop;
           }
           // ------------------------------------------------------------------
-          
-          System.out.println(ringToString(ring_segment));
           
           List<Integer> last_combination = Util.cloneArrayList(combination);
           last_combination.removeAll(combination_to_remove);
