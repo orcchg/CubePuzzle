@@ -175,11 +175,9 @@ public class Solver {
           Cube rhs_cube = new Cube(mCubes.get(pair.get(1)));
           Orientation.Feature[] valid_orientation = Orientation.getValidOrientation(orientation_pair[0].getOrientation(), orientation_pair[1].getOrientation());
           
-          if (lhs_cube.getID() == 1 && rhs_cube.getID() == 5) {
           System.out.println("-------------------------------------------");
           System.out.println(lhs_cube);
           System.out.println(rhs_cube);
-          }
           
           Cube valid_lhs_cube = new Cube(lhs_cube);
           if (orientation_pair[0].isMirrored()) {
@@ -192,22 +190,17 @@ public class Solver {
           Cube valid_rhs_cube = new Cube(rhs_cube);
           if (orientation_pair[1].isMirrored()) {
             valid_rhs_cube.mirror();
-            if (lhs_cube.getID() == 1 && rhs_cube.getID() == 5) {
             System.out.println("mir");
             System.out.println(valid_rhs_cube);
-            }
             valid_rhs_cube.setOrientation(Orientation.mirror(valid_orientation[1].getOrientation()));
-            if (lhs_cube.getID() == 1 && rhs_cube.getID() == 5) {
-            System.out.println(valid_rhs_cube);
             System.out.println("rot " + valid_rhs_cube.getOrientation());
-            }
+            System.out.println(valid_rhs_cube);
           } else {
             valid_rhs_cube.setOrientation(valid_orientation[1].getOrientation());
           }
           
-          if (lhs_cube.getID() == 1 && rhs_cube.getID() == 5) {
           System.out.print("IDS: [" + lhs_cube.getID() + "|" + rhs_cube.getID() +
-              "]\nORIENT [" + orientation_pair[0] + "|" + orientation_pair[1] +
+              "]\nSIDES [" + orientation_pair[0] + "|" + orientation_pair[1] +
               "]\nVALID [" + valid_orientation[0] + "|" + valid_orientation[1] + "]\n" +
               "ACTUAL [" + valid_lhs_cube.getOrientation() + "__" + valid_rhs_cube.getOrientation() + "]\n");
           System.out.println("+++++");
@@ -215,7 +208,6 @@ public class Solver {
           System.out.println(valid_lhs_cube);
           System.out.println(valid_rhs_cube);
           System.out.println("###############");
-          }
 //          boolean check = false;
 //          if (valid_orientation[0].isReversed() && !valid_orientation[1].isReversed()) {
 //            check = matchReversed(valid_rhs_cube, valid_orientation[1].getOrientation(), valid_lhs_cube, valid_orientation[0].getOrientation());
@@ -235,9 +227,8 @@ public class Solver {
           ring_segment.add(valid_rhs_cube);
           combination_to_remove.add(lhs_cube.getID());
           combination_to_remove.add(rhs_cube.getID());
-          if (lhs_cube.getID() == 1 && rhs_cube.getID() == 5) {
+          
           System.out.println(ringToString(ring_segment));
-          }
           
           List<Integer> rest_combination = Util.cloneArrayList(combination);
           rest_combination.removeAll(combination_to_remove);
