@@ -21,7 +21,7 @@ public enum Orientation implements Cloneable {
   public static class Feature {
     private final Orientation mOrientation;
     private final boolean mIsReversed;
-    private final boolean mIsMirrored;
+    private boolean mIsMirrored;
     
     public Feature(final Builder builder) {
       mOrientation = builder.mOrientation;
@@ -67,6 +67,10 @@ public enum Orientation implements Cloneable {
       return mIsMirrored;
     }
     
+    public void setMirrored(boolean flag) {
+      mIsMirrored = flag;
+    }
+    
     @Override
     public String toString() {
       StringBuilder builder = new StringBuilder();
@@ -77,6 +81,262 @@ public enum Orientation implements Cloneable {
              .append(mIsMirrored);
       return builder.toString();
     }
+  }
+  
+  /**
+   * @brief Transforms side while rotating cube from UP to 'rotation' orientation
+   */
+  public Feature transform(final Orientation side, final Orientation rotation) {
+    switch (side) {
+      case UP:
+        switch (rotation) {
+          case UP:
+            return new Feature.Builder().setOrientation(Orientation.UP).build();
+          case DOWN:
+            return new Feature.Builder().setOrientation(Orientation.DOWN).setReversed(true).build();
+          case RIGHT:
+            return new Feature.Builder().setOrientation(Orientation.RIGHT).build();
+          case LEFT:
+            return new Feature.Builder().setOrientation(Orientation.LEFT).setReversed(true).build();
+        }
+        break;
+      case DOWN:
+        switch (rotation) {
+          case UP:
+            return new Feature.Builder().setOrientation(Orientation.DOWN).build();
+          case DOWN:
+            return new Feature.Builder().setOrientation(Orientation.UP).setReversed(true).build();
+          case RIGHT:
+            return new Feature.Builder().setOrientation(Orientation.LEFT).build();
+          case LEFT:
+            return new Feature.Builder().setOrientation(Orientation.RIGHT).setReversed(true).build();
+        }
+        break;
+      case RIGHT:
+        switch (rotation) {
+          case UP:
+            return new Feature.Builder().setOrientation(Orientation.RIGHT).build();
+          case DOWN:
+            return new Feature.Builder().setOrientation(Orientation.LEFT).setReversed(true).build();
+          case RIGHT:
+            return new Feature.Builder().setOrientation(Orientation.DOWN).setReversed(true).build();
+          case LEFT:
+            return new Feature.Builder().setOrientation(Orientation.UP).build();
+        }
+        break;
+      case LEFT:
+        switch (rotation) {
+          case UP:
+            return new Feature.Builder().setOrientation(Orientation.LEFT).build();
+          case DOWN:
+            return new Feature.Builder().setOrientation(Orientation.RIGHT).setReversed(true).build();
+          case RIGHT:
+            return new Feature.Builder().setOrientation(Orientation.UP).setReversed(true).build();
+          case LEFT:
+            return new Feature.Builder().setOrientation(Orientation.DOWN).build();
+        }
+        break;
+    }
+    return null;
+  }
+  
+  public static Orientation mirror(final Orientation orientation) {
+    switch (orientation) {
+      case UP:
+      case DOWN:
+        return orientation;
+      case RIGHT:
+        return Orientation.LEFT;
+      case LEFT:
+        return Orientation.RIGHT;
+    }
+    return null;
+  }
+  
+  public static boolean makeMirrored(Orientation lhs, Orientation rhs, boolean direct, boolean reversed) {
+    if (lhs == Orientation.UP && rhs == Orientation.UP) {
+      if (direct && reversed) {
+        return false;
+      } else if (direct) {
+        return true;
+      } else if (reversed) {
+        return false;
+      } else {
+        return false;
+      }
+    }
+    if (lhs == Orientation.UP && rhs == Orientation.DOWN) {
+      if (direct && reversed) {
+        return false;
+      } else if (direct) {
+        return false;
+      } else if (reversed) {
+        return true;
+      } else {
+        return false;
+      }
+    }
+    if (lhs == Orientation.UP && rhs == Orientation.RIGHT) {
+      if (direct && reversed) {
+        return false;
+      } else if (direct) {
+        return true;
+      } else if (reversed) {
+        return false;
+      } else {
+        return false;
+      }
+    }
+    if (lhs == Orientation.UP && rhs == Orientation.LEFT) {
+      if (direct && reversed) {
+        return false;
+      } else if (direct) {
+        return false;
+      } else if (reversed) {
+        return true;
+      } else {
+        return false;
+      }
+    }
+    
+    // ------------------------------------------------------------------------
+    if (lhs == Orientation.DOWN && rhs == Orientation.UP) {
+      if (direct && reversed) {
+        return false;
+      } else if (direct) {
+        return false;
+      } else if (reversed) {
+        return true;
+      } else {
+        return false;
+      }
+    }
+    if (lhs == Orientation.DOWN && rhs == Orientation.DOWN) {
+      if (direct && reversed) {
+        return false;
+      } else if (direct) {
+        return true;
+      } else if (reversed) {
+        return false;
+      } else {
+        return false;
+      }
+    }
+    if (lhs == Orientation.DOWN && rhs == Orientation.RIGHT) {
+      if (direct && reversed) {
+        return false;
+      } else if (direct) {
+        return false;
+      } else if (reversed) {
+        return true;
+      } else {
+        return false;
+      }
+    }
+    if (lhs == Orientation.DOWN && rhs == Orientation.LEFT) {
+      if (direct && reversed) {
+        return false;
+      } else if (direct) {
+        return true;
+      } else if (reversed) {
+        return false;
+      } else {
+        return false;
+      }
+    }
+    
+    // ------------------------------------------------------------------------
+    if (lhs == Orientation.RIGHT && rhs == Orientation.UP) {
+      if (direct && reversed) {
+        return false;
+      } else if (direct) {
+        return true;
+      } else if (reversed) {
+        return false;
+      } else {
+        return false;
+      }
+    }
+    if (lhs == Orientation.RIGHT && rhs == Orientation.DOWN) {
+      if (direct && reversed) {
+        return false;
+      } else if (direct) {
+        return false;
+      } else if (reversed) {
+        return true;
+      } else {
+        return false;
+      }
+    }
+    if (lhs == Orientation.RIGHT && rhs == Orientation.RIGHT) {
+      if (direct && reversed) {
+        return false;
+      } else if (direct) {
+        return true;
+      } else if (reversed) {
+        return false;
+      } else {
+        return false;
+      }
+    }
+    if (lhs == Orientation.RIGHT && rhs == Orientation.LEFT) {
+      if (direct && reversed) {
+        return false;
+      } else if (direct) {
+        return false;
+      } else if (reversed) {
+        return true;
+      } else {
+        return false;
+      }
+    }
+    
+    // ------------------------------------------------------------------------
+    if (lhs == Orientation.LEFT && rhs == Orientation.UP) {
+      if (direct && reversed) {
+        return false;
+      } else if (direct) {
+        return false;
+      } else if (reversed) {
+        return true;
+      } else {
+        return false;
+      }
+    }
+    if (lhs == Orientation.LEFT && rhs == Orientation.DOWN) {
+      if (direct && reversed) {
+        return false;
+      } else if (direct) {
+        return true;
+      } else if (reversed) {
+        return false;
+      } else {
+        return false;
+      }
+    }
+    if (lhs == Orientation.LEFT && rhs == Orientation.RIGHT) {
+      if (direct && reversed) {
+        return false;
+      } else if (direct) {
+        return false;
+      } else if (reversed) {
+        return true;
+      } else {
+        return false;
+      }
+    }
+    if (lhs == Orientation.LEFT && rhs == Orientation.LEFT) {
+      if (direct && reversed) {
+        return false;
+      } else if (direct) {
+        return true;
+      } else if (reversed) {
+        return false;
+      } else {
+        return false;
+      }
+    }
+    return false;
   }
   
   public static Feature[] getValidOrientation(Orientation lhs, Orientation rhs) {

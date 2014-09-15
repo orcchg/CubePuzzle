@@ -190,6 +190,20 @@ public class Cube {
     mSides[1] = mTemp[1].clone().reverse();
     mSides[2] = mTemp[3].clone();
     mSides[3] = mTemp[2].clone();
+    backup();
+    
+    switch (mOrientation) {
+      case UP:
+      case DOWN:
+        break;
+      case RIGHT:
+        mOrientation = Orientation.LEFT;
+        break;
+      case LEFT:
+        mOrientation = Orientation.RIGHT;
+        break;
+    }
+    
     return this;
   }
   

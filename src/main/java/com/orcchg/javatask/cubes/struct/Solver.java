@@ -110,16 +110,31 @@ public class Solver {
       // try two puzzles in all possible orientations and get any
       smallcomb_2: for (List<Integer> pair : smallcomb) {
         // get all possible combinations between two pieces
-        List<Orientation[]> orientation_pairs = new ArrayList<>();
+        List<Orientation.Feature[]> orientation_pairs = new ArrayList<>();
 
         for (Orientation lhs : Orientation.entries) {
           for (Orientation rhs : Orientation.entries) {
             Cube lhs_cube = new Cube(mCubes.get(pair.get(0)));
             Cube rhs_cube = new Cube(mCubes.get(pair.get(1)));
-            boolean result = match(lhs_cube, lhs, rhs_cube, rhs);
-            boolean another_result = matchReversed(lhs_cube, lhs, rhs_cube, rhs);
-            if (Util.xor(result, another_result)) {
-              Orientation[] orientation_pair = new Orientation[]{lhs, rhs};
+            boolean direct = match(lhs_cube, lhs, rhs_cube, rhs);
+            boolean reversed = matchReversed(lhs_cube, lhs, rhs_cube, rhs);
+            
+            boolean mirrored = Orientation.makeMirrored(lhs, rhs, direct, reversed);
+            
+            if (direct) {
+              Orientation.Feature[] orientation_pair = new Orientation.Feature[2];
+              Orientation.Feature lhs_feature = new Orientation.Feature.Builder().setOrientation(lhs).build();
+              Orientation.Feature rhs_feature = new Orientation.Feature.Builder().setOrientation(rhs).setMirrored(mirrored).build();
+              orientation_pair[0] = lhs_feature;
+              orientation_pair[1] = rhs_feature;
+              orientation_pairs.add(orientation_pair);
+            }
+            if (reversed) {
+              Orientation.Feature[] orientation_pair = new Orientation.Feature[2];
+              Orientation.Feature lhs_feature = new Orientation.Feature.Builder().setOrientation(lhs).build();
+              Orientation.Feature rhs_feature = new Orientation.Feature.Builder().setOrientation(rhs).setReversed(true).setMirrored(mirrored).build();
+              orientation_pair[0] = lhs_feature;
+              orientation_pair[1] = rhs_feature;
               orientation_pairs.add(orientation_pair);
             }
             
@@ -152,49 +167,77 @@ public class Solver {
           }
         }
 
-        orientations_loop: for (Orientation[] orientation_pair : orientation_pairs) {
+        orientations_loop: for (Orientation.Feature[] orientation_pair : orientation_pairs) {
           // ring segment
           LinkedList<Cube> ring_segment = new LinkedList<>();  // vertical straight line of 4 adjacent pieces
 
           Cube lhs_cube = new Cube(mCubes.get(pair.get(0)));
           Cube rhs_cube = new Cube(mCubes.get(pair.get(1)));
-          Orientation.Feature[] valid_orientation = Orientation.getValidOrientation(orientation_pair[0], orientation_pair[1]);
+          Orientation.Feature[] valid_orientation = Orientation.getValidOrientation(orientation_pair[0].getOrientation(), orientation_pair[1].getOrientation());
+          
+          if (lhs_cube.getID() == 1 && rhs_cube.getID() == 5) {
+          System.out.println("-------------------------------------------");
+          System.out.println(lhs_cube);
+          System.out.println(rhs_cube);
+          }
           
           Cube valid_lhs_cube = new Cube(lhs_cube);
-          if (valid_orientation[0].isMirrored()) {
+          if (orientation_pair[0].isMirrored()) {
             valid_lhs_cube.mirror();
+            valid_lhs_cube.setOrientation(Orientation.mirror(valid_orientation[0].getOrientation()));
+          } else {
+            valid_lhs_cube.setOrientation(valid_orientation[0].getOrientation());
           }
-          valid_lhs_cube.setOrientation(valid_orientation[0].getOrientation());
           
           Cube valid_rhs_cube = new Cube(rhs_cube);
-          if (valid_orientation[1].isMirrored()) {
+          if (orientation_pair[1].isMirrored()) {
             valid_rhs_cube.mirror();
-          }
-          valid_rhs_cube.setOrientation(valid_orientation[1].getOrientation());
-          
-          boolean check = false;
-          if (valid_orientation[0].isReversed() && !valid_orientation[1].isReversed()) {
-            check = matchReversed(valid_rhs_cube, valid_orientation[1].getOrientation(), valid_lhs_cube, valid_orientation[0].getOrientation());
-          } else if (!valid_orientation[0].isReversed() && valid_orientation[1].isReversed()) {
-            check = matchReversed(valid_lhs_cube, valid_orientation[0].getOrientation(), valid_rhs_cube, valid_orientation[1].getOrientation());
-          } else if (!valid_orientation[0].isReversed() && !valid_orientation[1].isReversed()) {
-            check = match(valid_lhs_cube, valid_orientation[0].getOrientation(), valid_rhs_cube, valid_orientation[1].getOrientation());
+            if (lhs_cube.getID() == 1 && rhs_cube.getID() == 5) {
+            System.out.println("mir");
+            System.out.println(valid_rhs_cube);
+            }
+            valid_rhs_cube.setOrientation(Orientation.mirror(valid_orientation[1].getOrientation()));
+            if (lhs_cube.getID() == 1 && rhs_cube.getID() == 5) {
+            System.out.println(valid_rhs_cube);
+            System.out.println("rot " + valid_rhs_cube.getOrientation());
+            }
           } else {
-            throw new RuntimeException("Magic error: more than one orientations are reversed!");
+            valid_rhs_cube.setOrientation(valid_orientation[1].getOrientation());
           }
-          if (!check) {
-            // wrong actual matching - continue with other orientation
-            continue orientations_loop;
+          
+          if (lhs_cube.getID() == 1 && rhs_cube.getID() == 5) {
+          System.out.print("IDS: [" + lhs_cube.getID() + "|" + rhs_cube.getID() +
+              "]\nORIENT [" + orientation_pair[0] + "|" + orientation_pair[1] +
+              "]\nVALID [" + valid_orientation[0] + "|" + valid_orientation[1] + "]\n" +
+              "ACTUAL [" + valid_lhs_cube.getOrientation() + "__" + valid_rhs_cube.getOrientation() + "]\n");
+          System.out.println("+++++");
+          
+          System.out.println(valid_lhs_cube);
+          System.out.println(valid_rhs_cube);
+          System.out.println("###############");
           }
+//          boolean check = false;
+//          if (valid_orientation[0].isReversed() && !valid_orientation[1].isReversed()) {
+//            check = matchReversed(valid_rhs_cube, valid_orientation[1].getOrientation(), valid_lhs_cube, valid_orientation[0].getOrientation());
+//          } else if (!valid_orientation[0].isReversed() && valid_orientation[1].isReversed()) {
+//            check = matchReversed(valid_lhs_cube, valid_orientation[0].getOrientation(), valid_rhs_cube, valid_orientation[1].getOrientation());
+//          } else if (!valid_orientation[0].isReversed() && !valid_orientation[1].isReversed()) {
+//            check = match(valid_lhs_cube, valid_orientation[0].getOrientation(), valid_rhs_cube, valid_orientation[1].getOrientation());
+//          } else {
+//            throw new RuntimeException("Magic error: more than one orientations are reversed!");
+//          }
+//          if (!check) {
+//            // wrong actual matching - continue with other orientation
+//            continue orientations_loop;
+//          }
           
           ring_segment.add(valid_lhs_cube);
           ring_segment.add(valid_rhs_cube);
           combination_to_remove.add(lhs_cube.getID());
           combination_to_remove.add(rhs_cube.getID());
-          
-          System.out.print("ORIENT [" + orientation_pair[0] + "|" + orientation_pair[1] +
-                           "]\nVALID [" + valid_orientation[0] + "|" + valid_orientation[1] + "]\n");
+          if (lhs_cube.getID() == 1 && rhs_cube.getID() == 5) {
           System.out.println(ringToString(ring_segment));
+          }
           
           List<Integer> rest_combination = Util.cloneArrayList(combination);
           rest_combination.removeAll(combination_to_remove);
