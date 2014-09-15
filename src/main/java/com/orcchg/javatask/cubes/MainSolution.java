@@ -59,7 +59,7 @@ public class MainSolution {
 //    System.out.println("OR: " + c.getOrientation());
     
     instance.mSolver.solve();
-    System.out.println(instance.mSolver.getSolution());
+    //System.out.println(instance.mSolver.getSolution());
     System.out.println(instance.mSolver.totalUnfoldedT() + " ^^^ " + instance.mSolver.totalUnfoldedX());
   }
 
