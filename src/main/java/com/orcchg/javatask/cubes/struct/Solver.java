@@ -182,12 +182,6 @@ public class Solver {
               boolean mirrored = Orientation.makeMirrored(Orientation.UP, orientation, direct, reversed);
               Orientation.Feature[] valid_orientation_local = Orientation.getValidOrientation(Orientation.UP, orientation);
               valid_orientation_local[1].setMirrored(mirrored);
- 
-              if (rest_cube.getID() == 2 && ring_segment.get(1).getID() == 5) {
-              System.out.println("-------------------------------------------");
-              System.out.println(ring_segment.get(1));
-              System.out.println(rest_cube);
-              }
               
               if (direct || reversed) {
                 Cube valid_rest_cube = new Cube(rest_cube);
@@ -199,12 +193,6 @@ public class Solver {
                 }
                 
                 ring_segment.add(valid_rest_cube);
-                
-                if (rest_cube.getID() == 2 && ring_segment.get(1).getID() == 5) {
-                System.out.println("OR: " + orientation + " actual: " + valid_rest_cube.getOrientation() + " mirror: " + mirrored);
-                System.out.println(ringToString(ring_segment));
-                }
-                
                 combination_to_remove.add(rest_cube_id);
                 break rest_two_puzzles;
                 
@@ -221,6 +209,7 @@ public class Solver {
                 boolean reversed = matchReversed(ring_segment.get(0), Orientation.DOWN, rest_cube, orientation);
                 boolean mirrored = Orientation.makeMirrored(Orientation.DOWN, orientation, direct, reversed);
                 
+                // XXX:
                 if (direct || reversed) {
                   Cube valid_rest_cube = new Cube(rest_cube);
                   if (mirrored) {
@@ -296,6 +285,7 @@ public class Solver {
               Orientation.Feature[] valid_orientation_local = Orientation.getValidOrientation(Orientation.DOWN, orientation);
               valid_orientation_local[1].setMirrored(mirrored);
               
+              // XXX:
               if (direct || reversed) {
                 Cube valid_last_cube = new Cube(last_cube);
                 if (valid_orientation_local[1].isMirrored()) {
