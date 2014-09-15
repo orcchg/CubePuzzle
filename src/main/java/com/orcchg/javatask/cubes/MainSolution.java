@@ -32,34 +32,9 @@ public class MainSolution {
     }
     MainSolution instance = new MainSolution();
     instance.readCubes(args[0]);
-
-//    System.out.println(Solver.matchReversed(instance.mSolver.getCube(0), Orientation.RIGHT, instance.mSolver.getCube(1), Orientation.LEFT));
-//    System.out.println(Solver.matchReversed(instance.mSolver.getCube(1), Orientation.RIGHT, instance.mSolver.getCube(2), Orientation.LEFT));
-//    System.out.println(Solver.matchReversed(instance.mSolver.getCube(0), Orientation.DOWN, instance.mSolver.getCube(3), Orientation.UP));
-//    System.out.println(Solver.matchReversed(instance.mSolver.getCube(1), Orientation.DOWN, instance.mSolver.getCube(4), Orientation.UP));
-//    System.out.println(Solver.matchReversed(instance.mSolver.getCube(2), Orientation.DOWN, instance.mSolver.getCube(5), Orientation.UP));
-//    System.out.println(Solver.matchReversed(instance.mSolver.getCube(3), Orientation.RIGHT, instance.mSolver.getCube(4), Orientation.LEFT));
-    //System.out.println(Solver.matchReversed(instance.mSolver.getCube(3), Orientation.UP, instance.mSolver.getCube(5), Orientation.DOWN));
-    
-//    for (int i = 0; i < 6; ++i) {
-//      System.out.println(instance.mSolver.getCube(i));
-//      System.out.println();
-//      System.out.println(instance.mSolver.getCube(i).getMirrored());
-//      System.out.println("-------------------");
-//    }
-    
-//    Cube c = new Cube(instance.mSolver.getCube(5));
-//    System.out.println(c);
-//    System.out.println("OR: " + c.getOrientation());
-//    c.mirror();
-//    System.out.println(c);
-//    System.out.println("OR: " + c.getOrientation());
-//    c.setOrientation(Orientation.RIGHT);
-//    System.out.println(c);
-//    System.out.println("OR: " + c.getOrientation());
     
     instance.mSolver.solve();
-    //System.out.println(instance.mSolver.getSolution());
+    System.out.println(instance.mSolver.getSolution());
     System.out.println(instance.mSolver.totalUnfoldedT() + " ^^^ " + instance.mSolver.totalUnfoldedX());
   }
 

@@ -211,7 +211,6 @@ public class Solver {
                 ring_segment.add(valid_rest_cube);
                 int mark_last_cube = restcomb_i == 0 ? 1 : 0;
                 ring_segments.get(rest_combination.get(mark_last_cube)).add(ring_segment);
-                //combination_to_remove.add(rest_cube_id);
               }
             }
             
@@ -253,7 +252,6 @@ public class Solver {
                 ring_segment.addFirst(valid_rest_cube);
                 int mark_last_cube = restcomb_i == 0 ? 1 : 0;
                 ring_segments.get(rest_combination.get(mark_last_cube)).add(ring_segment);
-                //combination_to_remove.add(rest_cube_id);
               }
             }
           }  // rest_two_puzzles loop
@@ -295,7 +293,6 @@ public class Solver {
                   full_ring_segment.addAll(ring_segment);
                   full_ring_segment.add(valid_last_cube);
                   full_ring_segments.get(entry.getKey()).add(full_ring_segment);
-                  //combination_to_remove.add(last_puzzle_id);
                 }
               }
               
@@ -335,7 +332,6 @@ public class Solver {
                   full_ring_segment.addAll(ring_segment);
                   full_ring_segment.addFirst(valid_last_cube);
                   full_ring_segments.get(entry.getKey()).add(full_ring_segment);
-                  //combination_to_remove.add(last_puzzle_id);
                 }
               }
             }  // ring_segment_loop

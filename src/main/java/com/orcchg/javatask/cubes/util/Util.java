@@ -78,8 +78,6 @@ public class Util {
   
   /* Private methods */
   // --------------------------------------------------------------------------
-  //private List<List<Integer>> combinations = new ArrayList<>();
-  
   private static List<List<Integer>> processSubsets(int[] set, int k) {
     int[] subset = new int[k];
     List<List<Integer>> combinations = new ArrayList<>();
