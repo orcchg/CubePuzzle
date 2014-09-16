@@ -202,123 +202,52 @@ public class Solver {
 
           // ------------------------------------------------------------------
           // try to attach third puzzle and get a straight line
-          rest_two_puzzles: for (int restcomb_i = 0; restcomb_i < rest_combination.size(); ++restcomb_i) {
-            int rest_cube_id = rest_combination.get(restcomb_i);
-            
-            for (Orientation orientation : Orientation.entries) {
-              LinkedList<Cube> ring_segment = new LinkedList<>();
-              ring_segment.addAll(common_ring_segment);
+          mirror_loop: for (int mirror_i = 0; mirror_i < 2; ++mirror_i) {
+            rest_two_puzzles: for (int restcomb_i = 0; restcomb_i < rest_combination.size(); ++restcomb_i) {
+              int rest_cube_id = rest_combination.get(restcomb_i);
               
-              Cube rest_cube = new Cube(mCubes.get(rest_cube_id));
-              boolean direct = match(common_ring_segment.get(1), Orientation.UP, rest_cube, orientation);
-              boolean reversed = matchReversed(common_ring_segment.get(1), Orientation.UP, rest_cube, orientation);
-              boolean mirrored = Orientation.makeMirroredVertical(Orientation.UP, orientation, direct, reversed);
-              Orientation.Feature[] valid_orientation_local = Orientation.getValidOrientation(Orientation.UP, orientation);
-              valid_orientation_local[1].setMirrored(mirrored);
-              
-              if (direct || reversed) {
-                Cube valid_rest_cube = new Cube(rest_cube);
-                if (mirrored) {
-                  valid_rest_cube.mirror();
-                  valid_rest_cube.setOrientation(Orientation.mirror(valid_orientation_local[1].getOrientation()));
-                } else {
-                  valid_rest_cube.setOrientation(valid_orientation_local[1].getOrientation());
-                }
-                
-                ring_segment.add(valid_rest_cube);
-                int mark_last_cube = restcomb_i == 0 ? 1 : 0;
-                ring_segments.get(rest_combination.get(mark_last_cube)).add(ring_segment);
-              }
-            }
-            
-            // try another side
-            for (Orientation orientation : Orientation.entries) {
-              LinkedList<Cube> ring_segment = new LinkedList<>();
-              ring_segment.addAll(common_ring_segment);
-              
-              Cube rest_cube = new Cube(mCubes.get(rest_cube_id));
-              boolean direct = match(common_ring_segment.get(0), Orientation.DOWN, rest_cube, orientation);
-              boolean reversed = matchReversed(common_ring_segment.get(0), Orientation.DOWN, rest_cube, orientation);
-              boolean mirrored = Orientation.makeMirroredVertical(Orientation.DOWN, orientation, direct, reversed);
-              
-              Orientation.Feature valid_orientation_local = null;
-              switch (orientation) {
-                case UP:
-                  valid_orientation_local = new Orientation.Feature.Builder().setOrientation(Orientation.UP).build();
-                  break;
-                case DOWN:
-                  valid_orientation_local = new Orientation.Feature.Builder().setOrientation(Orientation.DOWN).setReversed(true).build();
-                  break;
-                case RIGHT:
-                  valid_orientation_local = new Orientation.Feature.Builder().setOrientation(Orientation.LEFT).build();
-                  break;
-                case LEFT:
-                  valid_orientation_local = new Orientation.Feature.Builder().setOrientation(Orientation.RIGHT).setReversed(true).build();
-                  break;
-              }
-              
-              if (direct || reversed) {
-                Cube valid_rest_cube = new Cube(rest_cube);
-                if (mirrored) {
-                  valid_rest_cube.mirror();
-                  valid_rest_cube.setOrientation(Orientation.mirror(valid_orientation_local.getOrientation()));
-                } else {
-                  valid_rest_cube.setOrientation(valid_orientation_local.getOrientation());
-                }
-                
-                ring_segment.addFirst(valid_rest_cube);
-                int mark_last_cube = restcomb_i == 0 ? 1 : 0;
-                ring_segments.get(rest_combination.get(mark_last_cube)).add(ring_segment);
-              }
-            }
-            continue rest_two_puzzles;
-          }  // rest_two_puzzles loop
-          // ------------------------------------------------------------------
-          
-          // ------------------------------------------------------------------
-          if (Util.mapContentIsEmpty(ring_segments)) {
-            // initial pair of puzzles is wrong or its pieces are in invalid orientation
-            // retry with new orientation
-            combination_to_remove.clear();
-            continue orientations_loop;
-          }
-          // ------------------------------------------------------------------
-          
-          // ------------------------------------------------------------------
-          ring_segments_map_loop: for (Map.Entry<Integer, List<LinkedList<Cube>>> entry : ring_segments.entrySet()) {
-            // try to attach last puzzle and get a ring
-            int last_puzzle_id = entry.getKey();
-            
-            ring_segment_loop: for (LinkedList<Cube> ring_segment : entry.getValue()) {
               for (Orientation orientation : Orientation.entries) {
-                Cube last_cube = new Cube(mCubes.get(last_puzzle_id));
-                boolean direct = match(ring_segment.get(2), Orientation.UP, last_cube, orientation);
-                boolean reversed = matchReversed(ring_segment.get(2), Orientation.UP, last_cube, orientation);
+                LinkedList<Cube> ring_segment = new LinkedList<>();
+                ring_segment.addAll(common_ring_segment);
+                
+                Cube rest_cube = new Cube(mCubes.get(rest_cube_id));
+                if (mirror_i == 1) {
+                  rest_cube.mirror();
+                }
+                
+                boolean direct = match(common_ring_segment.get(1), Orientation.UP, rest_cube, orientation);
+                boolean reversed = matchReversed(common_ring_segment.get(1), Orientation.UP, rest_cube, orientation);
                 boolean mirrored = Orientation.makeMirroredVertical(Orientation.UP, orientation, direct, reversed);
                 Orientation.Feature[] valid_orientation_local = Orientation.getValidOrientation(Orientation.UP, orientation);
                 valid_orientation_local[1].setMirrored(mirrored);
                 
                 if (direct || reversed) {
-                  Cube valid_last_cube = new Cube(last_cube);
+                  Cube valid_rest_cube = new Cube(rest_cube);
                   if (mirrored) {
-                    valid_last_cube.mirror();
-                    valid_last_cube.setOrientation(Orientation.mirror(valid_orientation_local[1].getOrientation()));
+                    valid_rest_cube.mirror();
+                    valid_rest_cube.setOrientation(Orientation.mirror(valid_orientation_local[1].getOrientation()));
                   } else {
-                    valid_last_cube.setOrientation(valid_orientation_local[1].getOrientation());
+                    valid_rest_cube.setOrientation(valid_orientation_local[1].getOrientation());
                   }
                   
-                  LinkedList<Cube> full_ring_segment = new LinkedList<>();
-                  full_ring_segment.addAll(ring_segment);
-                  full_ring_segment.add(valid_last_cube);
-                  full_ring_segments.get(entry.getKey()).add(full_ring_segment);
+                  ring_segment.add(valid_rest_cube);
+                  int mark_last_cube = restcomb_i == 0 ? 1 : 0;
+                  ring_segments.get(rest_combination.get(mark_last_cube)).add(ring_segment);
                 }
               }
               
               // try another side
               for (Orientation orientation : Orientation.entries) {
-                Cube last_cube = new Cube(mCubes.get(last_puzzle_id));
-                boolean direct = match(ring_segment.get(0), Orientation.DOWN, last_cube, orientation);
-                boolean reversed = matchReversed(ring_segment.get(0), Orientation.DOWN, last_cube, orientation);
+                LinkedList<Cube> ring_segment = new LinkedList<>();
+                ring_segment.addAll(common_ring_segment);
+                
+                Cube rest_cube = new Cube(mCubes.get(rest_cube_id));
+                if (mirror_i == 1) {
+                  rest_cube.mirror();
+                }
+                
+                boolean direct = match(common_ring_segment.get(0), Orientation.DOWN, rest_cube, orientation);
+                boolean reversed = matchReversed(common_ring_segment.get(0), Orientation.DOWN, rest_cube, orientation);
                 boolean mirrored = Orientation.makeMirroredVertical(Orientation.DOWN, orientation, direct, reversed);
                 
                 Orientation.Feature valid_orientation_local = null;
@@ -336,26 +265,119 @@ public class Solver {
                     valid_orientation_local = new Orientation.Feature.Builder().setOrientation(Orientation.RIGHT).setReversed(true).build();
                     break;
                 }
-  
+                
                 if (direct || reversed) {
-                  Cube valid_last_cube = new Cube(last_cube);
+                  Cube valid_rest_cube = new Cube(rest_cube);
                   if (mirrored) {
-                    valid_last_cube.mirror();
-                    valid_last_cube.setOrientation(Orientation.mirror(valid_orientation_local.getOrientation()));
+                    valid_rest_cube.mirror();
+                    valid_rest_cube.setOrientation(Orientation.mirror(valid_orientation_local.getOrientation()));
                   } else {
-                    valid_last_cube.setOrientation(valid_orientation_local.getOrientation());
+                    valid_rest_cube.setOrientation(valid_orientation_local.getOrientation());
                   }
                   
-                  LinkedList<Cube> full_ring_segment = new LinkedList<>();
-                  full_ring_segment.addAll(ring_segment);
-                  full_ring_segment.addFirst(valid_last_cube);
-                  full_ring_segments.get(entry.getKey()).add(full_ring_segment);
+                  ring_segment.addFirst(valid_rest_cube);
+                  int mark_last_cube = restcomb_i == 0 ? 1 : 0;
+                  ring_segments.get(rest_combination.get(mark_last_cube)).add(ring_segment);
                 }
               }
-              continue ring_segment_loop;
-            }  // ring_segment_loop
-            continue ring_segments_map_loop;
-          }  // ring_segments_map_loop
+              continue rest_two_puzzles;
+            }  // rest_two_puzzles loop
+            continue mirror_loop;
+          }  // mirror_loop
+          // ------------------------------------------------------------------
+          
+          // ------------------------------------------------------------------
+          if (Util.mapContentIsEmpty(ring_segments)) {
+            // initial pair of puzzles is wrong or its pieces are in invalid orientation
+            // retry with new orientation
+            combination_to_remove.clear();
+            continue orientations_loop;
+          }
+          // ------------------------------------------------------------------
+          
+          // ------------------------------------------------------------------
+          last_mirror_loop: for (int mirror_i = 0; mirror_i < 2; ++mirror_i) {
+            ring_segments_map_loop: for (Map.Entry<Integer, List<LinkedList<Cube>>> entry : ring_segments.entrySet()) {
+              // try to attach last puzzle and get a ring
+              int last_puzzle_id = entry.getKey();
+              
+              ring_segment_loop: for (LinkedList<Cube> ring_segment : entry.getValue()) {
+                for (Orientation orientation : Orientation.entries) {
+                  Cube last_cube = new Cube(mCubes.get(last_puzzle_id));
+                  if (mirror_i == 1) {
+                    last_cube.mirror();
+                  }
+                  
+                  boolean direct = match(ring_segment.get(2), Orientation.UP, last_cube, orientation);
+                  boolean reversed = matchReversed(ring_segment.get(2), Orientation.UP, last_cube, orientation);
+                  boolean mirrored = Orientation.makeMirroredVertical(Orientation.UP, orientation, direct, reversed);
+                  Orientation.Feature[] valid_orientation_local = Orientation.getValidOrientation(Orientation.UP, orientation);
+                  valid_orientation_local[1].setMirrored(mirrored);
+                  
+                  if (direct || reversed) {
+                    Cube valid_last_cube = new Cube(last_cube);
+                    if (mirrored) {
+                      valid_last_cube.mirror();
+                      valid_last_cube.setOrientation(Orientation.mirror(valid_orientation_local[1].getOrientation()));
+                    } else {
+                      valid_last_cube.setOrientation(valid_orientation_local[1].getOrientation());
+                    }
+                    
+                    LinkedList<Cube> full_ring_segment = new LinkedList<>();
+                    full_ring_segment.addAll(ring_segment);
+                    full_ring_segment.add(valid_last_cube);
+                    full_ring_segments.get(entry.getKey()).add(full_ring_segment);
+                  }
+                }
+                
+                // try another side
+                for (Orientation orientation : Orientation.entries) {
+                  Cube last_cube = new Cube(mCubes.get(last_puzzle_id));
+                  if (mirror_i == 1) {
+                    last_cube.mirror();
+                  }
+                  
+                  boolean direct = match(ring_segment.get(0), Orientation.DOWN, last_cube, orientation);
+                  boolean reversed = matchReversed(ring_segment.get(0), Orientation.DOWN, last_cube, orientation);
+                  boolean mirrored = Orientation.makeMirroredVertical(Orientation.DOWN, orientation, direct, reversed);
+                  
+                  Orientation.Feature valid_orientation_local = null;
+                  switch (orientation) {
+                    case UP:
+                      valid_orientation_local = new Orientation.Feature.Builder().setOrientation(Orientation.UP).build();
+                      break;
+                    case DOWN:
+                      valid_orientation_local = new Orientation.Feature.Builder().setOrientation(Orientation.DOWN).setReversed(true).build();
+                      break;
+                    case RIGHT:
+                      valid_orientation_local = new Orientation.Feature.Builder().setOrientation(Orientation.LEFT).build();
+                      break;
+                    case LEFT:
+                      valid_orientation_local = new Orientation.Feature.Builder().setOrientation(Orientation.RIGHT).setReversed(true).build();
+                      break;
+                  }
+    
+                  if (direct || reversed) {
+                    Cube valid_last_cube = new Cube(last_cube);
+                    if (mirrored) {
+                      valid_last_cube.mirror();
+                      valid_last_cube.setOrientation(Orientation.mirror(valid_orientation_local.getOrientation()));
+                    } else {
+                      valid_last_cube.setOrientation(valid_orientation_local.getOrientation());
+                    }
+                    
+                    LinkedList<Cube> full_ring_segment = new LinkedList<>();
+                    full_ring_segment.addAll(ring_segment);
+                    full_ring_segment.addFirst(valid_last_cube);
+                    full_ring_segments.get(entry.getKey()).add(full_ring_segment);
+                  }
+                }
+                continue ring_segment_loop;
+              }  // ring_segment_loop
+              continue ring_segments_map_loop;
+            }  // ring_segments_map_loop
+            continue last_mirror_loop;
+          }  // last_mirror_loop
           // ------------------------------------------------------------------
           
           if (Util.mapContentIsEmpty(full_ring_segments)) {
@@ -384,6 +406,13 @@ public class Solver {
         continue smallcomb_2;
       }  // smallcomb_2 loop
       // ----------------------------------------------------------------------
+      
+//      for (LinkedList<Cube> ring : collect_rings) {
+//        if (ring.get(0).getID() == 3 && ring.get(1).getID() == 1 && ring.get(2).getID() == 4 && ring.get(3).getID() == 5) {
+//        System.out.println(Util.printIDs(ring));
+//        System.out.println(ringToString(ring));
+//        }
+//      }
       
       // --------------------------------------------------------------------------------------------------------------
       
