@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.orcchg.javatask.cubes.struct.Cube;
+import com.orcchg.javatask.cubes.struct.Orientation;
 
 public class Util {
   public static List<List<Integer>> allConjunctions(final List<Integer> list, int length) {
@@ -83,6 +84,30 @@ public class Util {
     }
     string.append("\n");
     return string.toString();
+  }
+  
+  public static boolean equal(final Cube lhs, final Cube rhs) {
+    for (Orientation side : Orientation.entries) {
+      if (!lhs.getSide(side).equals(rhs.getSide(side))) {
+        return false;
+      }
+    }
+    return true;
+  }
+  
+  public static boolean equalSegments(final List<Cube> lhs, final List<Cube> rhs) {
+    if (lhs.size() != rhs.size()) {
+      return false;
+    }
+    
+    for (int i = 0; i < lhs.size(); ++i) {
+      Cube lhs_cube = lhs.get(i);
+      Cube rhs_cube = rhs.get(i);
+      if (!equal(lhs_cube, rhs_cube)) {
+        return false;
+      }
+    }
+    return true;
   }
   
   /* Private methods */

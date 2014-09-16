@@ -19,10 +19,42 @@ public class Solver {
   private static class Folding {
     private List<Cube> cubes;
     private boolean isUpper;
+    private Form form;
     
-    Folding(final List<Cube> cubes, boolean isUpper) {
+    private enum Form { T, X };
+    
+    Folding(final List<Cube> cubes, boolean isUpper, Form form) {
       this.cubes = cubes;
       this.isUpper = isUpper;
+      this.form = form;
+    }
+    
+    @Override
+    public int hashCode() {
+      final int prime = 31;
+      int result = 1;
+      result = prime * result + ((cubes == null) ? 0 : cubes.hashCode());
+      result = prime * result + (isUpper ? 1231 : 1237);
+      return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+      if (this == obj)
+        return true;
+      if (obj == null)
+        return false;
+      if (getClass() != obj.getClass())
+        return false;
+      Folding other = (Folding) obj;
+      if (cubes == null) {
+        if (other.cubes != null)
+          return false;
+      } else if (!Util.equalSegments(cubes, other.cubes))
+        return false;
+      if (isUpper != other.isUpper)
+        return false;
+      return true;
     }
   }
   
@@ -485,7 +517,7 @@ public class Solver {
                       }
                       answerT.add(candidate_cube);
                       answerT.add(last_candidate_cube);
-                      Folding folding = new Folding(answerT, id == 3 ? true : false);
+                      Folding folding = new Folding(answerT, id == 3 ? true : false, Folding.Form.T);
                       if (isUnfoldedTValid(folding)) {  // XXX: Record unfolded T, first from left
                         mUnfoldedT.add(folding);
                       }
@@ -598,7 +630,7 @@ public class Solver {
                       }
                       answerT.add(last_candidate_cube);
                       answerT.add(candidate_cube);
-                      Folding folding = new Folding(answerT, id == 3 ? true : false);
+                      Folding folding = new Folding(answerT, id == 3 ? true : false, Folding.Form.T);
                       if (isUnfoldedTValid(folding)) {  // XXX: Record unfolded T, first from right
                         mUnfoldedT.add(folding);
                       }
@@ -721,7 +753,7 @@ public class Solver {
                       }
                       answerX.add(candidate_cube);
                       answerX.add(last_candidate_cube);
-                      Folding folding = new Folding(answerX, id == 2 ? true : false);
+                      Folding folding = new Folding(answerX, id == 2 ? true : false, Folding.Form.X);
                       if (isUnfoldedXValid(folding)) {  // XXX: Record unfolded X, first from left
                         mUnfoldedX.add(folding);
                       }
@@ -834,7 +866,7 @@ public class Solver {
                       }
                       answerX.add(last_candidate_cube);
                       answerX.add(candidate_cube);
-                      Folding folding = new Folding(answerX, id == 2 ? true : false);
+                      Folding folding = new Folding(answerX, id == 2 ? true : false, Folding.Form.X);
                       if (isUnfoldedXValid(folding)) {  // XXX: Record unfolded X, first from right
                         mUnfoldedX.add(folding);
                       }
@@ -990,42 +1022,58 @@ public class Solver {
   }
   
   private List<Folding> removeDuplicates(List<Folding> list) {
-    Set<Folding> unique_list = new TreeSet<>(
-        new Comparator<Folding>() {
-          @Override
-          public int compare(Folding lhs, Folding rhs) {
-            int equal_counter = 0;
-            int ids_counter = 0;
-            
-            for (int i = 0; i < lhs.cubes.size(); ++i) {
-              Cube lhs_cube = lhs.cubes.get(i);
-              Cube rhs_cube = rhs.cubes.get(i);
-              boolean equal_ids = lhs_cube.getID() == rhs_cube.getID();
-              boolean equal_orientations = lhs_cube.getOrientation().equals(rhs_cube.getOrientation()) ||
-                                           (equal_ids && lhs_cube.isSymmetric());
-              
-              if (equal_ids && equal_orientations) {
-                ++equal_counter;
-              } else if (equal_ids) {
-                ++ids_counter;
-              }
-            }
-            
-            if (equal_counter == lhs.cubes.size()) {
-              return 0;
-            } else if (ids_counter == lhs.cubes.size()) {
-              return 1;
-            } else {
-              return -1;
-            }
-          }});
-    
-    unique_list.addAll(list);
-    
-    List<Folding> result = new ArrayList<>();
-    for (Folding item : unique_list) {
-      result.add(item);
+    if (list.size() < 2) {
+      return list;
     }
+    
+    List<Folding> result = new ArrayList<>(list.size());
+    result.add(list.get(0));
+    int total = list.size() - 1;
+    
+    for (int i = 0; i < list.size(); ++i) {
+      Folding lhs = list.get(i);
+      int counter = 0;
+      for (int j = 1; j < list.size(); ++j) {
+        Folding rhs = list.get(j);
+        if (!lhs.equals(rhs)) {
+          ++counter;
+        } else {
+//          System.err.println("I [" + i + "] J[" + j + "]");
+//          
+//          switch (lhs.form) {
+//            case T:
+//              switch (rhs.form) {
+//                case T:
+//                  System.err.println(unfoldedTtoString(lhs));
+//                  System.err.println(unfoldedTtoString(rhs));
+//                  break;
+//                case X:
+//                  System.err.println(unfoldedTtoString(lhs));
+//                  System.err.println(unfoldedXtoString(rhs));
+//                  break;
+//              }
+//              break;
+//            case X:
+//              switch (rhs.form) {
+//                case T:
+//                  System.err.println(unfoldedXtoString(lhs));
+//                  System.err.println(unfoldedTtoString(rhs));
+//                  break;
+//                case X:
+//                  System.err.println(unfoldedXtoString(lhs));
+//                  System.err.println(unfoldedXtoString(rhs));
+//                  break;
+//              }
+//              break;
+//          }
+//          return null;
+        }
+      }
+      if (counter == total - i) {
+        result.add(lhs);
+      }
+    }
+
     return result;
   }
   
