@@ -486,9 +486,9 @@ public class Solver {
                       answerT.add(candidate_cube);
                       answerT.add(last_candidate_cube);
                       Folding folding = new Folding(answerT, id == 3 ? true : false);
-                      if (isUnfoldedTValid(folding)) {  //XXX
+                      //if (isUnfoldedTValid(folding)) {  //XXX
                         mUnfoldedT.add(folding);
-                      }
+                      //}
                       
 //                      if (candidate_cube.getID() == 0 && last_candidate_cube.getID() == 2) {
 //                        System.out.println(ring.get(id));
@@ -612,9 +612,9 @@ public class Solver {
                       answerT.add(last_candidate_cube);
                       answerT.add(candidate_cube);
                       Folding folding = new Folding(answerT, id == 3 ? true : false);
-                      if (isUnfoldedTValid(folding)) {  //XXX
+                      //if (isUnfoldedTValid(folding)) {  //XXX
                         mUnfoldedT.add(folding);
-                      }
+                      //}
                     }
                   } else {
                     ++subcounter;
@@ -735,9 +735,9 @@ public class Solver {
                       answerX.add(candidate_cube);
                       answerX.add(last_candidate_cube);
                       Folding folding = new Folding(answerX, id == 2 ? true : false);
-                      if (isUnfoldedXValid(folding)) {  //XXX
+                      //if (isUnfoldedXValid(folding)) {  //XXX
                         mUnfoldedX.add(folding);
-                      }
+                      //}
                     }
                   } else {
                     ++subcounter;
@@ -848,9 +848,9 @@ public class Solver {
                       answerX.add(last_candidate_cube);
                       answerX.add(candidate_cube);
                       Folding folding = new Folding(answerX, id == 2 ? true : false);
-                      if (isUnfoldedXValid(folding)) {  //XXX
+                      //if (isUnfoldedXValid(folding)) {  //XXX
                         mUnfoldedX.add(folding);
-                     }
+                      //}
                     }
                   } else {
                     ++subcounter;

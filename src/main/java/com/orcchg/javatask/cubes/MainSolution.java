@@ -31,7 +31,7 @@ public class MainSolution {
     instance.readCubes(args[0]);
     
     instance.mSolver.solve();
-    //System.out.println(instance.mSolver.getSolution());
+    System.out.println(instance.mSolver.getSolution());
     System.out.println(instance.mSolver.totalUnfoldedT() + " ^^^ " + instance.mSolver.totalUnfoldedX());
     
     //instance.writeToFile("output.txt", instance.mSolver.getSolution());
