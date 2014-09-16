@@ -8,10 +8,8 @@ import java.io.IOException;
 
 import com.orcchg.javatask.cubes.struct.Cube;
 import com.orcchg.javatask.cubes.struct.Matrix;
-import com.orcchg.javatask.cubes.struct.Orientation;
 import com.orcchg.javatask.cubes.struct.Side;
 import com.orcchg.javatask.cubes.struct.Solver;
-import com.orcchg.javatask.cubes.util.Util;
 
 public class MainSolution {
   private Solver mSolver;
@@ -33,9 +31,10 @@ public class MainSolution {
     instance.readCubes(args[0]);
     
     instance.mSolver.solve();
-    System.out.println(instance.mSolver.getSolution());
-    System.out.println(instance.mSolver.totalUnfoldedT() + " ^^^ " + instance.mSolver.totalUnfoldedX());
     instance.writeToFile("output.txt", instance.mSolver.getSolution());
+    System.out.println("Total solutions in T unfolded form: " + instance.mSolver.totalUnfoldedT() +
+                       "\nTotal solutions in X unfolded form: " + instance.mSolver.totalUnfoldedX() +
+                       "\nSolutions are in file 'output.txt'");
   }
 
   /* Private methods */
