@@ -390,7 +390,7 @@ public class Solver {
       set_cube_ids.removeAll(set_combination);
       List<Integer> two_last_pieces = new ArrayList<>(set_cube_ids);
     
-      // TODO: start
+      // XXX: trying to add last two pieces
       Cube cube = new Cube(mCubes.get(two_last_pieces.get(0)));
       
       collect_rings_loop: for (LinkedList<Cube> ring : collect_rings) {
@@ -486,7 +486,7 @@ public class Solver {
                       answerT.add(candidate_cube);
                       answerT.add(last_candidate_cube);
                       Folding folding = new Folding(answerT, id == 3 ? true : false);
-                      if (isUnfoldedTValid(folding)) {  //XXX
+                      if (isUnfoldedTValid(folding)) {  // XXX: Record unfolded T, first from left
                         mUnfoldedT.add(folding);
                       }
                     }
@@ -599,7 +599,7 @@ public class Solver {
                       answerT.add(last_candidate_cube);
                       answerT.add(candidate_cube);
                       Folding folding = new Folding(answerT, id == 3 ? true : false);
-                      if (isUnfoldedTValid(folding)) {  //XXX
+                      if (isUnfoldedTValid(folding)) {  // XXX: Record unfolded T, first from right
                         mUnfoldedT.add(folding);
                       }
                     }
@@ -640,7 +640,7 @@ public class Solver {
           // try left side
           orientation_loop: for (Orientation orientation : Orientation.entries) {
             boolean direct = match(ring.get(id), Orientation.LEFT, cube, orientation);
-            boolean reversed = match(ring.get(id), Orientation.LEFT, cube, orientation);
+            boolean reversed = matchReversed(ring.get(id), Orientation.LEFT, cube, orientation);
             boolean mirrored = Orientation.makeMirroredLeft(orientation, direct, reversed);
             
             Orientation.Feature valid_orientation = null;
@@ -680,7 +680,7 @@ public class Solver {
                 int subcounter = 0;
                 last_orientation_loop: for (Orientation last_orientation : Orientation.entries) {
                   boolean another_direct = match(ring.get(id), Orientation.RIGHT, last_cube, last_orientation);
-                  boolean another_reversed = match(ring.get(id), Orientation.RIGHT, last_cube, last_orientation);
+                  boolean another_reversed = matchReversed(ring.get(id), Orientation.RIGHT, last_cube, last_orientation);
                   boolean last_mirrored = Orientation.makeMirroredRight(last_orientation, another_direct, another_reversed);
                   
                   Orientation.Feature local_valid_orientation = null;
@@ -722,7 +722,7 @@ public class Solver {
                       answerX.add(candidate_cube);
                       answerX.add(last_candidate_cube);
                       Folding folding = new Folding(answerX, id == 2 ? true : false);
-                      if (isUnfoldedXValid(folding)) {  //XXX
+                      if (isUnfoldedXValid(folding)) {  // XXX: Record unfolded X, first from left
                         mUnfoldedX.add(folding);
                       }
                     }
@@ -793,7 +793,7 @@ public class Solver {
                 int subcounter = 0;
                 last_orientation_loop: for (Orientation last_orientation : Orientation.entries) {
                   boolean another_direct = match(ring.get(id), Orientation.LEFT, last_cube, last_orientation);
-                  boolean another_reversed = match(ring.get(id), Orientation.LEFT, last_cube, last_orientation);
+                  boolean another_reversed = matchReversed(ring.get(id), Orientation.LEFT, last_cube, last_orientation);
                   boolean last_mirrored = Orientation.makeMirroredLeft(last_orientation, another_direct, another_reversed);
                   
                   Orientation.Feature local_valid_orientation = null;
@@ -835,7 +835,7 @@ public class Solver {
                       answerX.add(last_candidate_cube);
                       answerX.add(candidate_cube);
                       Folding folding = new Folding(answerX, id == 2 ? true : false);
-                      if (isUnfoldedXValid(folding)) {  //XXX
+                      if (isUnfoldedXValid(folding)) {  // XXX: Record unfolded X, first from right
                         mUnfoldedX.add(folding);
                       }
                     }
