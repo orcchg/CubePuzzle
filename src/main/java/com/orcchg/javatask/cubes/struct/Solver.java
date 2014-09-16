@@ -116,9 +116,6 @@ public class Solver {
     combinations_4: for (List<Integer> combination : combinations) {
       // all possible rings from given 4 pieces
       List<LinkedList<Cube>> collect_rings = new ArrayList<>();
-
-      // store pieces to be removed - we do not modify collections we iterating through
-      List<Integer> combination_to_remove = new ArrayList<>();
       
       // all combinations from 4 of 2
       List<List<Integer>> smallcomb = Util.allConjunctions(combination, 2);
@@ -129,216 +126,142 @@ public class Solver {
         // get all possible combinations between two pieces
         List<Orientation.Feature[]> orientation_pairs = new ArrayList<>();
 
-        for (Orientation lhs : Orientation.entries) {
-          for (Orientation rhs : Orientation.entries) {
+        top_mirror_loop: for (int top_mirror_i = 0; top_mirror_i < 4; ++top_mirror_i) {
+          for (Orientation lhs : Orientation.entries) {
+            for (Orientation rhs : Orientation.entries) {
+              Cube lhs_cube = new Cube(mCubes.get(pair.get(0)));
+              if (top_mirror_i == 2 || top_mirror_i == 3) {
+                lhs_cube.mirror();
+              }
+              
+              Cube rhs_cube = new Cube(mCubes.get(pair.get(1)));
+              if (top_mirror_i == 1 || top_mirror_i == 3) {
+                rhs_cube.mirror();
+              }
+              
+              boolean direct = match(lhs_cube, lhs, rhs_cube, rhs);
+              boolean reversed = matchReversed(lhs_cube, lhs, rhs_cube, rhs);
+              boolean mirrored = Orientation.makeMirroredVertical(lhs, rhs, direct, reversed);
+              
+              if (direct) {
+                Orientation.Feature[] orientation_pair = new Orientation.Feature[2];
+                Orientation.Feature lhs_feature = new Orientation.Feature.Builder().setOrientation(lhs).build();
+                Orientation.Feature rhs_feature = new Orientation.Feature.Builder().setOrientation(rhs).setMirrored(mirrored).build();
+                orientation_pair[0] = lhs_feature;
+                orientation_pair[1] = rhs_feature;
+                orientation_pairs.add(orientation_pair);
+              }
+              if (reversed) {
+                Orientation.Feature[] orientation_pair = new Orientation.Feature[2];
+                Orientation.Feature lhs_feature = new Orientation.Feature.Builder().setOrientation(lhs).build();
+                Orientation.Feature rhs_feature = new Orientation.Feature.Builder().setOrientation(rhs).setReversed(true).setMirrored(mirrored).build();
+                orientation_pair[0] = lhs_feature;
+                orientation_pair[1] = rhs_feature;
+                orientation_pairs.add(orientation_pair);
+              }
+            }
+          }
+  
+          orientations_loop: for (Orientation.Feature[] orientation_pair : orientation_pairs) {
+            // get two last pieces ids
+            Set<Integer> set_combination_init = new HashSet<>(combination);
+            Set<Integer> set_pair_init = new HashSet<>(pair);
+            set_combination_init.removeAll(set_pair_init);
+            List<Integer> two_last_pieces = new ArrayList<>(set_combination_init);
+            
+            // ring segments allocation
+            Map<Integer, List<LinkedList<Cube>>> ring_segments = new HashMap<>();  // vertical straight line of 3 adjacent pieces
+            Map<Integer, List<LinkedList<Cube>>> full_ring_segments = new HashMap<>();  // vertical straight line of 4 adjacent pieces
+            for (int last_piece_id : two_last_pieces) {
+              ring_segments.put(last_piece_id, new ArrayList<LinkedList<Cube>>());
+              full_ring_segments.put(last_piece_id, new ArrayList<LinkedList<Cube>>());
+            }
+            LinkedList<Cube> common_ring_segment = new LinkedList<>();  // common part of 2 pieces, vertically directed
+            
             Cube lhs_cube = new Cube(mCubes.get(pair.get(0)));
             Cube rhs_cube = new Cube(mCubes.get(pair.get(1)));
-            boolean direct = match(lhs_cube, lhs, rhs_cube, rhs);
-            boolean reversed = matchReversed(lhs_cube, lhs, rhs_cube, rhs);
-            boolean mirrored = Orientation.makeMirroredVertical(lhs, rhs, direct, reversed);
+            Orientation.Feature[] valid_orientation = Orientation.getValidOrientation(orientation_pair[0].getOrientation(), orientation_pair[1].getOrientation());   
             
-            if (direct) {
-              Orientation.Feature[] orientation_pair = new Orientation.Feature[2];
-              Orientation.Feature lhs_feature = new Orientation.Feature.Builder().setOrientation(lhs).build();
-              Orientation.Feature rhs_feature = new Orientation.Feature.Builder().setOrientation(rhs).setMirrored(mirrored).build();
-              orientation_pair[0] = lhs_feature;
-              orientation_pair[1] = rhs_feature;
-              orientation_pairs.add(orientation_pair);
+            Cube valid_lhs_cube = new Cube(lhs_cube);
+            if (orientation_pair[0].isMirrored()) {
+              valid_lhs_cube.mirror();
+              valid_lhs_cube.setOrientation(Orientation.mirror(valid_orientation[0].getOrientation()));
+            } else {
+              valid_lhs_cube.setOrientation(valid_orientation[0].getOrientation());
             }
-            if (reversed) {
-              Orientation.Feature[] orientation_pair = new Orientation.Feature[2];
-              Orientation.Feature lhs_feature = new Orientation.Feature.Builder().setOrientation(lhs).build();
-              Orientation.Feature rhs_feature = new Orientation.Feature.Builder().setOrientation(rhs).setReversed(true).setMirrored(mirrored).build();
-              orientation_pair[0] = lhs_feature;
-              orientation_pair[1] = rhs_feature;
-              orientation_pairs.add(orientation_pair);
+            
+            Cube valid_rhs_cube = new Cube(rhs_cube);
+            if (orientation_pair[1].isMirrored()) {
+              valid_rhs_cube.mirror();
+              valid_rhs_cube.setOrientation(Orientation.mirror(valid_orientation[1].getOrientation()));
+            } else {
+              valid_rhs_cube.setOrientation(valid_orientation[1].getOrientation());
             }
-          }
-        }
-
-        orientations_loop: for (Orientation.Feature[] orientation_pair : orientation_pairs) {
-          // get two last pieces ids
-          Set<Integer> set_combination_init = new HashSet<>(combination);
-          Set<Integer> set_pair_init = new HashSet<>(pair);
-          set_combination_init.removeAll(set_pair_init);
-          List<Integer> two_last_pieces = new ArrayList<>(set_combination_init);
-          
-          // ring segments allocation
-          Map<Integer, List<LinkedList<Cube>>> ring_segments = new HashMap<>();  // vertical straight line of 3 adjacent pieces
-          Map<Integer, List<LinkedList<Cube>>> full_ring_segments = new HashMap<>();  // vertical straight line of 4 adjacent pieces
-          for (int last_piece_id : two_last_pieces) {
-            ring_segments.put(last_piece_id, new ArrayList<LinkedList<Cube>>());
-            full_ring_segments.put(last_piece_id, new ArrayList<LinkedList<Cube>>());
-          }
-          LinkedList<Cube> common_ring_segment = new LinkedList<>();  // common part of 2 pieces, vertically directed
-          
-          Cube lhs_cube = new Cube(mCubes.get(pair.get(0)));
-          Cube rhs_cube = new Cube(mCubes.get(pair.get(1)));
-          Orientation.Feature[] valid_orientation = Orientation.getValidOrientation(orientation_pair[0].getOrientation(), orientation_pair[1].getOrientation());
-          
-          Cube valid_lhs_cube = new Cube(lhs_cube);
-          if (orientation_pair[0].isMirrored()) {
-            valid_lhs_cube.mirror();
-            valid_lhs_cube.setOrientation(Orientation.mirror(valid_orientation[0].getOrientation()));
-          } else {
-            valid_lhs_cube.setOrientation(valid_orientation[0].getOrientation());
-          }
-          
-          Cube valid_rhs_cube = new Cube(rhs_cube);
-          if (orientation_pair[1].isMirrored()) {
-            valid_rhs_cube.mirror();
-            valid_rhs_cube.setOrientation(Orientation.mirror(valid_orientation[1].getOrientation()));
-          } else {
-            valid_rhs_cube.setOrientation(valid_orientation[1].getOrientation());
-          }
-          
-          common_ring_segment.add(valid_lhs_cube);
-          common_ring_segment.add(valid_rhs_cube);
-          combination_to_remove.add(lhs_cube.getID());
-          combination_to_remove.add(rhs_cube.getID());
-          
-          List<Integer> rest_combination = Util.cloneArrayList(combination);
-          rest_combination.removeAll(combination_to_remove);
-
-          // ------------------------------------------------------------------
-          // try to attach third puzzle and get a straight line
-          mirror_loop: for (int mirror_i = 0; mirror_i < 2; ++mirror_i) {
-            rest_two_puzzles: for (int restcomb_i = 0; restcomb_i < rest_combination.size(); ++restcomb_i) {
-              int rest_cube_id = rest_combination.get(restcomb_i);
-              
-              for (Orientation orientation : Orientation.entries) {
-                LinkedList<Cube> ring_segment = new LinkedList<>();
-                ring_segment.addAll(common_ring_segment);
+            
+            common_ring_segment.add(valid_lhs_cube);
+            common_ring_segment.add(valid_rhs_cube);
+            
+            // store pieces to be removed - we do not modify collections we iterating through
+            List<Integer> combination_to_remove = new ArrayList<>();
+            combination_to_remove.add(lhs_cube.getID());
+            combination_to_remove.add(rhs_cube.getID());
+            
+            if (!isSegmentValid(common_ring_segment)) {
+              // wrong segment
+              continue orientations_loop;
+            }
+            
+            List<Integer> rest_combination = Util.cloneArrayList(combination);
+            rest_combination.removeAll(combination_to_remove);
+  
+            // ------------------------------------------------------------------
+            // try to attach third puzzle and get a straight line
+            mirror_loop: for (int mirror_i = 0; mirror_i < 2; ++mirror_i) {
+              rest_two_puzzles: for (int restcomb_i = 0; restcomb_i < rest_combination.size(); ++restcomb_i) {
+                int rest_cube_id = rest_combination.get(restcomb_i);
                 
-                Cube rest_cube = new Cube(mCubes.get(rest_cube_id));
-                if (mirror_i == 1) {
-                  rest_cube.mirror();
-                }
-                
-                boolean direct = match(common_ring_segment.get(1), Orientation.UP, rest_cube, orientation);
-                boolean reversed = matchReversed(common_ring_segment.get(1), Orientation.UP, rest_cube, orientation);
-                boolean mirrored = Orientation.makeMirroredVertical(Orientation.UP, orientation, direct, reversed);
-                Orientation.Feature[] valid_orientation_local = Orientation.getValidOrientation(Orientation.UP, orientation);
-                valid_orientation_local[1].setMirrored(mirrored);
-                
-                if (direct || reversed) {
-                  Cube valid_rest_cube = new Cube(rest_cube);
-                  if (mirrored) {
-                    valid_rest_cube.mirror();
-                    valid_rest_cube.setOrientation(Orientation.mirror(valid_orientation_local[1].getOrientation()));
-                  } else {
-                    valid_rest_cube.setOrientation(valid_orientation_local[1].getOrientation());
-                  }
-                  
-                  ring_segment.add(valid_rest_cube);
-                  int mark_last_cube = restcomb_i == 0 ? 1 : 0;
-                  ring_segments.get(rest_combination.get(mark_last_cube)).add(ring_segment);
-                }
-              }
-              
-              // try another side
-              for (Orientation orientation : Orientation.entries) {
-                LinkedList<Cube> ring_segment = new LinkedList<>();
-                ring_segment.addAll(common_ring_segment);
-                
-                Cube rest_cube = new Cube(mCubes.get(rest_cube_id));
-                if (mirror_i == 1) {
-                  rest_cube.mirror();
-                }
-                
-                boolean direct = match(common_ring_segment.get(0), Orientation.DOWN, rest_cube, orientation);
-                boolean reversed = matchReversed(common_ring_segment.get(0), Orientation.DOWN, rest_cube, orientation);
-                boolean mirrored = Orientation.makeMirroredVertical(Orientation.DOWN, orientation, direct, reversed);
-                
-                Orientation.Feature valid_orientation_local = null;
-                switch (orientation) {
-                  case UP:
-                    valid_orientation_local = new Orientation.Feature.Builder().setOrientation(Orientation.UP).build();
-                    break;
-                  case DOWN:
-                    valid_orientation_local = new Orientation.Feature.Builder().setOrientation(Orientation.DOWN).setReversed(true).build();
-                    break;
-                  case RIGHT:
-                    valid_orientation_local = new Orientation.Feature.Builder().setOrientation(Orientation.LEFT).build();
-                    break;
-                  case LEFT:
-                    valid_orientation_local = new Orientation.Feature.Builder().setOrientation(Orientation.RIGHT).setReversed(true).build();
-                    break;
-                }
-                
-                if (direct || reversed) {
-                  Cube valid_rest_cube = new Cube(rest_cube);
-                  if (mirrored) {
-                    valid_rest_cube.mirror();
-                    valid_rest_cube.setOrientation(Orientation.mirror(valid_orientation_local.getOrientation()));
-                  } else {
-                    valid_rest_cube.setOrientation(valid_orientation_local.getOrientation());
-                  }
-                  
-                  ring_segment.addFirst(valid_rest_cube);
-                  int mark_last_cube = restcomb_i == 0 ? 1 : 0;
-                  ring_segments.get(rest_combination.get(mark_last_cube)).add(ring_segment);
-                }
-              }
-              continue rest_two_puzzles;
-            }  // rest_two_puzzles loop
-            continue mirror_loop;
-          }  // mirror_loop
-          // ------------------------------------------------------------------
-          
-          // ------------------------------------------------------------------
-          if (Util.mapContentIsEmpty(ring_segments)) {
-            // initial pair of puzzles is wrong or its pieces are in invalid orientation
-            // retry with new orientation
-            combination_to_remove.clear();
-            continue orientations_loop;
-          }
-          // ------------------------------------------------------------------
-          
-          // ------------------------------------------------------------------
-          last_mirror_loop: for (int mirror_i = 0; mirror_i < 2; ++mirror_i) {
-            ring_segments_map_loop: for (Map.Entry<Integer, List<LinkedList<Cube>>> entry : ring_segments.entrySet()) {
-              // try to attach last puzzle and get a ring
-              int last_puzzle_id = entry.getKey();
-              
-              ring_segment_loop: for (LinkedList<Cube> ring_segment : entry.getValue()) {
                 for (Orientation orientation : Orientation.entries) {
-                  Cube last_cube = new Cube(mCubes.get(last_puzzle_id));
+                  LinkedList<Cube> ring_segment = new LinkedList<>();
+                  ring_segment.addAll(common_ring_segment);
+                  
+                  Cube rest_cube = new Cube(mCubes.get(rest_cube_id));
                   if (mirror_i == 1) {
-                    last_cube.mirror();
+                    rest_cube.mirror();
                   }
                   
-                  boolean direct = match(ring_segment.get(2), Orientation.UP, last_cube, orientation);
-                  boolean reversed = matchReversed(ring_segment.get(2), Orientation.UP, last_cube, orientation);
+                  boolean direct = match(common_ring_segment.get(1), Orientation.UP, rest_cube, orientation);
+                  boolean reversed = matchReversed(common_ring_segment.get(1), Orientation.UP, rest_cube, orientation);
                   boolean mirrored = Orientation.makeMirroredVertical(Orientation.UP, orientation, direct, reversed);
                   Orientation.Feature[] valid_orientation_local = Orientation.getValidOrientation(Orientation.UP, orientation);
                   valid_orientation_local[1].setMirrored(mirrored);
                   
                   if (direct || reversed) {
-                    Cube valid_last_cube = new Cube(last_cube);
+                    Cube valid_rest_cube = new Cube(rest_cube);
                     if (mirrored) {
-                      valid_last_cube.mirror();
-                      valid_last_cube.setOrientation(Orientation.mirror(valid_orientation_local[1].getOrientation()));
+                      valid_rest_cube.mirror();
+                      valid_rest_cube.setOrientation(Orientation.mirror(valid_orientation_local[1].getOrientation()));
                     } else {
-                      valid_last_cube.setOrientation(valid_orientation_local[1].getOrientation());
+                      valid_rest_cube.setOrientation(valid_orientation_local[1].getOrientation());
                     }
                     
-                    LinkedList<Cube> full_ring_segment = new LinkedList<>();
-                    full_ring_segment.addAll(ring_segment);
-                    full_ring_segment.add(valid_last_cube);
-                    full_ring_segments.get(entry.getKey()).add(full_ring_segment);
+                    ring_segment.add(valid_rest_cube);
+                    int mark_last_cube = restcomb_i == 0 ? 1 : 0;
+                    ring_segments.get(rest_combination.get(mark_last_cube)).add(ring_segment);
                   }
                 }
                 
                 // try another side
                 for (Orientation orientation : Orientation.entries) {
-                  Cube last_cube = new Cube(mCubes.get(last_puzzle_id));
+                  LinkedList<Cube> ring_segment = new LinkedList<>();
+                  ring_segment.addAll(common_ring_segment);
+                  
+                  Cube rest_cube = new Cube(mCubes.get(rest_cube_id));
                   if (mirror_i == 1) {
-                    last_cube.mirror();
+                    rest_cube.mirror();
                   }
                   
-                  boolean direct = match(ring_segment.get(0), Orientation.DOWN, last_cube, orientation);
-                  boolean reversed = matchReversed(ring_segment.get(0), Orientation.DOWN, last_cube, orientation);
+                  boolean direct = match(common_ring_segment.get(0), Orientation.DOWN, rest_cube, orientation);
+                  boolean reversed = matchReversed(common_ring_segment.get(0), Orientation.DOWN, rest_cube, orientation);
                   boolean mirrored = Orientation.makeMirroredVertical(Orientation.DOWN, orientation, direct, reversed);
                   
                   Orientation.Feature valid_orientation_local = null;
@@ -356,57 +279,148 @@ public class Solver {
                       valid_orientation_local = new Orientation.Feature.Builder().setOrientation(Orientation.RIGHT).setReversed(true).build();
                       break;
                   }
-    
+                  
                   if (direct || reversed) {
-                    Cube valid_last_cube = new Cube(last_cube);
+                    Cube valid_rest_cube = new Cube(rest_cube);
                     if (mirrored) {
-                      valid_last_cube.mirror();
-                      valid_last_cube.setOrientation(Orientation.mirror(valid_orientation_local.getOrientation()));
+                      valid_rest_cube.mirror();
+                      valid_rest_cube.setOrientation(Orientation.mirror(valid_orientation_local.getOrientation()));
                     } else {
-                      valid_last_cube.setOrientation(valid_orientation_local.getOrientation());
+                      valid_rest_cube.setOrientation(valid_orientation_local.getOrientation());
                     }
                     
-                    LinkedList<Cube> full_ring_segment = new LinkedList<>();
-                    full_ring_segment.addAll(ring_segment);
-                    full_ring_segment.addFirst(valid_last_cube);
-                    full_ring_segments.get(entry.getKey()).add(full_ring_segment);
+                    ring_segment.addFirst(valid_rest_cube);
+                    int mark_last_cube = restcomb_i == 0 ? 1 : 0;
+                    ring_segments.get(rest_combination.get(mark_last_cube)).add(ring_segment);
                   }
                 }
-                continue ring_segment_loop;
-              }  // ring_segment_loop
-              continue ring_segments_map_loop;
-            }  // ring_segments_map_loop
-            continue last_mirror_loop;
-          }  // last_mirror_loop
-          // ------------------------------------------------------------------
-          
-          if (Util.mapContentIsEmpty(full_ring_segments)) {
-            // initial pair of puzzles is wrong or its pieces are in invalid orientation
-            // retry with new orientation
-            combination_to_remove.clear();
-            continue orientations_loop;
-          } else {
-            // last piece has been found
-            for (Map.Entry<Integer, List<LinkedList<Cube>>> entry : full_ring_segments.entrySet()) {
-              for (LinkedList<Cube> ring_segment : entry.getValue()) {
-                if (ring_segment.size() == 4) {
-                  if (isSegmentARing(ring_segment) && isSegmentValid(ring_segment)) {
-                    // we have got a ring! one ring to rule them all...
-                    collect_rings.add(ring_segment);
+                continue rest_two_puzzles;
+              }  // rest_two_puzzles loop
+              continue mirror_loop;
+            }  // mirror_loop
+            // ------------------------------------------------------------------
+            
+            // ------------------------------------------------------------------
+            if (Util.mapContentIsEmpty(ring_segments)) {
+              // initial pair of puzzles is wrong or its pieces are in invalid orientation
+              // retry with new orientation
+              continue orientations_loop;
+            }
+            // ------------------------------------------------------------------
+            
+            // ------------------------------------------------------------------
+            last_mirror_loop: for (int mirror_i = 0; mirror_i < 2; ++mirror_i) {
+              ring_segments_map_loop: for (Map.Entry<Integer, List<LinkedList<Cube>>> entry : ring_segments.entrySet()) {
+                // try to attach last puzzle and get a ring
+                int last_puzzle_id = entry.getKey();
+                
+                ring_segment_loop: for (LinkedList<Cube> ring_segment : entry.getValue()) {
+                  for (Orientation orientation : Orientation.entries) {
+                    Cube last_cube = new Cube(mCubes.get(last_puzzle_id));
+                    if (mirror_i == 1) {
+                      last_cube.mirror();
+                    }
+                    
+                    boolean direct = match(ring_segment.get(2), Orientation.UP, last_cube, orientation);
+                    boolean reversed = matchReversed(ring_segment.get(2), Orientation.UP, last_cube, orientation);
+                    boolean mirrored = Orientation.makeMirroredVertical(Orientation.UP, orientation, direct, reversed);
+                    Orientation.Feature[] valid_orientation_local = Orientation.getValidOrientation(Orientation.UP, orientation);
+                    valid_orientation_local[1].setMirrored(mirrored);
+                    
+                    if (direct || reversed) {
+                      Cube valid_last_cube = new Cube(last_cube);
+                      if (mirrored) {
+                        valid_last_cube.mirror();
+                        valid_last_cube.setOrientation(Orientation.mirror(valid_orientation_local[1].getOrientation()));
+                      } else {
+                        valid_last_cube.setOrientation(valid_orientation_local[1].getOrientation());
+                      }
+                      
+                      LinkedList<Cube> full_ring_segment = new LinkedList<>();
+                      full_ring_segment.addAll(ring_segment);
+                      full_ring_segment.add(valid_last_cube);
+                      full_ring_segments.get(entry.getKey()).add(full_ring_segment);
+                    }
                   }
-                  combination_to_remove.clear();
-                } else {
-                  throw new RuntimeException("Magic error!");
+                  
+                  // try another side
+                  for (Orientation orientation : Orientation.entries) {
+                    Cube last_cube = new Cube(mCubes.get(last_puzzle_id));
+                    if (mirror_i == 1) {
+                      last_cube.mirror();
+                    }
+                    
+                    boolean direct = match(ring_segment.get(0), Orientation.DOWN, last_cube, orientation);
+                    boolean reversed = matchReversed(ring_segment.get(0), Orientation.DOWN, last_cube, orientation);
+                    boolean mirrored = Orientation.makeMirroredVertical(Orientation.DOWN, orientation, direct, reversed);
+                    
+                    Orientation.Feature valid_orientation_local = null;
+                    switch (orientation) {
+                      case UP:
+                        valid_orientation_local = new Orientation.Feature.Builder().setOrientation(Orientation.UP).build();
+                        break;
+                      case DOWN:
+                        valid_orientation_local = new Orientation.Feature.Builder().setOrientation(Orientation.DOWN).setReversed(true).build();
+                        break;
+                      case RIGHT:
+                        valid_orientation_local = new Orientation.Feature.Builder().setOrientation(Orientation.LEFT).build();
+                        break;
+                      case LEFT:
+                        valid_orientation_local = new Orientation.Feature.Builder().setOrientation(Orientation.RIGHT).setReversed(true).build();
+                        break;
+                    }
+      
+                    if (direct || reversed) {
+                      Cube valid_last_cube = new Cube(last_cube);
+                      if (mirrored) {
+                        valid_last_cube.mirror();
+                        valid_last_cube.setOrientation(Orientation.mirror(valid_orientation_local.getOrientation()));
+                      } else {
+                        valid_last_cube.setOrientation(valid_orientation_local.getOrientation());
+                      }
+                      
+                      LinkedList<Cube> full_ring_segment = new LinkedList<>();
+                      full_ring_segment.addAll(ring_segment);
+                      full_ring_segment.addFirst(valid_last_cube);
+                      full_ring_segments.get(entry.getKey()).add(full_ring_segment);
+                    }
+                  }
+                  continue ring_segment_loop;
+                }  // ring_segment_loop
+                continue ring_segments_map_loop;
+              }  // ring_segments_map_loop
+              continue last_mirror_loop;
+            }  // last_mirror_loop
+            // ------------------------------------------------------------------
+            
+            if (Util.mapContentIsEmpty(full_ring_segments)) {
+              // initial pair of puzzles is wrong or its pieces are in invalid orientation
+              // retry with new orientation
+              continue orientations_loop;
+            } else {
+              // last piece has been found
+              for (Map.Entry<Integer, List<LinkedList<Cube>>> entry : full_ring_segments.entrySet()) {
+                for (LinkedList<Cube> ring_segment : entry.getValue()) {
+                  if (ring_segment.size() == 4) {
+                    if (isSegmentARing(ring_segment) && isSegmentValid(ring_segment)) {
+                      // we have got a ring! one ring to rule them all...
+                      collect_rings.add(ring_segment);
+                    }
+                  } else {
+                    throw new RuntimeException("Magic error!");
+                  }
                 }
               }
             }
-          }
-        }  // orientations_loop
-        
+          }  // orientations_loop
+          
+          continue top_mirror_loop;
+        } // top_mirror_loop
         continue smallcomb_2;
       }  // smallcomb_2 loop
       // ----------------------------------------------------------------------
       
+      System.out.println(collect_rings.size());
 //      for (LinkedList<Cube> ring : collect_rings) {
 //        if (ring.get(0).getID() == 3 && ring.get(1).getID() == 1 && ring.get(2).getID() == 4 && ring.get(3).getID() == 5) {
 //        System.out.println(Util.printIDs(ring));
