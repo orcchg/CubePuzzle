@@ -1056,7 +1056,6 @@ public class Solver {
   // --------------------------------------------------------------------------
   private String unfoldedTtoString(final Folding folding) {
     StringBuilder solution = new StringBuilder();
-    solution.append(Util.printIDs(folding.cubes)).append("------------------\n  VALID: " + isUnfoldedTValid(folding) + "\n");
     
     if (folding.isUpper) {
       solution.append(folding.cubes.get(4).getSide(Orientation.UP))
@@ -1129,7 +1128,6 @@ public class Solver {
   // --------------------------------------------------------------------------
   private String unfoldedXtoString(final Folding folding) {
     StringBuilder solution = new StringBuilder();
-    solution.append(Util.printIDs(folding.cubes)).append("------------------\n  VALID: " + isUnfoldedXValid(folding) + "\n");
     
     if (folding.isUpper) {
       solution.append("     ").append(folding.cubes.get(3).getSide(Orientation.UP)).append("     ").append("\n");
