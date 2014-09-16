@@ -406,6 +406,11 @@ public class Solver {
                       // we have got a ring! one ring to rule them all...
                       collect_rings.add(ring_segment);
                     }
+                    LinkedList<Cube> mirrored_ring_segment = mirrorSegment(ring_segment);
+                    if (isSegmentARing(mirrored_ring_segment) && isSegmentValid(mirrored_ring_segment)) {
+                      // we have got a ring! one ring to rule them all...
+                      collect_rings.add(mirrored_ring_segment);
+                    }
                   } else {
                     throw new RuntimeException("Magic error!");
                   }
@@ -420,13 +425,13 @@ public class Solver {
       }  // smallcomb_2 loop
       // ----------------------------------------------------------------------
       
-      System.out.println(collect_rings.size());
-//      for (LinkedList<Cube> ring : collect_rings) {
-//        if (ring.get(0).getID() == 3 && ring.get(1).getID() == 1 && ring.get(2).getID() == 4 && ring.get(3).getID() == 5) {
-//        System.out.println(Util.printIDs(ring));
-//        System.out.println(ringToString(ring));
-//        }
-//      }
+ //     System.out.println(collect_rings.size());
+      for (LinkedList<Cube> ring : collect_rings) {
+        if (ring.get(0).getID() == 3 && ring.get(1).getID() == 1 && ring.get(2).getID() == 4 && ring.get(3).getID() == 5) {
+        System.out.println(Util.printIDs(ring));
+        System.out.println(ringToString(ring));
+        }
+      }
       
       // --------------------------------------------------------------------------------------------------------------
       
@@ -960,6 +965,16 @@ public class Solver {
       }
     }
     return true;
+  }
+  
+  private LinkedList<Cube> mirrorSegment(final LinkedList<Cube> segment) {
+    LinkedList<Cube> mirrored = new LinkedList<Cube>();
+    for (Cube cube : segment) {
+      Cube mirror_cube = new Cube(cube);
+      mirror_cube.mirror();
+      mirrored.add(mirror_cube);
+    }
+    return mirrored;
   }
   
   private boolean isUnfoldedTValid(final Folding folding) {

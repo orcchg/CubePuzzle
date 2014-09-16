@@ -192,17 +192,17 @@ public class Cube {
     mSides[3] = mTemp[2].clone();
     backup();
     
-    switch (mOrientation) {
-      case UP:
-      case DOWN:
-        break;
-      case RIGHT:
-        mOrientation = Orientation.LEFT;
-        break;
-      case LEFT:
-        mOrientation = Orientation.RIGHT;
-        break;
-    }
+//    switch (mOrientation) {
+//      case UP:
+//      case DOWN:
+//        break;
+//      case RIGHT:
+//        mOrientation = Orientation.LEFT;
+//        break;
+//      case LEFT:
+//        mOrientation = Orientation.RIGHT;
+//        break;
+//    }
     
     return this;
   }
