@@ -27,14 +27,19 @@ public class MainSolution {
       printUsage();
       return;
     }
+    
+    long start = System.currentTimeMillis();
     MainSolution instance = new MainSolution();
     instance.readCubes(args[0]);
     
     instance.mSolver.solve();
     instance.writeToFile("output.txt", instance.mSolver.getSolution());
+    long elapsed = System.currentTimeMillis() - start;
+    
     System.out.println("Total solutions in T unfolded form: " + instance.mSolver.totalUnfoldedT() +
                        "\nTotal solutions in X unfolded form: " + instance.mSolver.totalUnfoldedX() +
-                       "\nSolutions are in file 'output.txt'");
+                       "\nSolutions are in file 'output.txt'" +
+                       "\nTime elapsed: " + elapsed / 1000 + " s");
   }
 
   /* Private methods */
