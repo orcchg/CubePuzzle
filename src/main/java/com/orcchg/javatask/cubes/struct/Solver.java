@@ -489,19 +489,6 @@ public class Solver {
                       if (isUnfoldedTValid(folding)) {  //XXX
                         mUnfoldedT.add(folding);
                       }
-                      
-//                      if (candidate_cube.getID() == 5 && last_candidate_cube.getID() == 0) {
-//                        System.out.println(ring.get(id));
-//                        System.out.println(last_cube);
-//                        System.out.println(last_candidate_cube);
-//                        System.out.println("ORIENTATION[" + last_orientation + "] VALID[" +
-//                                            local_valid_orientation.getOrientation() +
-//                                            "] ACTUAL[" + last_candidate_cube.getOrientation() +
-//                                            "] MIRROR[" + last_mirrored +
-//                                            "] REVERSED[" + another_reversed + "]");
-//                        System.out.println(unfoldedTtoString(folding));
-//                      }
-                      
                     }
                   } else {
                     ++subcounter;
@@ -615,18 +602,6 @@ public class Solver {
                       if (isUnfoldedTValid(folding)) {  //XXX
                         mUnfoldedT.add(folding);
                       }
-                        
-//                        if (last_candidate_cube.getID() == 5 && candidate_cube.getID() == 0) {
-//                          System.out.println(ring.get(id));
-//                          System.out.println(last_cube);
-//                          System.out.println(last_candidate_cube);
-//                          System.out.println("ORIENTATION[" + last_orientation + "] VALID[" +
-//                                              local_valid_orientation.getOrientation() +
-//                                              "] ACTUAL[" + last_candidate_cube.getOrientation() +
-//                                              "] MIRROR[" + last_mirrored +
-//                                              "] REVERSED[" + another_reversed + "] ID[" + id);
-//                          System.out.println(unfoldedTtoString(folding));
-//                        }
                     }
                   } else {
                     ++subcounter;
