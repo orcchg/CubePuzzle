@@ -445,10 +445,10 @@ public class Solver {
                 last_orientation_loop: for (Orientation last_orientation : Orientation.entries) {
                   boolean another_direct = match(ring.get(id), Orientation.RIGHT, last_cube, last_orientation);
                   boolean another_reversed = matchReversed(ring.get(id), Orientation.RIGHT, last_cube, last_orientation);
-                  boolean last_mirrored = Orientation.makeMirroredRight(orientation, another_direct, another_reversed);
+                  boolean last_mirrored = Orientation.makeMirroredRight(last_orientation, another_direct, another_reversed);
                   
                   Orientation.Feature local_valid_orientation = null;
-                  switch (orientation) {
+                  switch (last_orientation) {
                     case UP:
                       local_valid_orientation = new Orientation.Feature.Builder().setOrientation(Orientation.LEFT).setReversed(true).build();
                       break;
@@ -486,20 +486,20 @@ public class Solver {
                       answerT.add(candidate_cube);
                       answerT.add(last_candidate_cube);
                       Folding folding = new Folding(answerT, id == 3 ? true : false);
-                      //if (isUnfoldedTValid(folding)) {  //XXX
+                      if (isUnfoldedTValid(folding)) {  //XXX
                         mUnfoldedT.add(folding);
-                      //}
+                      }
                       
-//                      if (candidate_cube.getID() == 0 && last_candidate_cube.getID() == 2) {
+//                      if (candidate_cube.getID() == 5 && last_candidate_cube.getID() == 0) {
 //                        System.out.println(ring.get(id));
 //                        System.out.println(last_cube);
 //                        System.out.println(last_candidate_cube);
-//                        System.out.println("ORIENTATION[" + orientation + "] VALID[" +
+//                        System.out.println("ORIENTATION[" + last_orientation + "] VALID[" +
 //                                            local_valid_orientation.getOrientation() +
 //                                            "] ACTUAL[" + last_candidate_cube.getOrientation() +
 //                                            "] MIRROR[" + last_mirrored +
 //                                            "] REVERSED[" + another_reversed + "]");
-//                        System.out.println(unfoldedTtoString(answerT));
+//                        System.out.println(unfoldedTtoString(folding));
 //                      }
                       
                     }
@@ -571,10 +571,10 @@ public class Solver {
                 last_orientation_loop: for (Orientation last_orientation : Orientation.entries) {
                   boolean another_direct = match(ring.get(id), Orientation.LEFT, last_cube, last_orientation);
                   boolean another_reversed = matchReversed(ring.get(id), Orientation.LEFT, last_cube, last_orientation);
-                  boolean last_mirrored = Orientation.makeMirroredLeft(orientation, another_direct, another_reversed);
+                  boolean last_mirrored = Orientation.makeMirroredLeft(last_orientation, another_direct, another_reversed);
                   
                   Orientation.Feature local_valid_orientation = null;
-                  switch (orientation) {
+                  switch (last_orientation) {
                     case UP:
                       local_valid_orientation = new Orientation.Feature.Builder().setOrientation(Orientation.RIGHT).build();
                       break;
@@ -612,9 +612,21 @@ public class Solver {
                       answerT.add(last_candidate_cube);
                       answerT.add(candidate_cube);
                       Folding folding = new Folding(answerT, id == 3 ? true : false);
-                      //if (isUnfoldedTValid(folding)) {  //XXX
+                      if (isUnfoldedTValid(folding)) {  //XXX
                         mUnfoldedT.add(folding);
-                      //}
+                      }
+                        
+//                        if (last_candidate_cube.getID() == 5 && candidate_cube.getID() == 0) {
+//                          System.out.println(ring.get(id));
+//                          System.out.println(last_cube);
+//                          System.out.println(last_candidate_cube);
+//                          System.out.println("ORIENTATION[" + last_orientation + "] VALID[" +
+//                                              local_valid_orientation.getOrientation() +
+//                                              "] ACTUAL[" + last_candidate_cube.getOrientation() +
+//                                              "] MIRROR[" + last_mirrored +
+//                                              "] REVERSED[" + another_reversed + "] ID[" + id);
+//                          System.out.println(unfoldedTtoString(folding));
+//                        }
                     }
                   } else {
                     ++subcounter;
@@ -694,10 +706,10 @@ public class Solver {
                 last_orientation_loop: for (Orientation last_orientation : Orientation.entries) {
                   boolean another_direct = match(ring.get(id), Orientation.RIGHT, last_cube, last_orientation);
                   boolean another_reversed = match(ring.get(id), Orientation.RIGHT, last_cube, last_orientation);
-                  boolean last_mirrored = Orientation.makeMirroredRight(orientation, another_direct, another_reversed);
+                  boolean last_mirrored = Orientation.makeMirroredRight(last_orientation, another_direct, another_reversed);
                   
                   Orientation.Feature local_valid_orientation = null;
-                  switch (orientation) {
+                  switch (last_orientation) {
                     case UP:
                       local_valid_orientation = new Orientation.Feature.Builder().setOrientation(Orientation.LEFT).setReversed(true).build();
                       break;
@@ -735,9 +747,9 @@ public class Solver {
                       answerX.add(candidate_cube);
                       answerX.add(last_candidate_cube);
                       Folding folding = new Folding(answerX, id == 2 ? true : false);
-                      //if (isUnfoldedXValid(folding)) {  //XXX
+                      if (isUnfoldedXValid(folding)) {  //XXX
                         mUnfoldedX.add(folding);
-                      //}
+                      }
                     }
                   } else {
                     ++subcounter;
@@ -807,10 +819,10 @@ public class Solver {
                 last_orientation_loop: for (Orientation last_orientation : Orientation.entries) {
                   boolean another_direct = match(ring.get(id), Orientation.LEFT, last_cube, last_orientation);
                   boolean another_reversed = match(ring.get(id), Orientation.LEFT, last_cube, last_orientation);
-                  boolean last_mirrored = Orientation.makeMirroredLeft(orientation, another_direct, another_reversed);
+                  boolean last_mirrored = Orientation.makeMirroredLeft(last_orientation, another_direct, another_reversed);
                   
                   Orientation.Feature local_valid_orientation = null;
-                  switch (orientation) {
+                  switch (last_orientation) {
                     case UP:
                       local_valid_orientation = new Orientation.Feature.Builder().setOrientation(Orientation.RIGHT).build();
                       break;
@@ -848,9 +860,9 @@ public class Solver {
                       answerX.add(last_candidate_cube);
                       answerX.add(candidate_cube);
                       Folding folding = new Folding(answerX, id == 2 ? true : false);
-                      //if (isUnfoldedXValid(folding)) {  //XXX
+                      if (isUnfoldedXValid(folding)) {  //XXX
                         mUnfoldedX.add(folding);
-                      //}
+                      }
                     }
                   } else {
                     ++subcounter;
