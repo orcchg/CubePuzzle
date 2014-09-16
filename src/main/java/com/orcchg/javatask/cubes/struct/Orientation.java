@@ -157,7 +157,18 @@ public enum Orientation implements Cloneable {
     return null;
   }
   
-  public static boolean makeMirrored(Orientation lhs, Orientation rhs, boolean direct, boolean reversed) {
+  /**
+   * @brief checks whether rhs-cube should be mirrored in case it's 'rhs'-side
+   *     matches 'lhs' side of lhs-cube in direct or reversed order, and then
+   *     two cubes form vertical straight line
+   *     
+   * @param lhs - left cube side
+   * @param rhs - right cube side
+   * @param direct - two sides match in direct order
+   * @param reversed - two sides match in reversed order
+   * @return should rhs-cube be mirrored to fulfill the match forming vertical segment
+   */
+  public static boolean makeMirroredVertical(Orientation lhs, Orientation rhs, boolean direct, boolean reversed) {
     if (lhs == Orientation.UP && rhs == Orientation.UP) {
       if (direct && reversed) {
         return false;
@@ -344,12 +355,124 @@ public enum Orientation implements Cloneable {
   }
   
   /**
+   * @brief given an assumption that rhs-cube is in vertical direction,
+   *     this method indicates, whether to mirror or not lhs-cube which matches
+   *     to rhs-cube's left side with its 'lhs' side, forming horizontal straight line
+   *     
+   * @param lhs - left cube side
+   * @param direct - left cube side matches left side of rhs-cube in direct order
+   * @param reversed - left cube side matches left side of rhs-cube in reversed order
+   * @return should lhs-cube be mirrored to form horizontal straight line
+   */
+  public static boolean makeMirroredLeft(Orientation lhs, boolean direct, boolean reversed) {
+    switch (lhs) {
+      case UP:
+        if (direct && reversed) {
+          return false;
+        } else if (direct) {
+          return false;
+        } else if (reversed) {
+          return true;
+        } else {
+          return false;
+        }
+      case DOWN:
+        if (direct && reversed) {
+          return false;
+        } else if (direct) {
+          return true;
+        } else if (reversed) {
+          return false;
+        } else {
+          return false;
+        }
+      case RIGHT:
+        if (direct && reversed) {
+          return false;
+        } else if (direct) {
+          return false;
+        } else if (reversed) {
+          return true;
+        } else {
+          return false;
+        }
+      case LEFT:
+        if (direct && reversed) {
+          return false;
+        } else if (direct) {
+          return true;
+        } else if (reversed) {
+          return false;
+        } else {
+          return false;
+        }
+    }
+    return false;
+  }
+  
+  /**
+   * @brief given an assumption that lhs-cube is in vertical direction,
+   *     this method indicates, whether to mirror or not rhs-cube which matches
+   *     to lhs-cube's right side with its 'rhs' side, forming horizontal straight line
+   *     
+   * @param rhs - right cube side
+   * @param direct - right cube side matches right side of lhs-cube in direct order
+   * @param reversed - right cube side matches right side of lhs-cube in reversed order
+   * @return should rhs-cube be mirrored to form horizontal straight line
+   */
+  public static boolean makeMirroredRight(Orientation rhs, boolean direct, boolean reversed) {
+    switch (rhs) {
+      case UP:
+        if (direct && reversed) {
+          return false;
+        } else if (direct) {
+          return true;
+        } else if (reversed) {
+          return false;
+        } else {
+          return false;
+        }
+      case DOWN:
+        if (direct && reversed) {
+          return false;
+        } else if (direct) {
+          return false;
+        } else if (reversed) {
+          return true;
+        } else {
+          return false;
+        }
+      case RIGHT:
+        if (direct && reversed) {
+          return false;
+        } else if (direct) {
+          return true;
+        } else if (reversed) {
+          return false;
+        } else {
+          return false;
+        }
+      case LEFT:
+        if (direct && reversed) {
+          return false;
+        } else if (direct) {
+          return false;
+        } else if (reversed) {
+          return true;
+        } else {
+          return false;
+        }
+    }
+    return false;
+  }
+  
+  /**
    * @brief two cubes are matched with 'lhs' and 'rhs' sides correspondingly.
    *     In order to combine them into vertical straight line, we should
    *     rotate these cubes, as this method says
    *     
-   * @param left cube side
-   * @param rigth cube side
+   * @param lhs - left cube side
+   * @param rhs - rigth cube side
    * 
    * @return pair of orientations for cubes, which they should be placed
    *     in order to get continuous vertical segment of two pieces,

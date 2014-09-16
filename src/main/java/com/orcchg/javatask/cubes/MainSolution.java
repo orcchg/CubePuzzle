@@ -34,7 +34,7 @@ public class MainSolution {
     System.out.println(instance.mSolver.getSolution());
     System.out.println(instance.mSolver.totalUnfoldedT() + " ^^^ " + instance.mSolver.totalUnfoldedX());
     
-    instance.writeToFile("output.txt", instance.mSolver.getSolution());
+    //instance.writeToFile("output.txt", instance.mSolver.getSolution());
   }
 
   /* Private methods */
