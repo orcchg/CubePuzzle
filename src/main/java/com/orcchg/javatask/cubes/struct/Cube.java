@@ -131,7 +131,7 @@ public class Cube {
         }
         break;
     }
-    mOrientation = Orientation.UP;
+    mOrientation = Orientation.UP;  // cube is always 'upright', after rotation we have a 'new' upright cube
     return this;
   }
   
