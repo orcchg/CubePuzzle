@@ -28,34 +28,6 @@ public class Solver {
       this.isUpper = isUpper;
       this.form = form;
     }
-    
-    @Override
-    public int hashCode() {
-      final int prime = 31;
-      int result = 1;
-      result = prime * result + ((cubes == null) ? 0 : cubes.hashCode());
-      result = prime * result + (isUpper ? 1231 : 1237);
-      return result;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-      if (this == obj)
-        return true;
-      if (obj == null)
-        return false;
-      if (getClass() != obj.getClass())
-        return false;
-      Folding other = (Folding) obj;
-      if (cubes == null) {
-        if (other.cubes != null)
-          return false;
-      } else if (!Util.equalSegments(cubes, other.cubes))
-        return false;
-      if (isUpper != other.isUpper)
-        return false;
-      return true;
-    }
   }
   
   private List<Folding> mUnfoldedT;
@@ -908,7 +880,7 @@ public class Solver {
     
     mUnfoldedT = removeDuplicates(mUnfoldedT);
     mUnfoldedX = removeDuplicates(mUnfoldedX);
-  }
+  }  // XXX: finish solution
   
   public String getSolution() {
     StringBuilder solution = new StringBuilder();
@@ -1021,59 +993,45 @@ public class Solver {
     return segment_valid && left && right;
   }
   
+  private boolean equal(Folding lhs, Folding rhs) {
+    if (lhs.isUpper != rhs.isUpper) {
+      return false;
+    }
+    if (lhs.form != rhs.form) {
+      return false;
+    }
+    for (int i = 0; i < 6; ++i) {
+      Cube lhs_cube = lhs.cubes.get(i);
+      Cube rhs_cube = rhs.cubes.get(i);
+      if (!Util.equal(lhs_cube, rhs_cube)) {
+        return false;
+      }
+    }
+    return true;
+  }
+  
   private List<Folding> removeDuplicates(List<Folding> list) {
     if (list.size() < 2) {
       return list;
     }
-    
     List<Folding> result = new ArrayList<>(list.size());
-    result.add(list.get(0));
-    int total = list.size() - 1;
     
-    for (int i = 0; i < list.size(); ++i) {
-      Folding lhs = list.get(i);
-      int counter = 0;
-      for (int j = 1; j < list.size(); ++j) {
-        Folding rhs = list.get(j);
-        if (!lhs.equals(rhs)) {
-          ++counter;
-        } else {
-//          System.err.println("I [" + i + "] J[" + j + "]");
-//          
-//          switch (lhs.form) {
-//            case T:
-//              switch (rhs.form) {
-//                case T:
-//                  System.err.println(unfoldedTtoString(lhs));
-//                  System.err.println(unfoldedTtoString(rhs));
-//                  break;
-//                case X:
-//                  System.err.println(unfoldedTtoString(lhs));
-//                  System.err.println(unfoldedXtoString(rhs));
-//                  break;
-//              }
-//              break;
-//            case X:
-//              switch (rhs.form) {
-//                case T:
-//                  System.err.println(unfoldedXtoString(lhs));
-//                  System.err.println(unfoldedTtoString(rhs));
-//                  break;
-//                case X:
-//                  System.err.println(unfoldedXtoString(lhs));
-//                  System.err.println(unfoldedXtoString(rhs));
-//                  break;
-//              }
-//              break;
-//          }
-//          return null;
-        }
-      }
-      if (counter == total - i) {
-        result.add(lhs);
-      }
+    Set<Folding> unique_list = new TreeSet<>(
+        new Comparator<Folding>() {
+          @Override
+          public int compare(Folding lhs, Folding rhs) {
+            if (equal(lhs, rhs)) {
+              return 0;
+            } else {
+              return -1;
+            }
+          }});
+    
+    unique_list.addAll(list);
+    
+    for (Folding item : unique_list) {
+      result.add(item);
     }
-
     return result;
   }
   
