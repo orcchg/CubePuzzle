@@ -23,10 +23,6 @@ public class Cube {
     return mID;
   }
   
-  public Orientation getOrientation() {
-    return mOrientation;
-  }
-  
   public Side getSide(Orientation orientation) {
     Side side = null;
     switch (orientation) {
@@ -135,7 +131,7 @@ public class Cube {
         }
         break;
     }
-    mOrientation = orientation;
+    mOrientation = Orientation.UP;
     return this;
   }
   
