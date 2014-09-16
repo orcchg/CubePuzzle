@@ -439,9 +439,9 @@ public class Solver {
                   
                   int subcounter = 0;
                   last_orientation_loop: for (Orientation last_orientation : Orientation.entries) {
-                    boolean success_one = match(ring.get(id), Orientation.RIGHT, last_cube, last_orientation);
-                    boolean another_success_one = matchReversed(ring.get(id), Orientation.RIGHT, last_cube, last_orientation);
-                    boolean last_mirrored = Orientation.makeMirroredRight(orientation, direct, reversed);
+                    boolean another_direct = match(ring.get(id), Orientation.RIGHT, last_cube, last_orientation);
+                    boolean another_reversed = matchReversed(ring.get(id), Orientation.RIGHT, last_cube, last_orientation);
+                    boolean last_mirrored = Orientation.makeMirroredRight(orientation, another_direct, another_reversed);
                     
                     Orientation.Feature local_valid_orientation = null;
                     switch (orientation) {
@@ -459,7 +459,7 @@ public class Solver {
                         break;
                     }
                     
-                    if (success_one || another_success_one) {
+                    if (another_direct || another_reversed) {
                       Cube last_candidate_cube = new Cube(last_cube);
                       if (last_mirrored) {
                         last_candidate_cube.mirror();
@@ -484,6 +484,11 @@ public class Solver {
                         //if (isUnfoldedTValid(answerT)) {  //XXX
                           mUnfoldedT.add(answerT);
                         //}
+                        
+                        if (candidate_cube.getID() == 0 && last_candidate_cube.getID() == 2) {
+                          System.out.println(unfoldedTtoString(answerT));
+                        }
+                        
                       }
                     } else {
                       ++subcounter;
@@ -554,9 +559,9 @@ public class Solver {
                   
                   int subcounter = 0;
                   last_orientation_loop: for (Orientation last_orientation : Orientation.entries) {
-                    boolean success_one = match(ring.get(id), Orientation.LEFT, last_cube, last_orientation);
-                    boolean another_success_one = matchReversed(ring.get(id), Orientation.LEFT, last_cube, last_orientation);
-                    boolean last_mirrored = Orientation.makeMirroredLeft(orientation, direct, reversed);
+                    boolean another_direct = match(ring.get(id), Orientation.LEFT, last_cube, last_orientation);
+                    boolean another_reversed = matchReversed(ring.get(id), Orientation.LEFT, last_cube, last_orientation);
+                    boolean last_mirrored = Orientation.makeMirroredLeft(orientation, another_direct, another_reversed);
                     
                     Orientation.Feature local_valid_orientation = null;
                     switch (orientation) {
@@ -574,7 +579,7 @@ public class Solver {
                         break;
                     }
                     
-                    if (success_one || another_success_one) {
+                    if (another_direct || another_reversed) {
                       Cube last_candidate_cube = new Cube(last_cube);
                       if (last_mirrored) {
                         last_candidate_cube.mirror();
@@ -597,7 +602,7 @@ public class Solver {
                         answerT.add(last_candidate_cube);
                         answerT.add(candidate_cube);
                         //if (isUnfoldedTValid(answerT)) {  //XXX
-                          mUnfoldedT.add(answerT);
+                          //mUnfoldedT.add(answerT);
                         //}
                       }
                     } else {
@@ -679,9 +684,9 @@ public class Solver {
                   
                   int subcounter = 0;
                   last_orientation_loop: for (Orientation last_orientation : Orientation.entries) {
-                    boolean success_one = match(ring.get(id), Orientation.RIGHT, last_cube, last_orientation);
-                    boolean another_success_one = match(ring.get(id), Orientation.RIGHT, last_cube, last_orientation);
-                    boolean last_mirrored = Orientation.makeMirroredRight(orientation, direct, reversed);
+                    boolean another_direct = match(ring.get(id), Orientation.RIGHT, last_cube, last_orientation);
+                    boolean another_reversed = match(ring.get(id), Orientation.RIGHT, last_cube, last_orientation);
+                    boolean last_mirrored = Orientation.makeMirroredRight(orientation, another_direct, another_reversed);
                     
                     Orientation.Feature local_valid_orientation = null;
                     switch (orientation) {
@@ -699,7 +704,7 @@ public class Solver {
                         break;
                     }
                     
-                    if (success_one || another_success_one) {
+                    if (another_direct || another_reversed) {
                       Cube last_candidate_cube = new Cube(last_cube);
                       if (last_mirrored) {
                         last_candidate_cube.mirror();
@@ -722,7 +727,7 @@ public class Solver {
                         answerX.add(candidate_cube);
                         answerX.add(last_candidate_cube);
                         //if (isUnfoldedXValid(answerX)) {  //XXX
-                          mUnfoldedX.add(answerX);
+                          //mUnfoldedX.add(answerX);
                         //}
                       }
                     } else {
@@ -794,9 +799,9 @@ public class Solver {
                   
                   int subcounter = 0;
                   last_orientation_loop: for (Orientation last_orientation : Orientation.entries) {
-                    boolean success_one = match(ring.get(id), Orientation.LEFT, last_cube, last_orientation);
-                    boolean another_success_one = match(ring.get(id), Orientation.LEFT, last_cube, last_orientation);
-                    boolean last_mirrored = Orientation.makeMirroredLeft(orientation, direct, reversed);
+                    boolean another_direct = match(ring.get(id), Orientation.LEFT, last_cube, last_orientation);
+                    boolean another_reversed = match(ring.get(id), Orientation.LEFT, last_cube, last_orientation);
+                    boolean last_mirrored = Orientation.makeMirroredLeft(orientation, another_direct, another_reversed);
                     
                     Orientation.Feature local_valid_orientation = null;
                     switch (orientation) {
@@ -814,7 +819,7 @@ public class Solver {
                         break;
                     }
                     
-                    if (success_one || another_success_one) {
+                    if (another_direct || another_reversed) {
                       Cube last_candidate_cube = new Cube(last_cube);
                       if (last_mirrored) {
                         last_candidate_cube.mirror();
@@ -837,7 +842,7 @@ public class Solver {
                         answerX.add(last_candidate_cube);
                         answerX.add(candidate_cube);
                         //if (isUnfoldedXValid(answerX)) {  //XXX
-                          mUnfoldedX.add(answerX);
+                          //mUnfoldedX.add(answerX);
                         //}
                       }
                     } else {
