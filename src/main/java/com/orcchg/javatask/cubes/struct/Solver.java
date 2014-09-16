@@ -1030,6 +1030,7 @@ public class Solver {
   }
   
   // --------------------------------------------------------------------------
+  @SuppressWarnings("unused")
   private String ringToString(final List<Cube> ring) {
     for (Cube c : ring) {
       System.out.print(c.getID() + " ");
