@@ -23,7 +23,7 @@ public class Solver {
     
     private enum Form { T, X };
     
-    Folding(final List<Cube> cubes, boolean isUpper, Form form) {
+    private Folding(final List<Cube> cubes, boolean isUpper, Form form) {
       this.cubes = cubes;
       this.isUpper = isUpper;
       this.form = form;
@@ -425,14 +425,6 @@ public class Solver {
       }  // smallcomb_2 loop
       // ----------------------------------------------------------------------
       
- //     System.out.println(collect_rings.size());
-      for (LinkedList<Cube> ring : collect_rings) {
-        if (ring.get(0).getID() == 3 && ring.get(1).getID() == 1 && ring.get(2).getID() == 4 && ring.get(3).getID() == 5) {
-        System.out.println(Util.printIDs(ring));
-        System.out.println(ringToString(ring));
-        }
-      }
-      
       // --------------------------------------------------------------------------------------------------------------
       
       // ----------------------------------------------------------------------
@@ -443,484 +435,503 @@ public class Solver {
       List<Integer> two_last_pieces = new ArrayList<>(set_cube_ids);
     
       // XXX: trying to add last two pieces
-      Cube cube = new Cube(mCubes.get(two_last_pieces.get(0)));
-      
-      collect_rings_loop: for (LinkedList<Cube> ring : collect_rings) {
-        // try to attach two rest pieces in T unfolded form
-        List<Integer> ring_head_and_tail = new ArrayList<>(2);
-        ring_head_and_tail.add(3);  // head
-        ring_head_and_tail.add(0);  // tail
+      folding_mirror_loop: for (int folding_mirror_i = 0; folding_mirror_i < 4; ++folding_mirror_i) {
+        Cube cube = new Cube(mCubes.get(two_last_pieces.get(0)));
+        if (folding_mirror_i == 2 || folding_mirror_i == 3) {
+          cube.mirror();
+        }
         
-        ring_head_and_tail_loop: for (int id : ring_head_and_tail) {
-          // ------------------------------------------------------------------
-          // try left side
-          orientation_loop: for (Orientation orientation : Orientation.entries) {
-            boolean direct = match(ring.get(id), Orientation.LEFT, cube, orientation);
-            boolean reversed = matchReversed(ring.get(id), Orientation.LEFT, cube, orientation);
-            boolean mirrored = Orientation.makeMirroredLeft(orientation, direct, reversed);
-            
-            Orientation.Feature valid_orientation = null;
-            switch (orientation) {
-              case UP:
-                valid_orientation = new Orientation.Feature.Builder().setOrientation(Orientation.RIGHT).build();
-                break;
-              case DOWN:
-                valid_orientation = new Orientation.Feature.Builder().setOrientation(Orientation.LEFT).setReversed(true).build();
-                break;
-              case RIGHT:
-                valid_orientation = new Orientation.Feature.Builder().setOrientation(Orientation.UP).build();
-                break;
-              case LEFT:
-                valid_orientation = new Orientation.Feature.Builder().setOrientation(Orientation.DOWN).setReversed(true).build();
-                break;
-            }
-            
-            if (direct || reversed) {
-              Cube candidate_cube = new Cube(cube);
-              if (mirrored) {
-                candidate_cube.mirror();
-                candidate_cube.setOrientation(Orientation.mirror(valid_orientation.getOrientation()));
-              } else {
-                candidate_cube.setOrientation(valid_orientation.getOrientation());
+        collect_rings_loop: for (LinkedList<Cube> ring : collect_rings) {
+          // try to attach two rest pieces in T unfolded form
+          List<Integer> ring_head_and_tail = new ArrayList<>(2);
+          ring_head_and_tail.add(3);  // head
+          ring_head_and_tail.add(0);  // tail
+          
+          ring_head_and_tail_loop: for (int id : ring_head_and_tail) {
+            // ------------------------------------------------------------------
+            // try left side
+            orientation_loop: for (Orientation orientation : Orientation.entries) {
+              boolean direct = match(ring.get(id), Orientation.LEFT, cube, orientation);
+              boolean reversed = matchReversed(ring.get(id), Orientation.LEFT, cube, orientation);
+              boolean mirrored = Orientation.makeMirroredLeft(orientation, direct, reversed);
+              
+              Orientation.Feature valid_orientation = null;
+              switch (orientation) {
+                case UP:
+                  valid_orientation = new Orientation.Feature.Builder().setOrientation(Orientation.RIGHT).build();
+                  break;
+                case DOWN:
+                  valid_orientation = new Orientation.Feature.Builder().setOrientation(Orientation.LEFT).setReversed(true).build();
+                  break;
+                case RIGHT:
+                  valid_orientation = new Orientation.Feature.Builder().setOrientation(Orientation.UP).build();
+                  break;
+                case LEFT:
+                  valid_orientation = new Orientation.Feature.Builder().setOrientation(Orientation.DOWN).setReversed(true).build();
+                  break;
               }
               
-              boolean try_one   = matchReversed(ring.get(id == 3 ? 2 : 3), Orientation.LEFT, candidate_cube, Orientation.DOWN);
-              boolean try_two   = match(ring.get(id == 3 ? 0 : 1), Orientation.LEFT, candidate_cube, Orientation.UP);
-              boolean try_three = matchReversed(ring.get(id == 3 ? 1 : 2), Orientation.LEFT, candidate_cube, Orientation.LEFT);
-              boolean accumulate = try_one && try_two && try_three;
-              
-              if (accumulate) {
-                // try last piece
-                Cube last_cube = new Cube(mCubes.get(two_last_pieces.get(1)));
-                
-                int subcounter = 0;
-                last_orientation_loop: for (Orientation last_orientation : Orientation.entries) {
-                  boolean another_direct = match(ring.get(id), Orientation.RIGHT, last_cube, last_orientation);
-                  boolean another_reversed = matchReversed(ring.get(id), Orientation.RIGHT, last_cube, last_orientation);
-                  boolean last_mirrored = Orientation.makeMirroredRight(last_orientation, another_direct, another_reversed);
-                  
-                  Orientation.Feature local_valid_orientation = null;
-                  switch (last_orientation) {
-                    case UP:
-                      local_valid_orientation = new Orientation.Feature.Builder().setOrientation(Orientation.LEFT).setReversed(true).build();
-                      break;
-                    case DOWN:
-                      local_valid_orientation = new Orientation.Feature.Builder().setOrientation(Orientation.RIGHT).build();
-                      break;
-                    case RIGHT:
-                      local_valid_orientation = new Orientation.Feature.Builder().setOrientation(Orientation.DOWN).setReversed(true).build();
-                      break;
-                    case LEFT:
-                      local_valid_orientation = new Orientation.Feature.Builder().setOrientation(Orientation.UP).build();
-                      break;
-                  }
-                  
-                  if (another_direct || another_reversed) {
-                    Cube last_candidate_cube = new Cube(last_cube);
-                    if (last_mirrored) {
-                      last_candidate_cube.mirror();
-                      last_candidate_cube.setOrientation(Orientation.mirror(local_valid_orientation.getOrientation()));
-                    } else {
-                      last_candidate_cube.setOrientation(local_valid_orientation.getOrientation());
-                    }
-                    
-                    boolean success_two   = match(ring.get(id == 3 ? 2 : 3), Orientation.RIGHT, last_candidate_cube, Orientation.DOWN);
-                    boolean success_three = matchReversed(ring.get(id == 3 ? 0 : 1), Orientation.RIGHT, last_candidate_cube, Orientation.UP);
-                    boolean success_four  = matchReversed(ring.get(id == 3 ? 1 : 2), Orientation.RIGHT, last_candidate_cube, Orientation.RIGHT);
-                    boolean success = success_two && success_three && success_four;
-                    
-                    if (success) {
-                      // we have got an answer - T unfolded form
-                      List<Cube> answerT = new ArrayList<>(6);
-                      for (Cube cube_from_ring : ring) {
-                        answerT.add(cube_from_ring);
-                      }
-                      answerT.add(candidate_cube);
-                      answerT.add(last_candidate_cube);
-                      Folding folding = new Folding(answerT, id == 3 ? true : false, Folding.Form.T);
-                      if (isUnfoldedTValid(folding)) {  // XXX: Record unfolded T, first from left
-                        mUnfoldedT.add(folding);
-                      }
-                    }
-                  } else {
-                    ++subcounter;
-                    continue last_orientation_loop;
-                  }
-                }  // last_orientation_loop
-                
-                if (subcounter == Orientation.size) {
-                  // last piece has not matched - the whole ring is wrong or orientation of 1st piece is wrong
-                  // retry orientation of 1st piece
-                  subcounter = 0;
-                  continue orientation_loop;
+              if (direct || reversed) {
+                Cube candidate_cube = new Cube(cube);
+                if (mirrored) {
+                  candidate_cube.mirror();
+                  candidate_cube.setOrientation(Orientation.mirror(valid_orientation.getOrientation()));
+                } else {
+                  candidate_cube.setOrientation(valid_orientation.getOrientation());
                 }
                 
-              } else {
-                // this piece does not match
-              }  // accumulate (if)
-              
-            } else {
-              // this piece does not match in such orientation
-            }  // result (if)
-          }  // orientations_loop
-          // ------------------------------------------------------------------
-          
-          // ------------------------------------------------------------------
-          // try another side
-          orientation_loop: for (Orientation orientation : Orientation.entries) {
-            boolean direct = match(ring.get(id), Orientation.RIGHT, cube, orientation);
-            boolean reversed = matchReversed(ring.get(id), Orientation.RIGHT, cube, orientation);
-            boolean mirrored = Orientation.makeMirroredRight(orientation, direct, reversed);
-            
-            Orientation.Feature valid_orientation = null;
-            switch (orientation) {
-              case UP:
-                valid_orientation = new Orientation.Feature.Builder().setOrientation(Orientation.LEFT).setReversed(true).build();
-                break;
-              case DOWN:
-                valid_orientation = new Orientation.Feature.Builder().setOrientation(Orientation.RIGHT).build();
-                break;
-              case RIGHT:
-                valid_orientation = new Orientation.Feature.Builder().setOrientation(Orientation.DOWN).setReversed(true).build();
-                break;
-              case LEFT:
-                valid_orientation = new Orientation.Feature.Builder().setOrientation(Orientation.UP).build();
-                break;
-            }
-            
-            if (direct || reversed) {
-              Cube candidate_cube = new Cube(cube);
-              if (mirrored) {
-                candidate_cube.mirror();
-                candidate_cube.setOrientation(Orientation.mirror(valid_orientation.getOrientation()));
-              } else {
-                candidate_cube.setOrientation(valid_orientation.getOrientation());
-              }
-
-              boolean try_one   = match(ring.get(id == 3 ? 2 : 3), Orientation.RIGHT, candidate_cube, Orientation.DOWN);
-              boolean try_two   = matchReversed(ring.get(id == 3 ? 0 : 1), Orientation.RIGHT, candidate_cube, Orientation.UP);
-              boolean try_three = matchReversed(ring.get(id == 3 ? 1 : 2), Orientation.RIGHT, candidate_cube, Orientation.RIGHT);
-              boolean accumulate = try_one && try_two && try_three;
-              
-              if (accumulate) {
-                // try last piece
-                Cube last_cube = new Cube(mCubes.get(two_last_pieces.get(1)));
+                boolean try_one   = matchReversed(ring.get(id == 3 ? 2 : 3), Orientation.LEFT, candidate_cube, Orientation.DOWN);
+                boolean try_two   = match(ring.get(id == 3 ? 0 : 1), Orientation.LEFT, candidate_cube, Orientation.UP);
+                boolean try_three = matchReversed(ring.get(id == 3 ? 1 : 2), Orientation.LEFT, candidate_cube, Orientation.LEFT);
+                boolean accumulate = try_one && try_two && try_three;
                 
-                int subcounter = 0;
-                last_orientation_loop: for (Orientation last_orientation : Orientation.entries) {
-                  boolean another_direct = match(ring.get(id), Orientation.LEFT, last_cube, last_orientation);
-                  boolean another_reversed = matchReversed(ring.get(id), Orientation.LEFT, last_cube, last_orientation);
-                  boolean last_mirrored = Orientation.makeMirroredLeft(last_orientation, another_direct, another_reversed);
-                  
-                  Orientation.Feature local_valid_orientation = null;
-                  switch (last_orientation) {
-                    case UP:
-                      local_valid_orientation = new Orientation.Feature.Builder().setOrientation(Orientation.RIGHT).build();
-                      break;
-                    case DOWN:
-                      local_valid_orientation = new Orientation.Feature.Builder().setOrientation(Orientation.LEFT).setReversed(true).build();
-                      break;
-                    case RIGHT:
-                      local_valid_orientation = new Orientation.Feature.Builder().setOrientation(Orientation.UP).build();
-                      break;
-                    case LEFT:
-                      local_valid_orientation = new Orientation.Feature.Builder().setOrientation(Orientation.DOWN).setReversed(true).build();
-                      break;
+                if (accumulate) {
+                  // try last piece
+                  Cube last_cube = new Cube(mCubes.get(two_last_pieces.get(1)));
+                  if (folding_mirror_i == 1 || folding_mirror_i == 3) {
+                    last_cube.mirror();
                   }
                   
-                  if (another_direct || another_reversed) {
-                    Cube last_candidate_cube = new Cube(last_cube);
-                    if (last_mirrored) {
-                      last_candidate_cube.mirror();
-                      last_candidate_cube.setOrientation(Orientation.mirror(local_valid_orientation.getOrientation()));
-                    } else {
-                      last_candidate_cube.setOrientation(local_valid_orientation.getOrientation());
-                    }
-
-                    boolean success_two   = matchReversed(ring.get(id == 3 ? 2 : 3), Orientation.LEFT, last_candidate_cube, Orientation.DOWN);
-                    boolean success_three = match(ring.get(id == 3 ? 0 : 1), Orientation.LEFT, last_candidate_cube, Orientation.UP);
-                    boolean success_four  = matchReversed(ring.get(id == 3 ? 1 : 2), Orientation.LEFT, last_candidate_cube, Orientation.LEFT);
-                    boolean success = success_two && success_three && success_four;
+                  int subcounter = 0;
+                  last_orientation_loop: for (Orientation last_orientation : Orientation.entries) {
+                    boolean another_direct = match(ring.get(id), Orientation.RIGHT, last_cube, last_orientation);
+                    boolean another_reversed = matchReversed(ring.get(id), Orientation.RIGHT, last_cube, last_orientation);
+                    boolean last_mirrored = Orientation.makeMirroredRight(last_orientation, another_direct, another_reversed);
                     
-                    if (success) {
-                      // we have got an answer - T unfolded form
-                      List<Cube> answerT = new ArrayList<>(6);
-                      for (Cube cube_from_ring : ring) {
-                        answerT.add(cube_from_ring);
-                      }
-                      answerT.add(last_candidate_cube);
-                      answerT.add(candidate_cube);
-                      Folding folding = new Folding(answerT, id == 3 ? true : false, Folding.Form.T);
-                      if (isUnfoldedTValid(folding)) {  // XXX: Record unfolded T, first from right
-                        mUnfoldedT.add(folding);
-                      }
+                    Orientation.Feature local_valid_orientation = null;
+                    switch (last_orientation) {
+                      case UP:
+                        local_valid_orientation = new Orientation.Feature.Builder().setOrientation(Orientation.LEFT).setReversed(true).build();
+                        break;
+                      case DOWN:
+                        local_valid_orientation = new Orientation.Feature.Builder().setOrientation(Orientation.RIGHT).build();
+                        break;
+                      case RIGHT:
+                        local_valid_orientation = new Orientation.Feature.Builder().setOrientation(Orientation.DOWN).setReversed(true).build();
+                        break;
+                      case LEFT:
+                        local_valid_orientation = new Orientation.Feature.Builder().setOrientation(Orientation.UP).build();
+                        break;
                     }
-                  } else {
-                    ++subcounter;
-                    continue last_orientation_loop;
+                    
+                    if (another_direct || another_reversed) {
+                      Cube last_candidate_cube = new Cube(last_cube);
+                      if (last_mirrored) {
+                        last_candidate_cube.mirror();
+                        last_candidate_cube.setOrientation(Orientation.mirror(local_valid_orientation.getOrientation()));
+                      } else {
+                        last_candidate_cube.setOrientation(local_valid_orientation.getOrientation());
+                      }
+                      
+                      boolean success_two   = match(ring.get(id == 3 ? 2 : 3), Orientation.RIGHT, last_candidate_cube, Orientation.DOWN);
+                      boolean success_three = matchReversed(ring.get(id == 3 ? 0 : 1), Orientation.RIGHT, last_candidate_cube, Orientation.UP);
+                      boolean success_four  = matchReversed(ring.get(id == 3 ? 1 : 2), Orientation.RIGHT, last_candidate_cube, Orientation.RIGHT);
+                      boolean success = success_two && success_three && success_four;
+                      
+                      if (success) {
+                        // we have got an answer - T unfolded form
+                        List<Cube> answerT = new ArrayList<>(6);
+                        for (Cube cube_from_ring : ring) {
+                          answerT.add(cube_from_ring);
+                        }
+                        answerT.add(candidate_cube);
+                        answerT.add(last_candidate_cube);
+                        Folding folding = new Folding(answerT, id == 3 ? true : false, Folding.Form.T);
+                        if (isUnfoldedTValid(folding)) {  // XXX: Record unfolded T, first from left
+                          mUnfoldedT.add(folding);
+                        }
+                      }
+                    } else {
+                      ++subcounter;
+                      continue last_orientation_loop;
+                    }
+                  }  // last_orientation_loop
+                  
+                  if (subcounter == Orientation.size) {
+                    // last piece has not matched - the whole ring is wrong or orientation of 1st piece is wrong
+                    // retry orientation of 1st piece
+                    subcounter = 0;
+                    continue orientation_loop;
                   }
-                }  // last_orientation_loop
-                
-                if (subcounter == Orientation.size) {
-                  // last piece has not matched - the whole ring is wrong or orientation of 1st piece is wrong
-                  // retry orientation of 1st piece
-                  subcounter = 0;
-                  continue orientation_loop;
-                }
+                  
+                } else {
+                  // this piece does not match
+                }  // accumulate (if)
                 
               } else {
-                // this piece does not match
-              }  // accumulate (if)
+                // this piece does not match in such orientation
+              }  // result (if)
+            }  // orientations_loop
+            // ------------------------------------------------------------------
+            
+            // ------------------------------------------------------------------
+            // try another side
+            orientation_loop: for (Orientation orientation : Orientation.entries) {
+              boolean direct = match(ring.get(id), Orientation.RIGHT, cube, orientation);
+              boolean reversed = matchReversed(ring.get(id), Orientation.RIGHT, cube, orientation);
+              boolean mirrored = Orientation.makeMirroredRight(orientation, direct, reversed);
               
-            } else {
-              // this piece does not match in such orientation
-            }  // result (if)
-          }  // orientations_loop
-          // ------------------------------------------------------------------
-          
-          continue ring_head_and_tail_loop;
-        }  // ring_head_and_tail_loop
-        
-        // --------------------------------------------------------------------
-        // try to attach two rest pieces in X unfolded form
-        List<Integer> ring_middle_band = new ArrayList<>(2);
-        ring_middle_band.add(2);  // head
-        ring_middle_band.add(1);  // tail
-        
-        ring_middle_band_loop: for (int id : ring_middle_band) {
-          // ------------------------------------------------------------------
-          // try left side
-          orientation_loop: for (Orientation orientation : Orientation.entries) {
-            boolean direct = match(ring.get(id), Orientation.LEFT, cube, orientation);
-            boolean reversed = matchReversed(ring.get(id), Orientation.LEFT, cube, orientation);
-            boolean mirrored = Orientation.makeMirroredLeft(orientation, direct, reversed);
-            
-            Orientation.Feature valid_orientation = null;
-            switch (orientation) {
-              case UP:
-                valid_orientation = new Orientation.Feature.Builder().setOrientation(Orientation.RIGHT).build();
-                break;
-              case DOWN:
-                valid_orientation = new Orientation.Feature.Builder().setOrientation(Orientation.LEFT).setReversed(true).build();
-                break;
-              case RIGHT:
-                valid_orientation = new Orientation.Feature.Builder().setOrientation(Orientation.UP).build();
-                break;
-              case LEFT:
-                valid_orientation = new Orientation.Feature.Builder().setOrientation(Orientation.DOWN).setReversed(true).build();
-                break;
-            }
-            
-            if (direct || reversed) {
-              Cube candidate_cube = new Cube(cube);
-              if (mirrored) {
-                candidate_cube.mirror();
-                candidate_cube.setOrientation(Orientation.mirror(valid_orientation.getOrientation()));
-              } else {
-                candidate_cube.setOrientation(valid_orientation.getOrientation());
+              Orientation.Feature valid_orientation = null;
+              switch (orientation) {
+                case UP:
+                  valid_orientation = new Orientation.Feature.Builder().setOrientation(Orientation.LEFT).setReversed(true).build();
+                  break;
+                case DOWN:
+                  valid_orientation = new Orientation.Feature.Builder().setOrientation(Orientation.RIGHT).build();
+                  break;
+                case RIGHT:
+                  valid_orientation = new Orientation.Feature.Builder().setOrientation(Orientation.DOWN).setReversed(true).build();
+                  break;
+                case LEFT:
+                  valid_orientation = new Orientation.Feature.Builder().setOrientation(Orientation.UP).build();
+                  break;
               }
               
-              boolean try_one   = matchReversed(ring.get(id == 2 ? 1 : 0), Orientation.LEFT, candidate_cube, Orientation.DOWN);
-              boolean try_two   = match(ring.get(id == 2 ? 3 : 2), Orientation.LEFT, candidate_cube, Orientation.UP);
-              boolean try_three = matchReversed(ring.get(id == 2 ? 0 : 3), Orientation.LEFT, candidate_cube, Orientation.LEFT);
-              boolean accumulate = try_one && try_two && try_three;
-              
-              if (accumulate) {
-                // try last piece
-                Cube last_cube = new Cube(mCubes.get(two_last_pieces.get(1)));
-                
-                int subcounter = 0;
-                last_orientation_loop: for (Orientation last_orientation : Orientation.entries) {
-                  boolean another_direct = match(ring.get(id), Orientation.RIGHT, last_cube, last_orientation);
-                  boolean another_reversed = matchReversed(ring.get(id), Orientation.RIGHT, last_cube, last_orientation);
-                  boolean last_mirrored = Orientation.makeMirroredRight(last_orientation, another_direct, another_reversed);
-                  
-                  Orientation.Feature local_valid_orientation = null;
-                  switch (last_orientation) {
-                    case UP:
-                      local_valid_orientation = new Orientation.Feature.Builder().setOrientation(Orientation.LEFT).setReversed(true).build();
-                      break;
-                    case DOWN:
-                      local_valid_orientation = new Orientation.Feature.Builder().setOrientation(Orientation.RIGHT).build();
-                      break;
-                    case RIGHT:
-                      local_valid_orientation = new Orientation.Feature.Builder().setOrientation(Orientation.DOWN).setReversed(true).build();
-                      break;
-                    case LEFT:
-                      local_valid_orientation = new Orientation.Feature.Builder().setOrientation(Orientation.UP).build();
-                      break;
-                  }
-                  
-                  if (another_direct || another_reversed) {
-                    Cube last_candidate_cube = new Cube(last_cube);
-                    if (last_mirrored) {
-                      last_candidate_cube.mirror();
-                      last_candidate_cube.setOrientation(Orientation.mirror(local_valid_orientation.getOrientation()));
-                    } else {
-                      last_candidate_cube.setOrientation(local_valid_orientation.getOrientation());
-                    }
-                    
-                    boolean success_two   = match(ring.get(id == 2 ? 1 : 0), Orientation.RIGHT, last_candidate_cube, Orientation.DOWN);
-                    boolean success_three = matchReversed(ring.get(id == 2 ? 3 : 2), Orientation.RIGHT, last_candidate_cube, Orientation.UP);
-                    boolean success_four  = matchReversed(ring.get(id == 2 ? 0 : 3), Orientation.RIGHT, last_candidate_cube, Orientation.RIGHT);
-                    boolean success = success_two && success_three && success_four;
-                    
-                    if (success) {
-                      // we have got an answer - X unfolded form
-                      List<Cube> answerX = new ArrayList<>(6);
-                      for (Cube cube_from_ring : ring) {
-                        answerX.add(cube_from_ring);
-                      }
-                      answerX.add(candidate_cube);
-                      answerX.add(last_candidate_cube);
-                      Folding folding = new Folding(answerX, id == 2 ? true : false, Folding.Form.X);
-                      if (isUnfoldedXValid(folding)) {  // XXX: Record unfolded X, first from left
-                        mUnfoldedX.add(folding);
-                      }
-                    }
-                  } else {
-                    ++subcounter;
-                    continue last_orientation_loop;
-                  }
-                }  // last_orientation_loop
-                
-                if (subcounter == Orientation.size) {
-                  // last piece has not matched - the whole ring is wrong or orientation of 1st piece is wrong
-                  // retry orientation of 1st piece
-                  subcounter = 0;
-                  continue orientation_loop;
+              if (direct || reversed) {
+                Cube candidate_cube = new Cube(cube);
+                if (mirrored) {
+                  candidate_cube.mirror();
+                  candidate_cube.setOrientation(Orientation.mirror(valid_orientation.getOrientation()));
+                } else {
+                  candidate_cube.setOrientation(valid_orientation.getOrientation());
                 }
+  
+                boolean try_one   = match(ring.get(id == 3 ? 2 : 3), Orientation.RIGHT, candidate_cube, Orientation.DOWN);
+                boolean try_two   = matchReversed(ring.get(id == 3 ? 0 : 1), Orientation.RIGHT, candidate_cube, Orientation.UP);
+                boolean try_three = matchReversed(ring.get(id == 3 ? 1 : 2), Orientation.RIGHT, candidate_cube, Orientation.RIGHT);
+                boolean accumulate = try_one && try_two && try_three;
+                
+                if (accumulate) {
+                  // try last piece
+                  Cube last_cube = new Cube(mCubes.get(two_last_pieces.get(1)));
+                  if (folding_mirror_i == 1 || folding_mirror_i == 3) {
+                    last_cube.mirror();
+                  }
+                  
+                  int subcounter = 0;
+                  last_orientation_loop: for (Orientation last_orientation : Orientation.entries) {
+                    boolean another_direct = match(ring.get(id), Orientation.LEFT, last_cube, last_orientation);
+                    boolean another_reversed = matchReversed(ring.get(id), Orientation.LEFT, last_cube, last_orientation);
+                    boolean last_mirrored = Orientation.makeMirroredLeft(last_orientation, another_direct, another_reversed);
+                    
+                    Orientation.Feature local_valid_orientation = null;
+                    switch (last_orientation) {
+                      case UP:
+                        local_valid_orientation = new Orientation.Feature.Builder().setOrientation(Orientation.RIGHT).build();
+                        break;
+                      case DOWN:
+                        local_valid_orientation = new Orientation.Feature.Builder().setOrientation(Orientation.LEFT).setReversed(true).build();
+                        break;
+                      case RIGHT:
+                        local_valid_orientation = new Orientation.Feature.Builder().setOrientation(Orientation.UP).build();
+                        break;
+                      case LEFT:
+                        local_valid_orientation = new Orientation.Feature.Builder().setOrientation(Orientation.DOWN).setReversed(true).build();
+                        break;
+                    }
+                    
+                    if (another_direct || another_reversed) {
+                      Cube last_candidate_cube = new Cube(last_cube);
+                      if (last_mirrored) {
+                        last_candidate_cube.mirror();
+                        last_candidate_cube.setOrientation(Orientation.mirror(local_valid_orientation.getOrientation()));
+                      } else {
+                        last_candidate_cube.setOrientation(local_valid_orientation.getOrientation());
+                      }
+  
+                      boolean success_two   = matchReversed(ring.get(id == 3 ? 2 : 3), Orientation.LEFT, last_candidate_cube, Orientation.DOWN);
+                      boolean success_three = match(ring.get(id == 3 ? 0 : 1), Orientation.LEFT, last_candidate_cube, Orientation.UP);
+                      boolean success_four  = matchReversed(ring.get(id == 3 ? 1 : 2), Orientation.LEFT, last_candidate_cube, Orientation.LEFT);
+                      boolean success = success_two && success_three && success_four;
+                      
+                      if (success) {
+                        // we have got an answer - T unfolded form
+                        List<Cube> answerT = new ArrayList<>(6);
+                        for (Cube cube_from_ring : ring) {
+                          answerT.add(cube_from_ring);
+                        }
+                        answerT.add(last_candidate_cube);
+                        answerT.add(candidate_cube);
+                        Folding folding = new Folding(answerT, id == 3 ? true : false, Folding.Form.T);
+                        if (isUnfoldedTValid(folding)) {  // XXX: Record unfolded T, first from right
+                          mUnfoldedT.add(folding);
+                        }
+                      }
+                    } else {
+                      ++subcounter;
+                      continue last_orientation_loop;
+                    }
+                  }  // last_orientation_loop
+                  
+                  if (subcounter == Orientation.size) {
+                    // last piece has not matched - the whole ring is wrong or orientation of 1st piece is wrong
+                    // retry orientation of 1st piece
+                    subcounter = 0;
+                    continue orientation_loop;
+                  }
+                  
+                } else {
+                  // this piece does not match
+                }  // accumulate (if)
                 
               } else {
-                // this piece does not match
-              }  // accumulate (if)
-              
-            } else {
-              // this piece does not match in such orientation
-            }  // result (if)
-          }  // orientations_loop
-          // ------------------------------------------------------------------
+                // this piece does not match in such orientation
+              }  // result (if)
+            }  // orientations_loop
+            // ------------------------------------------------------------------
+            
+            continue ring_head_and_tail_loop;
+          }  // ring_head_and_tail_loop
           
-          // ------------------------------------------------------------------
-          // try another side
-          orientation_loop: for (Orientation orientation : Orientation.entries) {
-            boolean direct = match(ring.get(id), Orientation.RIGHT, cube, orientation);
-            boolean reversed = matchReversed(ring.get(id), Orientation.RIGHT, cube, orientation);
-            boolean mirrored = Orientation.makeMirroredRight(orientation, direct, reversed);
-            
-            Orientation.Feature valid_orientation = null;
-            switch (orientation) {
-              case UP:
-                valid_orientation = new Orientation.Feature.Builder().setOrientation(Orientation.LEFT).setReversed(true).build();
-                break;
-              case DOWN:
-                valid_orientation = new Orientation.Feature.Builder().setOrientation(Orientation.RIGHT).build();
-                break;
-              case RIGHT:
-                valid_orientation = new Orientation.Feature.Builder().setOrientation(Orientation.DOWN).setReversed(true).build();
-                break;
-              case LEFT:
-                valid_orientation = new Orientation.Feature.Builder().setOrientation(Orientation.UP).build();
-                break;
-            }
-            
-            if (direct || reversed) {
-              Cube candidate_cube = new Cube(cube);
-              if (mirrored) {
-                candidate_cube.mirror();
-                candidate_cube.setOrientation(Orientation.mirror(valid_orientation.getOrientation()));
-              } else {
-                candidate_cube.setOrientation(valid_orientation.getOrientation());
+          // --------------------------------------------------------------------
+          // try to attach two rest pieces in X unfolded form
+          List<Integer> ring_middle_band = new ArrayList<>(2);
+          ring_middle_band.add(2);  // head
+          ring_middle_band.add(1);  // tail
+          
+          ring_middle_band_loop: for (int id : ring_middle_band) {
+            // ------------------------------------------------------------------
+            // try left side
+            orientation_loop: for (Orientation orientation : Orientation.entries) {
+              boolean direct = match(ring.get(id), Orientation.LEFT, cube, orientation);
+              boolean reversed = matchReversed(ring.get(id), Orientation.LEFT, cube, orientation);
+              boolean mirrored = Orientation.makeMirroredLeft(orientation, direct, reversed);
+              
+              Orientation.Feature valid_orientation = null;
+              switch (orientation) {
+                case UP:
+                  valid_orientation = new Orientation.Feature.Builder().setOrientation(Orientation.RIGHT).build();
+                  break;
+                case DOWN:
+                  valid_orientation = new Orientation.Feature.Builder().setOrientation(Orientation.LEFT).setReversed(true).build();
+                  break;
+                case RIGHT:
+                  valid_orientation = new Orientation.Feature.Builder().setOrientation(Orientation.UP).build();
+                  break;
+                case LEFT:
+                  valid_orientation = new Orientation.Feature.Builder().setOrientation(Orientation.DOWN).setReversed(true).build();
+                  break;
               }
               
-              boolean try_one   = match(ring.get(id == 2 ? 1 : 0), Orientation.RIGHT, candidate_cube, Orientation.DOWN);
-              boolean try_two   = matchReversed(ring.get(id == 2 ? 3 : 2), Orientation.RIGHT, candidate_cube, Orientation.UP);
-              boolean try_three = matchReversed(ring.get(id == 2 ? 0 : 3), Orientation.RIGHT, candidate_cube, Orientation.RIGHT);
-              boolean accumulate = try_one && try_two && try_three;
-              
-              if (accumulate) {
-                // try last piece
-                Cube last_cube = new Cube(mCubes.get(two_last_pieces.get(1)));
-
-                int subcounter = 0;
-                last_orientation_loop: for (Orientation last_orientation : Orientation.entries) {
-                  boolean another_direct = match(ring.get(id), Orientation.LEFT, last_cube, last_orientation);
-                  boolean another_reversed = matchReversed(ring.get(id), Orientation.LEFT, last_cube, last_orientation);
-                  boolean last_mirrored = Orientation.makeMirroredLeft(last_orientation, another_direct, another_reversed);
-                  
-                  Orientation.Feature local_valid_orientation = null;
-                  switch (last_orientation) {
-                    case UP:
-                      local_valid_orientation = new Orientation.Feature.Builder().setOrientation(Orientation.RIGHT).build();
-                      break;
-                    case DOWN:
-                      local_valid_orientation = new Orientation.Feature.Builder().setOrientation(Orientation.LEFT).setReversed(true).build();
-                      break;
-                    case RIGHT:
-                      local_valid_orientation = new Orientation.Feature.Builder().setOrientation(Orientation.UP).build();
-                      break;
-                    case LEFT:
-                      local_valid_orientation = new Orientation.Feature.Builder().setOrientation(Orientation.DOWN).setReversed(true).build();
-                      break;
-                  }
-                  
-                  if (another_direct || another_reversed) {
-                    Cube last_candidate_cube = new Cube(last_cube);
-                    if (last_mirrored) {
-                      last_candidate_cube.mirror();
-                      last_candidate_cube.setOrientation(Orientation.mirror(local_valid_orientation.getOrientation()));
-                    } else {
-                      last_candidate_cube.setOrientation(local_valid_orientation.getOrientation());
-                    }
-                    
-                    boolean success_two   = matchReversed(ring.get(id == 2 ? 1 : 0), Orientation.LEFT, last_candidate_cube, Orientation.DOWN);
-                    boolean success_three = match(ring.get(id == 2 ? 3 : 2), Orientation.LEFT, last_candidate_cube, Orientation.UP);
-                    boolean success_four  = matchReversed(ring.get(id == 2 ? 0 : 3), Orientation.LEFT, last_candidate_cube, Orientation.LEFT);
-                    boolean success = success_two && success_three && success_four;
-                    
-                    if (success) {
-                      // we have got an answer - X unfolded form
-                      List<Cube> answerX = new ArrayList<>(6);
-                      for (Cube cube_from_ring : ring) {
-                        answerX.add(cube_from_ring);
-                      }
-                      answerX.add(last_candidate_cube);
-                      answerX.add(candidate_cube);
-                      Folding folding = new Folding(answerX, id == 2 ? true : false, Folding.Form.X);
-                      if (isUnfoldedXValid(folding)) {  // XXX: Record unfolded X, first from right
-                        mUnfoldedX.add(folding);
-                      }
-                    }
-                  } else {
-                    ++subcounter;
-                    continue last_orientation_loop;
-                  }
-                }  // last_orientation_loop
-                
-                if (subcounter == Orientation.size) {
-                  // last piece has not matched - the whole ring is wrong or orientation of 1st piece is wrong
-                  // retry orientation of 1st piece
-                  subcounter = 0;
-                  continue orientation_loop;
+              if (direct || reversed) {
+                Cube candidate_cube = new Cube(cube);
+                if (mirrored) {
+                  candidate_cube.mirror();
+                  candidate_cube.setOrientation(Orientation.mirror(valid_orientation.getOrientation()));
+                } else {
+                  candidate_cube.setOrientation(valid_orientation.getOrientation());
                 }
                 
+                boolean try_one   = matchReversed(ring.get(id == 2 ? 1 : 0), Orientation.LEFT, candidate_cube, Orientation.DOWN);
+                boolean try_two   = match(ring.get(id == 2 ? 3 : 2), Orientation.LEFT, candidate_cube, Orientation.UP);
+                boolean try_three = matchReversed(ring.get(id == 2 ? 0 : 3), Orientation.LEFT, candidate_cube, Orientation.LEFT);
+                boolean accumulate = try_one && try_two && try_three;
+                
+                if (accumulate) {
+                  // try last piece
+                  Cube last_cube = new Cube(mCubes.get(two_last_pieces.get(1)));
+                  if (folding_mirror_i == 1 || folding_mirror_i == 3) {
+                    last_cube.mirror();
+                  }
+                  
+                  int subcounter = 0;
+                  last_orientation_loop: for (Orientation last_orientation : Orientation.entries) {
+                    boolean another_direct = match(ring.get(id), Orientation.RIGHT, last_cube, last_orientation);
+                    boolean another_reversed = matchReversed(ring.get(id), Orientation.RIGHT, last_cube, last_orientation);
+                    boolean last_mirrored = Orientation.makeMirroredRight(last_orientation, another_direct, another_reversed);
+                    
+                    Orientation.Feature local_valid_orientation = null;
+                    switch (last_orientation) {
+                      case UP:
+                        local_valid_orientation = new Orientation.Feature.Builder().setOrientation(Orientation.LEFT).setReversed(true).build();
+                        break;
+                      case DOWN:
+                        local_valid_orientation = new Orientation.Feature.Builder().setOrientation(Orientation.RIGHT).build();
+                        break;
+                      case RIGHT:
+                        local_valid_orientation = new Orientation.Feature.Builder().setOrientation(Orientation.DOWN).setReversed(true).build();
+                        break;
+                      case LEFT:
+                        local_valid_orientation = new Orientation.Feature.Builder().setOrientation(Orientation.UP).build();
+                        break;
+                    }
+                    
+                    if (another_direct || another_reversed) {
+                      Cube last_candidate_cube = new Cube(last_cube);
+                      if (last_mirrored) {
+                        last_candidate_cube.mirror();
+                        last_candidate_cube.setOrientation(Orientation.mirror(local_valid_orientation.getOrientation()));
+                      } else {
+                        last_candidate_cube.setOrientation(local_valid_orientation.getOrientation());
+                      }
+                      
+                      boolean success_two   = match(ring.get(id == 2 ? 1 : 0), Orientation.RIGHT, last_candidate_cube, Orientation.DOWN);
+                      boolean success_three = matchReversed(ring.get(id == 2 ? 3 : 2), Orientation.RIGHT, last_candidate_cube, Orientation.UP);
+                      boolean success_four  = matchReversed(ring.get(id == 2 ? 0 : 3), Orientation.RIGHT, last_candidate_cube, Orientation.RIGHT);
+                      boolean success = success_two && success_three && success_four;
+                      
+                      if (success) {
+                        // we have got an answer - X unfolded form
+                        List<Cube> answerX = new ArrayList<>(6);
+                        for (Cube cube_from_ring : ring) {
+                          answerX.add(cube_from_ring);
+                        }
+                        answerX.add(candidate_cube);
+                        answerX.add(last_candidate_cube);
+                        Folding folding = new Folding(answerX, id == 2 ? true : false, Folding.Form.X);
+                        if (isUnfoldedXValid(folding)) {  // XXX: Record unfolded X, first from left
+                          mUnfoldedX.add(folding);
+                        }
+                      }
+                    } else {
+                      ++subcounter;
+                      continue last_orientation_loop;
+                    }
+                  }  // last_orientation_loop
+                  
+                  if (subcounter == Orientation.size) {
+                    // last piece has not matched - the whole ring is wrong or orientation of 1st piece is wrong
+                    // retry orientation of 1st piece
+                    subcounter = 0;
+                    continue orientation_loop;
+                  }
+                  
+                } else {
+                  // this piece does not match
+                }  // accumulate (if)
+                
               } else {
-                // this piece does not match
-              }  // accumulate (if)
+                // this piece does not match in such orientation
+              }  // result (if)
+            }  // orientations_loop
+            // ------------------------------------------------------------------
+            
+            // ------------------------------------------------------------------
+            // try another side
+            orientation_loop: for (Orientation orientation : Orientation.entries) {
+              boolean direct = match(ring.get(id), Orientation.RIGHT, cube, orientation);
+              boolean reversed = matchReversed(ring.get(id), Orientation.RIGHT, cube, orientation);
+              boolean mirrored = Orientation.makeMirroredRight(orientation, direct, reversed);
               
-            } else {
-              // this piece does not match in such orientation
-            }  // result (if)
-          }  // orientations_loop
-          // ------------------------------------------------------------------
+              Orientation.Feature valid_orientation = null;
+              switch (orientation) {
+                case UP:
+                  valid_orientation = new Orientation.Feature.Builder().setOrientation(Orientation.LEFT).setReversed(true).build();
+                  break;
+                case DOWN:
+                  valid_orientation = new Orientation.Feature.Builder().setOrientation(Orientation.RIGHT).build();
+                  break;
+                case RIGHT:
+                  valid_orientation = new Orientation.Feature.Builder().setOrientation(Orientation.DOWN).setReversed(true).build();
+                  break;
+                case LEFT:
+                  valid_orientation = new Orientation.Feature.Builder().setOrientation(Orientation.UP).build();
+                  break;
+              }
+              
+              if (direct || reversed) {
+                Cube candidate_cube = new Cube(cube);
+                if (mirrored) {
+                  candidate_cube.mirror();
+                  candidate_cube.setOrientation(Orientation.mirror(valid_orientation.getOrientation()));
+                } else {
+                  candidate_cube.setOrientation(valid_orientation.getOrientation());
+                }
+                
+                boolean try_one   = match(ring.get(id == 2 ? 1 : 0), Orientation.RIGHT, candidate_cube, Orientation.DOWN);
+                boolean try_two   = matchReversed(ring.get(id == 2 ? 3 : 2), Orientation.RIGHT, candidate_cube, Orientation.UP);
+                boolean try_three = matchReversed(ring.get(id == 2 ? 0 : 3), Orientation.RIGHT, candidate_cube, Orientation.RIGHT);
+                boolean accumulate = try_one && try_two && try_three;
+                
+                if (accumulate) {
+                  // try last piece
+                  Cube last_cube = new Cube(mCubes.get(two_last_pieces.get(1)));
+                  if (folding_mirror_i == 1 || folding_mirror_i == 3) {
+                    last_cube.mirror();
+                  }
+  
+                  int subcounter = 0;
+                  last_orientation_loop: for (Orientation last_orientation : Orientation.entries) {
+                    boolean another_direct = match(ring.get(id), Orientation.LEFT, last_cube, last_orientation);
+                    boolean another_reversed = matchReversed(ring.get(id), Orientation.LEFT, last_cube, last_orientation);
+                    boolean last_mirrored = Orientation.makeMirroredLeft(last_orientation, another_direct, another_reversed);
+                    
+                    Orientation.Feature local_valid_orientation = null;
+                    switch (last_orientation) {
+                      case UP:
+                        local_valid_orientation = new Orientation.Feature.Builder().setOrientation(Orientation.RIGHT).build();
+                        break;
+                      case DOWN:
+                        local_valid_orientation = new Orientation.Feature.Builder().setOrientation(Orientation.LEFT).setReversed(true).build();
+                        break;
+                      case RIGHT:
+                        local_valid_orientation = new Orientation.Feature.Builder().setOrientation(Orientation.UP).build();
+                        break;
+                      case LEFT:
+                        local_valid_orientation = new Orientation.Feature.Builder().setOrientation(Orientation.DOWN).setReversed(true).build();
+                        break;
+                    }
+                    
+                    if (another_direct || another_reversed) {
+                      Cube last_candidate_cube = new Cube(last_cube);
+                      if (last_mirrored) {
+                        last_candidate_cube.mirror();
+                        last_candidate_cube.setOrientation(Orientation.mirror(local_valid_orientation.getOrientation()));
+                      } else {
+                        last_candidate_cube.setOrientation(local_valid_orientation.getOrientation());
+                      }
+                      
+                      boolean success_two   = matchReversed(ring.get(id == 2 ? 1 : 0), Orientation.LEFT, last_candidate_cube, Orientation.DOWN);
+                      boolean success_three = match(ring.get(id == 2 ? 3 : 2), Orientation.LEFT, last_candidate_cube, Orientation.UP);
+                      boolean success_four  = matchReversed(ring.get(id == 2 ? 0 : 3), Orientation.LEFT, last_candidate_cube, Orientation.LEFT);
+                      boolean success = success_two && success_three && success_four;
+                      
+                      if (success) {
+                        // we have got an answer - X unfolded form
+                        List<Cube> answerX = new ArrayList<>(6);
+                        for (Cube cube_from_ring : ring) {
+                          answerX.add(cube_from_ring);
+                        }
+                        answerX.add(last_candidate_cube);
+                        answerX.add(candidate_cube);
+                        Folding folding = new Folding(answerX, id == 2 ? true : false, Folding.Form.X);
+                        if (isUnfoldedXValid(folding)) {  // XXX: Record unfolded X, first from right
+                          mUnfoldedX.add(folding);
+                        }
+                      }
+                    } else {
+                      ++subcounter;
+                      continue last_orientation_loop;
+                    }
+                  }  // last_orientation_loop
+                  
+                  if (subcounter == Orientation.size) {
+                    // last piece has not matched - the whole ring is wrong or orientation of 1st piece is wrong
+                    // retry orientation of 1st piece
+                    subcounter = 0;
+                    continue orientation_loop;
+                  }
+                  
+                } else {
+                  // this piece does not match
+                }  // accumulate (if)
+                
+              } else {
+                // this piece does not match in such orientation
+              }  // result (if)
+            }  // orientations_loop
+            // ------------------------------------------------------------------
+            
+            continue ring_middle_band_loop;
+          }  // ring_middle_band_loop
           
-          continue ring_middle_band_loop;
-        }  // ring_middle_band_loop
+          // ------------------------------------------------------------------
+  
+          continue collect_rings_loop;
+        }  // collect_rings_loop
         
-        // ------------------------------------------------------------------
-
-        continue collect_rings_loop;
-      }  // collect_rings_loop
+        continue folding_mirror_loop;
+      }  // folding_mirror_i
       
       continue combinations_4;
     }  // combinations_4 loop
@@ -1051,16 +1062,18 @@ public class Solver {
     return segment_valid && left && right;
   }
   
-  private boolean equal(Folding lhs, Folding rhs) {
-    if (lhs.isUpper != rhs.isUpper) {
-      return false;
-    }
+  private boolean equal(final Folding lhs, final Folding rhs) {
     if (lhs.form != rhs.form) {
       return false;
     }
+    
+    Folding rhs_temp = rhs;
+    if (lhs.isUpper != rhs_temp.isUpper) {
+      rhs_temp = flip(rhs);
+    }
     for (int i = 0; i < 6; ++i) {
       Cube lhs_cube = lhs.cubes.get(i);
-      Cube rhs_cube = rhs.cubes.get(i);
+      Cube rhs_cube = rhs_temp.cubes.get(i);
       if (!Util.equal(lhs_cube, rhs_cube)) {
         return false;
       }
@@ -1091,6 +1104,19 @@ public class Solver {
       result.add(item);
     }
     return result;
+  }
+  
+  private Folding flip(final Folding folding) {
+    boolean is_upper = !folding.isUpper;
+    Folding.Form form = folding.form;
+    List<Cube> cubes = new ArrayList<>();
+    for (int i = 3; i >= 0; --i) {
+      cubes.add(folding.cubes.get(i).getOriented(Orientation.DOWN));
+    }
+    cubes.add(folding.cubes.get(5).getOriented(Orientation.DOWN));
+    cubes.add(folding.cubes.get(4).getOriented(Orientation.DOWN));
+    Folding flipped = new Folding(cubes, is_upper, form);
+    return flipped;
   }
   
   // --------------------------------------------------------------------------
