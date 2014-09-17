@@ -96,6 +96,138 @@ public class Solver {
     return flip == rhs_bits;
   }
   
+  public void exhaustiveSolve() {
+    if (mCubes.size() != 6) {
+      throw new IllegalStateException("Number of cubes is not equal to six! No solution.");
+    }
+    
+    List<Integer> cube_ids = new ArrayList<>(6);
+    for (Map.Entry<Integer, Cube> entry : mCubes.entrySet()) {
+      cube_ids.add(entry.getKey());
+    }
+    
+    List<List<Integer>> permutations = Util.allCombinations(cube_ids);
+    permutations_loop: for (List<Integer> permutation : permutations) {
+      
+     // List<Folding> foldings = new ArrayList<>();
+
+      Cube cube_1 = new Cube(mCubes.get(permutation.get(0)));
+      for (int mirror_i1 = 0; mirror_i1 < 2; ++mirror_i1) {
+        for (int rotate_i1 = 0; rotate_i1 < 4; ++rotate_i1) {
+            if (mirror_i1 % 2 == 1) {
+              cube_1.mirror();
+            }
+            for (int rot = 0; rot < rotate_i1; ++rot) {
+              cube_1.rotate();
+            }
+            // have cube 1
+            
+            Cube cube_2 = new Cube(mCubes.get(permutation.get(1)));
+            for (int mirror_i2 = 0; mirror_i2 < 2; ++mirror_i2) {
+              for (int rotate_i2 = 0; rotate_i2 < 4; ++rotate_i2) {
+                if (mirror_i2 % 2 == 1) {
+                  cube_2.mirror();
+                }
+                for (int rot = 0; rot < rotate_i2; ++rot) {
+                  cube_2.rotate();
+                }
+                // have cube 2
+                
+                Cube cube_3 = new Cube(mCubes.get(permutation.get(2)));
+                for (int mirror_i3 = 0; mirror_i3 < 2; ++mirror_i3) {
+                  for (int rotate_i3 = 0; rotate_i3 < 4; ++rotate_i3) {
+                    if (mirror_i3 % 2 == 1) {
+                      cube_3.mirror();
+                    }
+                    for (int rot = 0; rot < rotate_i3; ++rot) {
+                      cube_3.rotate();
+                    }
+                    // have cube 3
+                    
+                    Cube cube_4 = new Cube(mCubes.get(permutation.get(3)));
+                    for (int mirror_i4 = 0; mirror_i4 < 2; ++mirror_i4) {
+                      for (int rotate_i4 = 0; rotate_i4 < 4; ++rotate_i4) {
+                        if (mirror_i4 % 2 == 1) {
+                          cube_4.mirror();
+                        }
+                        for (int rot = 0; rot < rotate_i4; ++rot) {
+                          cube_4.rotate();
+                        }
+                        // have cube 4
+                        
+                        Cube cube_5 = new Cube(mCubes.get(permutation.get(4)));
+                        for (int mirror_i5 = 0; mirror_i5 < 2; ++mirror_i5) {
+                          for (int rotate_i5 = 0; rotate_i5 < 4; ++rotate_i5) {
+                            if (mirror_i5 % 2 == 1) {
+                              cube_5.mirror();
+                            }
+                            for (int rot = 0; rot < rotate_i5; ++rot) {
+                              cube_5.rotate();
+                            }
+                            // have cube 5
+                            
+                            Cube cube_6 = new Cube(mCubes.get(permutation.get(5)));
+                            for (int mirror_i6 = 0; mirror_i6 < 2; ++mirror_i6) {
+                              for (int rotate_i6 = 0; rotate_i6 < 4; ++rotate_i6) {
+                                if (mirror_i6 % 2 == 1) {
+                                  cube_6.mirror();
+                                }
+                                for (int rot = 0; rot < rotate_i6; ++rot) {
+                                  cube_6.rotate();
+                                }
+                                // have cube 6
+                                
+                                // have got all cubes, make a folding
+                                List<Cube> segment = new ArrayList<>();
+                                segment.add(cube_1);
+                                segment.add(cube_2);
+                                segment.add(cube_3);
+                                segment.add(cube_4);
+                                segment.add(cube_5);
+                                segment.add(cube_6);
+                                Folding fT_upper = new Folding(segment, true, Folding.Form.T);
+                                Folding fT_lower = new Folding(segment, false, Folding.Form.T);
+                                Folding fX_upper = new Folding(segment, true, Folding.Form.X);
+                                Folding fX_lower = new Folding(segment, false, Folding.Form.X);
+                                
+                                if (isUnfoldedTValid(fT_upper)) {
+                                  //foldings.add(fT_upper);
+                                  mUnfoldedT.add(fT_upper);
+                                }
+                                if (isUnfoldedTValid(fT_lower)) {
+                                  //foldings.add(fT_lower);
+                                  mUnfoldedT.add(fT_lower);
+                                }
+                                if (isUnfoldedXValid(fX_upper)) {
+                                  //foldings.add(fX_upper);
+                                  mUnfoldedX.add(fX_upper);
+                                }
+                                if (isUnfoldedXValid(fX_lower)) {
+                                  //foldings.add(fX_lower);
+                                  mUnfoldedX.add(fX_lower);
+                                }
+                                 
+                              }  // cube 6
+                            }
+                             
+                          }  // cube 5
+                        }
+                         
+                      }  // cube 4
+                    }
+                    
+                  }  // cube 3
+                }
+                
+              }  // cube 2
+            }
+            
+        }  // cube 1
+      }
+    
+    }  // permutations_loop
+  }
+  
   /**
    * @brief Sorry for code duplication - I was in a hurry during development :(
    */
@@ -424,6 +556,14 @@ public class Solver {
         continue smallcomb_2;
       }  // smallcomb_2 loop
       // ----------------------------------------------------------------------
+      collect_rings = removeDuplicateSegments(collect_rings);
+      System.out.println(collect_rings.size());
+      if (collect_rings.size() < 20) {
+        for (LinkedList<Cube> ring : collect_rings) {
+          System.out.println(ringToString(ring));
+        }
+        return;
+      }
       
       // --------------------------------------------------------------------------------------------------------------
       
@@ -1062,6 +1202,21 @@ public class Solver {
     return segment_valid && left && right;
   }
   
+  private boolean equal(final List<Cube> lhs, final List<Cube> rhs) {
+    if (lhs.size() != rhs.size()) {
+      return false;
+    }
+    
+    for (int i = 0; i < lhs.size(); ++i) {
+      Cube lhs_cube = lhs.get(i);
+      Cube rhs_cube = rhs.get(i);
+      if (!Util.equal(lhs_cube, rhs_cube)) {
+        return false;
+      }
+    }
+    return true;
+  }
+  
   private boolean equal(final Folding lhs, final Folding rhs) {
     if (lhs.form != rhs.form) {
       return false;
@@ -1079,6 +1234,31 @@ public class Solver {
       }
     }
     return true;
+  }
+  
+  private List<LinkedList<Cube>> removeDuplicateSegments(List<LinkedList<Cube>> list) {
+    if (list.size() < 2) {
+      return list;
+    }
+    List<LinkedList<Cube>> result = new ArrayList<>(list.size());
+    
+    Set<LinkedList<Cube>> unique_list = new TreeSet<>(
+        new Comparator<LinkedList<Cube>>() {
+          @Override
+          public int compare(LinkedList<Cube> lhs, LinkedList<Cube> rhs) {
+            if (equal(lhs, rhs)) {
+              return 0;
+            } else {
+              return -1;
+            }
+          }});
+    
+    unique_list.addAll(list);
+    
+    for (LinkedList<Cube> item : unique_list) {
+      result.add(item);
+    }
+    return result;
   }
   
   private List<Folding> removeDuplicates(List<Folding> list) {

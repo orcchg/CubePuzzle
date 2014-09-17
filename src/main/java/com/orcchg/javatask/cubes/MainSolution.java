@@ -32,7 +32,7 @@ public class MainSolution {
     MainSolution instance = new MainSolution();
     instance.readCubes(args[0]);
     
-    instance.mSolver.solve();
+    instance.mSolver.exhaustiveSolve();
     instance.writeToFile("output.txt", instance.mSolver.getSolution());
     long elapsed = System.currentTimeMillis() - start;
     
@@ -42,9 +42,7 @@ public class MainSolution {
                        "\nTime elapsed: " + elapsed / 1000 + " s");
   }
 
-  /* Private methods */
-  // --------------------------------------------------------------------------
-  private void readCubes(String filename) {
+  public void readCubes(String filename) {
     Matrix matrix = new Matrix();
     try (BufferedReader br = new BufferedReader(new FileReader(filename))) {
       String line = null;
@@ -113,7 +111,7 @@ public class MainSolution {
         ));
   }
   
-  private void writeToFile(final String filename, final String content) {
+  public void writeToFile(final String filename, final String content) {
     File file = new File(filename);
     
     try (FileOutputStream fout = new FileOutputStream(file);) {
