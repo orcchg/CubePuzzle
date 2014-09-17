@@ -32,13 +32,6 @@ public class MainSolution {
     MainSolution instance = new MainSolution();
     instance.readCubes(args[0]);
     
-//    System.out.println(instance.mSolver.getCube(4));
-//    System.out.println();
-//    System.out.println(instance.mSolver.getCube(4).getRotated().getRotated());
-//    System.out.println();
-//    System.out.println(instance.mSolver.getCube(4).getMirrored());
-//    System.out.println();
-//    System.out.println(instance.mSolver.getCube(4).getMirrored().getRotated().getRotated());
     instance.mSolver.exhaustiveSolve();
     instance.writeToFile("output.txt", instance.mSolver.getSolution());
     long elapsed = System.currentTimeMillis() - start;
