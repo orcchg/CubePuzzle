@@ -96,6 +96,7 @@ public class Solver {
     return flip == rhs_bits;
   }
   
+  // XXX: start
   public void exhaustiveSolve() {
     if (mCubes.size() != 6) {
       throw new IllegalStateException("Number of cubes is not equal to six! No solution.");
@@ -250,9 +251,16 @@ public class Solver {
       }
     
     }  // permutations_loop
-  }
+    
+    mUnfoldedT = removeDuplicates(mUnfoldedT);
+    mUnfoldedX = removeDuplicates(mUnfoldedX);
+    // XXX: end
+  }  // end exhaustive solution
   
+  
+  // ------------------------------------------------------------------------------------------------------------------
   /**
+   * Old, obsolete and monstrous solution. Do not try to understand this!
    * @brief Sorry for code duplication - I was in a hurry during development :(
    */
   public void solve() {
