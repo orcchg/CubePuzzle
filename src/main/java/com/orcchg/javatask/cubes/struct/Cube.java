@@ -149,28 +149,28 @@ public class Cube {
         mSides[1] = mTemp[2].clone().reverse();
         mSides[2] = mTemp[0].clone();
         mSides[3] = mTemp[1].clone();
-        break;
+        return this;
       case DOWN:
         mOrientation = Orientation.LEFT;
         mSides[0] = mTemp[2].clone();
         mSides[1] = mTemp[3].clone();
         mSides[2] = mTemp[1].clone().reverse();
         mSides[3] = mTemp[0].clone().reverse();
-        break;
+        return this;
       case RIGHT:
         mOrientation = Orientation.DOWN;
         mSides[0] = mTemp[1].clone().reverse();
         mSides[1] = mTemp[0].clone().reverse();
         mSides[2] = mTemp[3].clone().reverse();
         mSides[3] = mTemp[2].clone().reverse();
-        break;
+        return this;
       case LEFT:
         mOrientation = Orientation.UP;
         mSides[0] = mTemp[0].clone();
         mSides[1] = mTemp[1].clone();
         mSides[2] = mTemp[2].clone();
         mSides[3] = mTemp[3].clone();
-        break;
+        return this;
     }
     return this;
   }
@@ -244,7 +244,11 @@ public class Cube {
     mSides[1] = rhs.mSides[1].clone();
     mSides[2] = rhs.mSides[2].clone();
     mSides[3] = rhs.mSides[3].clone();
-    backup();
+    
+    mTemp[0] = rhs.mTemp[0].clone();
+    mTemp[1] = rhs.mTemp[1].clone();
+    mTemp[2] = rhs.mTemp[2].clone();
+    mTemp[3] = rhs.mTemp[3].clone();
   }
   
   private void backup() {
