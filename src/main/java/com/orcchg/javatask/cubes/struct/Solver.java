@@ -251,12 +251,12 @@ public class Solver {
                                 Folding fX_upper = new Folding(segment, true, Folding.Form.X);
                                 Folding fX_lower = new Folding(segment, false, Folding.Form.X);
                                 
-                                if (isUnfoldedTValid(fT_upper)) {
+                               // if (isUnfoldedTValid(fT_upper)) {
                                   //foldings.add(fT_upper);
                                   if (cube_1.getID() == 3 && cube_2.getID() == 1 && cube_3.getID() == 4 &&
                                       cube_4.getID() == 5 && cube_5.getID() == 0 && cube_6.getID() == 2)
                                   mUnfoldedT.add(fT_upper);
-                                }
+                                //}
                                 if (isUnfoldedTValid(fT_lower)) {
                                   //foldings.add(fT_lower);
                                   //mUnfoldedT.add(fT_lower);
