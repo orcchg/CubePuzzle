@@ -115,7 +115,7 @@ public class Solver {
       Cube cube_1 = new Cube(mCubes.get(permutation.get(0)));
       for (int mirror_i1 = 0; mirror_i1 < 2; ++mirror_i1) {
         for (int rotate_i1 = 0; rotate_i1 < 4; ++rotate_i1) {
-            if (mirror_i1 % 2 == 0) {
+            if (mirror_i1 == 1) {
               cube_1 = cube_1.getMirrored();
             }
             switch (rotate_i1) {
@@ -136,7 +136,7 @@ public class Solver {
             Cube cube_2 = new Cube(mCubes.get(permutation.get(1)));
             for (int mirror_i2 = 0; mirror_i2 < 2; ++mirror_i2) {
               for (int rotate_i2 = 0; rotate_i2 < 4; ++rotate_i2) {
-                if (mirror_i2 % 2 == 0) {
+                if (mirror_i2 == 1) {
                   cube_2 = cube_2.getMirrored();
                 }
                 switch (rotate_i2) {
@@ -157,7 +157,7 @@ public class Solver {
                 Cube cube_3 = new Cube(mCubes.get(permutation.get(2)));
                 for (int mirror_i3 = 0; mirror_i3 < 2; ++mirror_i3) {
                   for (int rotate_i3 = 0; rotate_i3 < 4; ++rotate_i3) {
-                    if (mirror_i3 % 2 == 0) {
+                    if (mirror_i3 == 1) {
                       cube_3 = cube_3.getMirrored();
                     }
                     switch (rotate_i3) {
@@ -178,7 +178,7 @@ public class Solver {
                     Cube cube_4 = new Cube(mCubes.get(permutation.get(3)));
                     for (int mirror_i4 = 0; mirror_i4 < 2; ++mirror_i4) {
                       for (int rotate_i4 = 0; rotate_i4 < 4; ++rotate_i4) {
-                        if (mirror_i4 % 2 == 0) {
+                        if (mirror_i4 == 1) {
                           cube_4 = cube_4.getMirrored();
                         }
                         switch (rotate_i4) {
@@ -199,7 +199,7 @@ public class Solver {
                         Cube cube_5 = new Cube(mCubes.get(permutation.get(4)));
                         for (int mirror_i5 = 0; mirror_i5 < 2; ++mirror_i5) {
                           for (int rotate_i5 = 0; rotate_i5 < 4; ++rotate_i5) {
-                            if (mirror_i5 % 2 == 0) {
+                            if (mirror_i5 == 1) {
                               cube_5 = cube_5.getMirrored();
                             }
                             switch (rotate_i5) {
@@ -220,7 +220,7 @@ public class Solver {
                             Cube cube_6 = new Cube(mCubes.get(permutation.get(5)));
                             for (int mirror_i6 = 0; mirror_i6 < 2; ++mirror_i6) {
                               for (int rotate_i6 = 0; rotate_i6 < 4; ++rotate_i6) {
-                                if (mirror_i6 % 2 == 0) {
+                                if (mirror_i6 == 1) {
                                   cube_6 = cube_6.getMirrored();
                                 }
                                 switch (rotate_i6) {
