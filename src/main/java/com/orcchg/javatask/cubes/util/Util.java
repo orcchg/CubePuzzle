@@ -1,14 +1,21 @@
 package com.orcchg.javatask.cubes.util;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import com.orcchg.javatask.cubes.struct.Cube;
 import com.orcchg.javatask.cubes.struct.Orientation;
 
 public class Util {
+  public static List<List<Integer>> allCombinations(final List<Integer> list) {
+    return permutation(list);
+  }
+  
   public static List<List<Integer>> allConjunctions(final List<Integer> list, int length) {
     if (list.size() < length) {
       throw new IllegalArgumentException("List is shorter than required size of conjunctions.");
@@ -130,6 +137,29 @@ public class Util {
       for (int j = nextIndex; j < set.length; j++) {
         subset[subsetSize] = set[j];
         processLargerSubsets(set, subset, subsetSize + 1, j + 1, combinations);
+      }
+    }
+  }
+
+  private static List<List<Integer>> permutation(List<Integer> str) {
+    List<List<Integer>> answer = new ArrayList<>();
+    permutation(new ArrayList<Integer>(), str, answer);
+    return answer;
+  }
+
+  private static void permutation(List<Integer> prefix, List<Integer> str, List<List<Integer>> answer) {
+    int n = str.size();
+    if (n == 0) {
+      answer.add(prefix);
+    } else {
+      for (int i = 0; i < n; i++) {
+        List<Integer> sublist = new ArrayList<>();
+        sublist.addAll(str.subList(0, i));
+        sublist.addAll(str.subList(i + 1, n));
+        List<Integer> prefixlist = new ArrayList<>();
+        prefixlist.addAll(prefix);
+        prefixlist.add(str.get(i));
+        permutation(prefixlist, sublist, answer);
       }
     }
   }
