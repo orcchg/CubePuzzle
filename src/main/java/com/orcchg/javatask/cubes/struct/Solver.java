@@ -112,7 +112,11 @@ public class Solver {
      // List<Folding> foldings = new ArrayList<>();
 
       Cube cube_1 = new Cube(mCubes.get(permutation.get(0)));
-      for (int mirror_i1 = 0; mirror_i1 < 2; ++mirror_i1) {
+      int mirror_i1 = 0;
+      if (cube_1.isSymmetric()) {
+        mirror_i1 = 1;
+      }
+      for (; mirror_i1 < 2; ++mirror_i1) {
         for (int rotate_i1 = 0; rotate_i1 < 4; ++rotate_i1) {
             if (mirror_i1 % 2 == 1) {
               cube_1.mirror();
@@ -123,7 +127,11 @@ public class Solver {
             // have cube 1
             
             Cube cube_2 = new Cube(mCubes.get(permutation.get(1)));
-            for (int mirror_i2 = 0; mirror_i2 < 2; ++mirror_i2) {
+            int mirror_i2 = 0;
+            if (cube_2.isSymmetric()) {
+              mirror_i2 = 1;
+            }
+            for (; mirror_i2 < 2; ++mirror_i2) {
               for (int rotate_i2 = 0; rotate_i2 < 4; ++rotate_i2) {
                 if (mirror_i2 % 2 == 1) {
                   cube_2.mirror();
@@ -134,7 +142,11 @@ public class Solver {
                 // have cube 2
                 
                 Cube cube_3 = new Cube(mCubes.get(permutation.get(2)));
-                for (int mirror_i3 = 0; mirror_i3 < 2; ++mirror_i3) {
+                int mirror_i3 = 0;
+                if (cube_3.isSymmetric()) {
+                  mirror_i3 = 1;
+                }
+                for (; mirror_i3 < 2; ++mirror_i3) {
                   for (int rotate_i3 = 0; rotate_i3 < 4; ++rotate_i3) {
                     if (mirror_i3 % 2 == 1) {
                       cube_3.mirror();
@@ -145,7 +157,11 @@ public class Solver {
                     // have cube 3
                     
                     Cube cube_4 = new Cube(mCubes.get(permutation.get(3)));
-                    for (int mirror_i4 = 0; mirror_i4 < 2; ++mirror_i4) {
+                    int mirror_i4 = 0;
+                    if (cube_4.isSymmetric()) {
+                      mirror_i4 = 1;
+                    }
+                    for (; mirror_i4 < 2; ++mirror_i4) {
                       for (int rotate_i4 = 0; rotate_i4 < 4; ++rotate_i4) {
                         if (mirror_i4 % 2 == 1) {
                           cube_4.mirror();
@@ -156,7 +172,11 @@ public class Solver {
                         // have cube 4
                         
                         Cube cube_5 = new Cube(mCubes.get(permutation.get(4)));
-                        for (int mirror_i5 = 0; mirror_i5 < 2; ++mirror_i5) {
+                        int mirror_i5 = 0;
+                        if (cube_5.isSymmetric()) {
+                          mirror_i5 = 1;
+                        }
+                        for (; mirror_i5 < 2; ++mirror_i5) {
                           for (int rotate_i5 = 0; rotate_i5 < 4; ++rotate_i5) {
                             if (mirror_i5 % 2 == 1) {
                               cube_5.mirror();
@@ -167,7 +187,11 @@ public class Solver {
                             // have cube 5
                             
                             Cube cube_6 = new Cube(mCubes.get(permutation.get(5)));
-                            for (int mirror_i6 = 0; mirror_i6 < 2; ++mirror_i6) {
+                            int mirror_i6 = 0;
+                            if (cube_6.isSymmetric()) {
+                              mirror_i6 = 1;
+                            }
+                            for (; mirror_i6 < 2; ++mirror_i6) {
                               for (int rotate_i6 = 0; rotate_i6 < 4; ++rotate_i6) {
                                 if (mirror_i6 % 2 == 1) {
                                   cube_6.mirror();
