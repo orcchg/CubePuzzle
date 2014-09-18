@@ -108,9 +108,10 @@ public class Solver {
     }
     
     List<List<Integer>> permutations = Util.allCombinations(cube_ids);
+    int perm_i = 0;
     permutations_loop: for (List<Integer> permutation : permutations) {
       
-     // List<Folding> foldings = new ArrayList<>();
+     long start = System.currentTimeMillis();
 
       for (int mirror_i1 = 0; mirror_i1 < 2; ++mirror_i1) {
         for (int rotate_i1 = 0; rotate_i1 < 4; ++rotate_i1) {
@@ -286,11 +287,13 @@ public class Solver {
         }  // cube 1
       }
       System.gc();
-    
+      long elapsed = System.currentTimeMillis() - start;
+      ++perm_i;
+      System.out.println("Permutation [" + perm_i + " / 720] has been processed. Time elapsed: " + elapsed / 1000.0);
     }  // permutations_loop
     
-    //mUnfoldedT = removeDuplicates(mUnfoldedT);
-    //mUnfoldedX = removeDuplicates(mUnfoldedX);
+    mUnfoldedT = removeDuplicates(mUnfoldedT);
+    mUnfoldedX = removeDuplicates(mUnfoldedX);
     // XXX: end
   }  // end exhaustive solution
   
