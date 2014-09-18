@@ -67,6 +67,12 @@ public class Cube {
       return false;
     return true;
   }
+
+  public Cube getOriented(Orientation orientation) {
+    Cube oriented = new Cube(this);
+    oriented.setOrientation(orientation);
+    return oriented;
+  }
   
   public Cube getRotated() {  // clockwise rotation by 90 degrees
     Cube rotated = new Cube(this);  // deep copy
@@ -122,11 +128,83 @@ public class Cube {
     mTemp[3] = rhs.mTemp[3].clone();
   }
   
+  Orientation getOrientation() {
+    return mOrientation;
+  }
+  
   private void backup() {
     mTemp[0] = mSides[0].clone();
     mTemp[1] = mSides[1].clone();
     mTemp[2] = mSides[2].clone();
     mTemp[3] = mSides[3].clone();
+  }
+  
+  private Cube setOrientation(Orientation orientation) {
+    switch (mOrientation) {
+      case UP:
+        switch (orientation) {
+          case UP:
+            break;
+          case DOWN:
+            rotate(); rotate();
+            break;
+          case RIGHT:
+            rotate();
+            break;
+          case LEFT:
+            rotate(); rotate(); rotate();
+            break;
+        }
+        break;
+      case DOWN:
+        switch (orientation) {
+          case UP:
+            rotate(); rotate();
+            break;
+          case DOWN:
+            break;
+          case RIGHT:
+            rotate(); rotate(); rotate();
+            break;
+          case LEFT:
+            rotate();
+            break;
+        }
+        break;
+      case RIGHT:
+        switch (orientation) {
+          case UP:
+            rotate(); rotate(); rotate();
+            break;
+          case DOWN:
+            rotate();
+            break;
+          case RIGHT:
+            break;
+          case LEFT:
+            rotate(); rotate();
+            break;
+        }
+        break;
+      case LEFT:
+        switch (orientation) {
+          case UP:
+            rotate();
+            break;
+          case DOWN:
+            rotate(); rotate(); rotate();
+            break;
+          case RIGHT:
+            rotate(); rotate();
+            break;
+          case LEFT:
+            break;
+        }
+        break;
+    }
+    mOrientation = orientation;
+    backup();
+    return this;
   }
   
   Cube rotate() {  // clockwise rotation by 90 degrees

@@ -443,13 +443,21 @@ public class Solver {
       return false;
     }
     
-    Folding rhs_temp = rhs;
-    if (lhs.isUpper != rhs_temp.isUpper) {
-      rhs_temp = flip(rhs);
+    if (lhs.isUpper != rhs.isUpper) {
+      Folding rhs_flipped = flip(rhs);
+      return cubesEquality(lhs, rhs_flipped);
+    } else {
+      boolean direct = cubesEquality(lhs, rhs);
+      Folding rhs_mirrored = mirror(rhs);
+      boolean mirrored = cubesEquality(lhs, rhs_mirrored);
+      return direct || mirrored;
     }
+  }
+  
+  private boolean cubesEquality(final Folding lhs, final Folding rhs) {
     for (int i = 0; i < 6; ++i) {
       Cube lhs_cube = lhs.cubes.get(i);
-      Cube rhs_cube = rhs_temp.cubes.get(i);
+      Cube rhs_cube = rhs.cubes.get(i);
       if (!Util.equal(lhs_cube, rhs_cube)) {
         return false;
       }
@@ -526,7 +534,7 @@ public class Solver {
     cubes.add(new Cube(mCubes.get(1)));
     cubes.add(new Cube(mCubes.get(4).getMirrored().getRotated().getRotated()));
     cubes.add(new Cube(mCubes.get(5).getMirrored().getRotated().getRotated().getRotated()));
-    cubes.add(new Cube(mCubes.get(2)));
+    cubes.add(new Cube(mCubes.get(0)));
     cubes.add(new Cube(mCubes.get(2).getRotated().getRotated().getRotated()));
     Folding folding = new Folding(cubes, true, Folding.Form.T);
     
@@ -535,6 +543,37 @@ public class Solver {
     Folding flipped = flip(folding);
     System.out.println(unfoldedTtoString(flipped));
     System.out.println("Equal: " + equal(folding, flipped));
+  }
+  
+  private Folding mirror(final Folding folding) {
+    List<Cube> cubes = new ArrayList<>();
+    for (int i = 0; i <= 3; ++i) {
+      Cube cube = folding.cubes.get(i);
+      cubes.add(cube.getOriented(cube.getOrientation()).getMirrored());
+    }
+    Cube cube_5 = folding.cubes.get(5);
+    Cube cube_4 = folding.cubes.get(4);
+    cubes.add(cube_5.getOriented(cube_5.getOrientation()).getMirrored());
+    cubes.add(cube_4.getOriented(cube_4.getOrientation()).getMirrored());
+    Folding mirrored = new Folding(cubes, folding.isUpper, folding.form);
+    return mirrored;
+  }
+  
+  public void testMirror() {
+    List<Cube> cubes = new ArrayList<>();
+    cubes.add(new Cube(mCubes.get(3)));
+    cubes.add(new Cube(mCubes.get(1)));
+    cubes.add(new Cube(mCubes.get(4).getMirrored().getRotated().getRotated()));
+    cubes.add(new Cube(mCubes.get(5).getMirrored().getRotated().getRotated().getRotated()));
+    cubes.add(new Cube(mCubes.get(0)));
+    cubes.add(new Cube(mCubes.get(2).getRotated().getRotated().getRotated()));
+    Folding folding = new Folding(cubes, true, Folding.Form.T);
+    
+    System.out.println(unfoldedTtoString(folding));
+    System.out.println();
+    Folding mirrored = mirror(folding);
+    System.out.println(unfoldedTtoString(mirrored));
+    System.out.println("Equal: " + equal(folding, mirrored));
   }
   
   // --------------------------------------------------------------------------
