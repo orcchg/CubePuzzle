@@ -68,139 +68,10 @@ public class Cube {
     return true;
   }
   
-  public Cube setOrientation(Orientation orientation) {
-    switch (mOrientation) {
-      case UP:
-        switch (orientation) {
-          case UP:
-            break;
-          case DOWN:
-            rotate(); rotate();
-            break;
-          case RIGHT:
-            rotate();
-            break;
-          case LEFT:
-            rotate(); rotate(); rotate();
-            break;
-        }
-        break;
-      case DOWN:
-        switch (orientation) {
-          case UP:
-            rotate(); rotate();
-            break;
-          case DOWN:
-            break;
-          case RIGHT:
-            rotate(); rotate(); rotate();
-            break;
-          case LEFT:
-            rotate();
-            break;
-        }
-        break;
-      case RIGHT:
-        switch (orientation) {
-          case UP:
-            rotate(); rotate(); rotate();
-            break;
-          case DOWN:
-            rotate();
-            break;
-          case RIGHT:
-            break;
-          case LEFT:
-            rotate(); rotate();
-            break;
-        }
-        break;
-      case LEFT:
-        switch (orientation) {
-          case UP:
-            rotate();
-            break;
-          case DOWN:
-            rotate(); rotate(); rotate();
-            break;
-          case RIGHT:
-            rotate(); rotate();
-            break;
-          case LEFT:
-            break;
-        }
-        break;
-    }
-    mOrientation = orientation;
-    return this;
-  }
-  
-  public Cube getOriented(Orientation orientation) {
-    Cube oriented = new Cube(this);
-    oriented.setOrientation(orientation);
-    return oriented;
-  }
-
-  public Cube rotate() {  // clockwise rotation by 90 degrees
-    switch (mOrientation) {
-      case UP:
-        mOrientation = Orientation.RIGHT;
-        mSides[0] = mTemp[3].clone().reverse();
-        mSides[1] = mTemp[2].clone().reverse();
-        mSides[2] = mTemp[0].clone();
-        mSides[3] = mTemp[1].clone();
-        return this;
-      case DOWN:
-        mOrientation = Orientation.LEFT;
-        mSides[0] = mTemp[2].clone();
-        mSides[1] = mTemp[3].clone();
-        mSides[2] = mTemp[1].clone().reverse();
-        mSides[3] = mTemp[0].clone().reverse();
-        return this;
-      case RIGHT:
-        mOrientation = Orientation.DOWN;
-        mSides[0] = mTemp[1].clone().reverse();
-        mSides[1] = mTemp[0].clone().reverse();
-        mSides[2] = mTemp[3].clone().reverse();
-        mSides[3] = mTemp[2].clone().reverse();
-        return this;
-      case LEFT:
-        mOrientation = Orientation.UP;
-        mSides[0] = mTemp[0].clone();
-        mSides[1] = mTemp[1].clone();
-        mSides[2] = mTemp[2].clone();
-        mSides[3] = mTemp[3].clone();
-        return this;
-    }
-    return this;
-  }
-  
   public Cube getRotated() {  // clockwise rotation by 90 degrees
     Cube rotated = new Cube(this);  // deep copy
     rotated.rotate();
     return rotated;
-  }
-  
-  public Cube mirror() {  // mirror at vertical line
-    mSides[0] = mTemp[0].clone().reverse();
-    mSides[1] = mTemp[1].clone().reverse();
-    mSides[2] = mTemp[3].clone();
-    mSides[3] = mTemp[2].clone();
-    backup();
-    
-//    switch (mOrientation) {
-//      case UP:
-//      case DOWN:
-//        break;
-//      case RIGHT:
-//        mOrientation = Orientation.LEFT;
-//        break;
-//      case LEFT:
-//        mOrientation = Orientation.RIGHT;
-//        break;
-//    }
-    
-    return this;
   }
   
   public Cube getMirrored() {
@@ -256,5 +127,48 @@ public class Cube {
     mTemp[1] = mSides[1].clone();
     mTemp[2] = mSides[2].clone();
     mTemp[3] = mSides[3].clone();
+  }
+  
+  Cube rotate() {  // clockwise rotation by 90 degrees
+    switch (mOrientation) {
+      case UP:
+        mOrientation = Orientation.RIGHT;
+        mSides[0] = mTemp[3].clone().reverse();
+        mSides[1] = mTemp[2].clone().reverse();
+        mSides[2] = mTemp[0].clone();
+        mSides[3] = mTemp[1].clone();
+        return this;
+      case DOWN:
+        mOrientation = Orientation.LEFT;
+        mSides[0] = mTemp[2].clone();
+        mSides[1] = mTemp[3].clone();
+        mSides[2] = mTemp[1].clone().reverse();
+        mSides[3] = mTemp[0].clone().reverse();
+        return this;
+      case RIGHT:
+        mOrientation = Orientation.DOWN;
+        mSides[0] = mTemp[1].clone().reverse();
+        mSides[1] = mTemp[0].clone().reverse();
+        mSides[2] = mTemp[3].clone().reverse();
+        mSides[3] = mTemp[2].clone().reverse();
+        return this;
+      case LEFT:
+        mOrientation = Orientation.UP;
+        mSides[0] = mTemp[0].clone();
+        mSides[1] = mTemp[1].clone();
+        mSides[2] = mTemp[2].clone();
+        mSides[3] = mTemp[3].clone();
+        return this;
+    }
+    return this;
+  }
+  
+  Cube mirror() {  // mirror at vertical line
+    mSides[0] = mTemp[0].clone().reverse();
+    mSides[1] = mTemp[1].clone().reverse();
+    mSides[2] = mTemp[3].clone();
+    mSides[3] = mTemp[2].clone();
+    backup();
+    return this;
   }
 }

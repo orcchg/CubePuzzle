@@ -31,7 +31,7 @@ public class MainSolution {
     long start = System.currentTimeMillis();
     MainSolution instance = new MainSolution();
     instance.readCubes(args[0]);
-    
+
     instance.mSolver.exhaustiveSolve();
     instance.writeToFile("output.txt", instance.mSolver.getSolution());
     long elapsed = System.currentTimeMillis() - start;
