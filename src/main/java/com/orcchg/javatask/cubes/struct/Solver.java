@@ -495,7 +495,7 @@ public class Solver {
             if (equal(lhs, rhs)) {
               return 0;
             } else {
-              return -1;
+              return 1;
             }
           }});
     
